@@ -1,0 +1,653 @@
+<template>
+  <section>
+    <!--工具条-->
+    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+      <el-form :inline="true" :model="filters">
+        <el-form-item>
+          <el-input v-model="filters.name" placeholder="客户姓名"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="filters.name" placeholder="手机号"></el-input>
+        </el-form-item>
+        <span class="demonstration">申请提现开始时间：</span>
+        <el-date-picker v-model="value1" type="datetime" placeholder="选择日期时间">
+        </el-date-picker>
+        <span class="demonstration">申请提结束时间：</span>
+        <el-date-picker v-model="value2" type="datetime" placeholder="选择日期时间">
+        </el-date-picker><br>
+        <span class="demonstration">打款开始时间：</span>
+        <el-date-picker v-model="value3" type="datetime" placeholder="选择日期时间">
+        </el-date-picker>
+        <span class="demonstration">打款结束时间：</span>
+        <el-date-picker v-model="value4" type="datetime" placeholder="选择日期时间">
+        </el-date-picker>
+        <el-select v-model="value" placeholder="提现状态">
+            <el-option v-for="item in list" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        <el-form-item>
+          <el-button type="primary" v-on:click="getUsers">查询</el-button>
+        </el-form-item>
+        <!-- <el-form-item>
+          <el-button type="primary" @click="handleAdd">新增</el-button>
+        </el-form-item> -->
+      </el-form>
+    </el-col>
+
+    <!--列表-->
+    <el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;">
+      <el-table-column prop="id" label="序号" width="120" >
+      </el-table-column>
+      <el-table-column prop="number" label="手机号码" width="125">
+      </el-table-column>
+      <el-table-column prop="name" label="真实姓名" width="120">
+      </el-table-column>
+      <el-table-column prop="user_name" label="提现账号" width="120">
+      </el-table-column>
+      <el-table-column prop="loan" label="提现银行" width="250">
+      </el-table-column>
+      <el-table-column prop="loan_number" label="支行" width="120">
+      </el-table-column>
+      <el-table-column prop="min_company" label="提现总额" width="80">
+      </el-table-column>
+      <el-table-column prop="interest_rate" label="到账金额" width="80">
+      </el-table-column>
+      <el-table-column prop="data_qx" label="手续费" width="120">
+      </el-table-column>
+      <el-table-column prop="time" label="提现申请时间" width="120">
+      </el-table-column>
+      <el-table-column prop="toubiao" label="打款时间" width="120">
+      </el-table-column>
+      <el-table-column prop="fs_time" label="状态" width="120">
+      </el-table-column>
+      <el-table-column prop="yhkje" label="审核人" width="120" >
+      </el-table-column>
+      <el-table-column label="操作" width="150">
+        <template scope="scope">
+          <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">查看</el-button>
+          <!-- <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button> -->
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!--工具条-->
+    <el-col :span="24" class="toolbar">
+      <!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
+      <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
+      </el-pagination>
+    </el-col>
+
+    <!--编辑界面-->
+    <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+      <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="editForm.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="性别">
+          <el-radio-group v-model="editForm.sex">
+            <el-radio class="radio" :label="1">男</el-radio>
+            <el-radio class="radio" :label="0">女</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="年龄">
+          <el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
+        </el-form-item>
+        <el-form-item label="生日">
+          <el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="地址">
+          <el-input type="textarea" v-model="editForm.addr"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native="editFormVisible = false">取消</el-button>
+        <el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
+      </div>
+    </el-dialog>
+
+    <!--新增界面-->
+    <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
+      <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="addForm.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="性别">
+          <el-radio-group v-model="addForm.sex">
+            <el-radio class="radio" :label="1">男</el-radio>
+            <el-radio class="radio" :label="0">女</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="年龄">
+          <el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
+        </el-form-item>
+        <el-form-item label="生日">
+          <el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
+        </el-form-item>
+        <el-form-item label="地址">
+          <el-input type="textarea" v-model="addForm.addr"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native="addFormVisible = false">取消</el-button>
+        <el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
+      </div>
+    </el-dialog>
+  </section>
+</template>
+
+<script>
+  import util from '../../common/js/util'
+  //import NProgress from 'nprogress'
+  import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
+
+  export default {
+    data() {
+      return {
+        value:'',
+        value1:'',
+        value2:'',
+        value3:'',
+        value4:'',
+        list:[{
+          value:'选项1',
+          label:'提现中'
+        },{
+          value:'选项1',
+          label:'提现完成'
+        },{
+          value:'选项1',
+          label:'提现失败'
+        }],
+        filters: {
+          name: ''
+        },
+        users: [],
+        total: 0,
+        page: 1,
+        listLoading: false,
+        sels: [],//列表选中列
+
+        editFormVisible: false,//编辑界面是否显示
+        editLoading: false,
+        editFormRules: {
+          name: [
+            { required: true, message: '请输入姓名', trigger: 'blur' }
+          ]
+        },
+        //编辑界面数据
+        editForm: {
+          id: 0,
+          name: '',
+          sex: -1,
+          age: 0,
+          birth: '',
+          addr: ''
+        },
+
+        addFormVisible: false,//新增界面是否显示
+        addLoading: false,
+        addFormRules: {
+          name: [
+            { required: true, message: '请输入姓名', trigger: 'blur' }
+          ]
+        },
+        //新增界面数据
+        addForm: {
+          name: '',
+          sex: -1,
+          age: 0,
+          birth: '',
+          addr: ''
+        },
+        table:[{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        },{
+          id:"001",
+          number:"18709829122",
+          name:"胡红",
+          user_name:"4分",
+          loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
+          loan_number:"450000元",
+          min_company:"-",
+          interest_rate:"10%",
+          data_qx:"1个月",
+          time:"2017-04-01 12:12:00",
+          toubiao:"0元",
+          fs_time:"",
+          yhkje:"0元",
+          syhkje:"545111元",
+          state:"等待初审"
+        }]
+      }
+    },
+    methods: {
+      //性别显示转换
+      formatSex: function (row, column) {
+        return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+      },
+      handleCurrentChange(val) {
+        this.page = val;
+        this.getUsers();
+      },
+      //获取用户列表
+      getUsers() {
+        let para = {
+          page: this.page,
+          name: this.filters.name
+        };
+        this.listLoading = true;
+        //NProgress.start();
+        getUserListPage(para).then((res) => {
+          this.total = res.data.total;
+          this.users = res.data.users;
+          this.listLoading = false;
+          //NProgress.done();
+        });
+      },
+      //删除
+      handleDel: function (index, row) {
+        this.$confirm('确认删除该记录吗?', '提示', {
+          type: 'warning'
+        }).then(() => {
+          this.listLoading = true;
+          //NProgress.start();
+          let para = { id: row.id };
+          removeUser(para).then((res) => {
+            this.listLoading = false;
+            //NProgress.done();
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            this.getUsers();
+          });
+        }).catch(() => {
+
+        });
+      },
+      //显示编辑界面
+      handleEdit: function (index, row) {
+        this.editFormVisible = true;
+        this.editForm = Object.assign({}, row);
+      },
+      //显示新增界面
+      handleAdd: function () {
+        this.addFormVisible = true;
+        this.addForm = {
+          name: '',
+          sex: -1,
+          age: 0,
+          birth: '',
+          addr: ''
+        };
+      },
+      //编辑
+      editSubmit: function () {
+        this.$refs.editForm.validate((valid) => {
+          if (valid) {
+            this.$confirm('确认提交吗？', '提示', {}).then(() => {
+              this.editLoading = true;
+              //NProgress.start();
+              let para = Object.assign({}, this.editForm);
+              para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
+              editUser(para).then((res) => {
+                this.editLoading = false;
+                //NProgress.done();
+                this.$message({
+                  message: '提交成功',
+                  type: 'success'
+                });
+                this.$refs['editForm'].resetFields();
+                this.editFormVisible = false;
+                this.getUsers();
+              });
+            });
+          }
+        });
+      },
+      //新增
+      addSubmit: function () {
+        this.$refs.addForm.validate((valid) => {
+          if (valid) {
+            this.$confirm('确认提交吗？', '提示', {}).then(() => {
+              this.addLoading = true;
+              //NProgress.start();
+              let para = Object.assign({}, this.addForm);
+              para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
+              addUser(para).then((res) => {
+                this.addLoading = false;
+                //NProgress.done();
+                this.$message({
+                  message: '提交成功',
+                  type: 'success'
+                });
+                this.$refs['addForm'].resetFields();
+                this.addFormVisible = false;
+                this.getUsers();
+              });
+            });
+          }
+        });
+      },
+      selsChange: function (sels) {
+        this.sels = sels;
+      },
+      //批量删除
+      batchRemove: function () {
+        var ids = this.sels.map(item => item.id).toString();
+        this.$confirm('确认删除选中记录吗？', '提示', {
+          type: 'warning'
+        }).then(() => {
+          this.listLoading = true;
+          //NProgress.start();
+          let para = { ids: ids };
+          batchRemoveUser(para).then((res) => {
+            this.listLoading = false;
+            //NProgress.done();
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+            this.getUsers();
+          });
+        }).catch(() => {
+
+        });
+      }
+    },
+    mounted() {
+      this.getUsers();
+    }
+  }
+
+</script>
+
+<style scoped>
+
+</style>
