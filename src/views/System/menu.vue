@@ -547,9 +547,9 @@
 			//解析tree数据及数据再整理
 			menunodes(list,chlid){
 				for(var x = 0;x<list.length;x++){
-					var childrens = {}
-					childrens.value = list[x].id
-					childrens.label = list[x].name
+					var childrens = {};
+					childrens.value = list[x].id;
+					childrens.label = list[x].name;
 					if(list[x].nodes.length !== 0){
 						var chlids = []
 						childrens.children = chlids

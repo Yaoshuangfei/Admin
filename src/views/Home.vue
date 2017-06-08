@@ -1,9 +1,7 @@
 <template>
 	<el-row class="container">
 		<el-col :span="24" class="header">
-			<el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
-				{{sysName}}
-			</el-col>
+			<el-col :span="4" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'"></el-col>
 			<el-col :span="10">
 				<div class="tools" @click.prevent="collapse">
 					<i class="fa fa-align-justify"></i>
@@ -26,18 +24,9 @@
 		<el-col :span="24" class="main">
 			<aside :class="collapsed?'menu-collapsed':'menu-expanded'">
 				<!--导航菜单-->
-				<!-- <el-menu :default-active="$route.path" class="el-menu-vertical-demo" @open="handleopen" @close="handleclose" @select="handleselect"
-					 unique-opened router v-show="!collapsed">
-					<template v-for="(item,index) in meunList" >
-						<el-submenu>
-							<template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
-							<el-menu-item v-for="child in item.children" v-if="!child.hidden">{{child.name}}</el-menu-item>
-						</el-submenu>
-						<el-menu-item v-if="item.leaf&&item.children.length>0" ><i :class="item.iconCls"></i>{{item.children[0].name}}</el-menu-item>
-					</template>
-				</el-menu> -->
 				<el-menu :default-active="$route.path" class="el-menu-vertical-demo" @open="handleopen" @close="handleclose" @select="handleselect"
 					 unique-opened router v-show="!collapsed">
+					<!--<div class="main_left_logo"></div>-->
 					<template  v-for="(item,index) in $router.options.routes"  v-if="!item.hidden">
 						<el-submenu :index="index+''" v-if="!item.leaf">
 							<template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
@@ -50,15 +39,25 @@
 				<ul class="el-menu el-menu-vertical-demo collapsed" v-show="collapsed" ref="menuCollapsed">
 					<li v-for="(item,index) in $router.options.routes" v-if="!item.hidden" class="el-submenu item">
 						<template v-if="!item.leaf">
-							<div class="el-submenu__title" style="padding-left: 20px;" @mouseover="showMenu(index,true)" @mouseout="showMenu(index,false)"><i :class="item.iconCls"></i></div>
-							<ul class="el-menu submenu" :class="'submenu-hook-'+index" @mouseover="showMenu(index,true)" @mouseout="showMenu(index,false)">
-								<li v-for="child in item.children" v-if="!child.hidden" class="el-menu-item" style="padding-left: 40px;" :class="$route.path==child.path?'is-active':''" @click="$router.push(child.path)">{{child.name}}</li>
+							<div class="el-submenu__title" style="padding-left: 20px;" @mouseover="showMenu(index,true)"
+								 @mouseout="showMenu(index,false)"><i :class="item.iconCls"></i></div>
+							<ul class="el-menu submenu" :class="'submenu-hook-'+index" @mouseover="showMenu(index,true)"
+								@mouseout="showMenu(index,false)">
+								<li v-for="child in item.children" v-if="!child.hidden" class="el-menu-item"
+									style="padding-left: 40px;" :class="$route.path==child.path?'is-active':''"
+									@click="$router.push(child.path)">{{child.name}}
+								</li>
 							</ul>
 						</template>
 						<template v-else>
-							<li class="el-submenu">
-								<div class="el-submenu__title el-menu-item" style="padding-left: 20px;height: 56px;line-height: 56px;padding: 0 20px;" :class="$route.path==item.children[0].path?'is-active':''" @click="$router.push(item.children[0].path)"><i :class="item.iconCls"></i></div>
-							</li>
+							<!--<li class="el-submenu">-->
+								<!--<div class="el-submenu__title el-menu-item"-->
+									 <!--style="padding-left: 20px;height: 56px;line-height: 56px;padding: 0 20px;"-->
+									 <!--:class="$route.path==item.children[0].path?'is-active':''"-->
+									 <!--@click="$router.push(item.children[0].path)">-->
+									<!--<i :class="item.iconCls"></i>-->
+								<!--</div>-->
+							<!--</li>-->
 						</template>
 					</li>
 				</ul>
@@ -81,11 +80,6 @@
 				</div>
 			</section>
 		</el-col>
-		<!-- <el-col :span="24" class="footer">
-			<el-row>
-				<el-col :span="24">11111</el-col>
-			</el-row>
-		</el-col> -->
 	</el-row>
 </template>
 
@@ -93,7 +87,7 @@
 	export default {
 		data() {
 			return {
-				sysName:'蜜蜂聚财',
+				sysName:'后台超级管理系统',
 				collapsed:false,
 				sysUserName: '',
 				sysUserAvatar: '',
@@ -220,8 +214,9 @@
 		.header {
 			height: 60px;
 			line-height: 60px;
-			background: $color-primary;
+			background: $color-primarys;
 			color:#fff;
+			margin-top: inherit;
 			.userinfo {
 				text-align: right;
 				padding-right: 35px;
@@ -244,9 +239,11 @@
 				font-size: 22px;
 				padding-left:20px;
 				padding-right:20px;
-				border-color: rgba(238,241,146,0.3);
-				border-right-width: 1px;
-				border-right-style: solid;
+				background: $color-header;
+				margin-top: auto;
+				/*border-color: rgba(238,241,146,0.3);*/
+				/*border-right-width: 1px;*/
+				/*border-right-style: solid;*/
 				img {
 					width: 40px;
 					float: left;
@@ -280,12 +277,17 @@
 			top: 60px;
 			bottom: 0px;
 			overflow: hidden;
+			margin-top: inherit;
 			aside {
 				flex:0 0 230px;
 				width: 230px;
 				// position: absolute;
 				// top: 0px;
 				// bottom: 0px;
+				.main_left_logo {
+					height:230px;
+					background: $color-header;
+				}
 				.el-menu{
 					height: 100%;
 				}
