@@ -97,7 +97,7 @@
 			<!--</el-col>-->
 		</el-col>
 				</el-col>
-				<div class="grid-content bg-purple-light" style="padding-left: 20px;">
+				<div class="grid-content bg-purple-light" style="padding-left: 20px;margin-top: 50px">
 					<el-col :span="24" class="breadcrumb-container">
 						<strong class="title">{{$route.name}}</strong>
 						<el-breadcrumb separator="/" class="breadcrumb-inner">
@@ -402,7 +402,7 @@
 				// left: 230px;*/
 				overflow-y: scroll;
 				padding: 20px 20px 20px 0;
-				background: #f7f7f7;
+				background: #fff;
 				.breadcrumb-container {
 					//margin-bottom: 15px;
 					.title {
