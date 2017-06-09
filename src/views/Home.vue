@@ -10,7 +10,7 @@
 							<li>
 								<p>
 									<span class="main_login_name">昵称</span>
-									<span class="main_login_write">注1销</span>
+									<span class="main_login_write">注销</span>
 								</p>
 								<p style="font-size: 18px;">123456789</p>
 							</li>
@@ -47,7 +47,7 @@
 				</ul></div>
 			</aside>
 			<section class="content-container">
-				<el-col :span="24" style="position: fixed;z-index: 9999;top:-20px">
+				<el-col :span="24" style="position: fixed;z-index: 9999;top:-20px;border-bottom: 1px solid #ddd;">
 						<el-col :span="24" class="header">
 							<el-row>
 								<el-col :xs="8" :sm="6" :md="4" :lg="4" style="margin-top: 0;">
