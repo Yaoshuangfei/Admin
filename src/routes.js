@@ -31,11 +31,6 @@ import invitation from './views/Investor/invitation.vue'
 
 /*资讯管理Article*/
 import articleList from './views/Article/articleList.vue'
-import addArticle from './views/Article/addArticle.vue'
-import newsList from './views/Article/newsList.vue'
-import advertisementManagement from './views/Article/advertisementManagement.vue'
-import carPCouselManagementApp from './views/Article/carPCouselManagementApp.vue'
-import menuManagement from './views/Article/menuManagement.vue'
 import bankManagement from './views/Article/bankManagement.vue'
 import carouselManagementPC from './views/Article/carouselManagementPC.vue'
 
@@ -142,11 +137,6 @@ let routes = [
         iconCls: 'fa el-icon-picture',
         children: [
             { path: '/articleList', component: articleList, name: '订单信息管理' },
-            // { path: '/addArticle/:id', component: addArticle, name: '添加文章' },
-            // { path: '/newsList/:id', component: newsList, name: '新闻资讯' },
-            // { path: '/advertisementManagement', component: advertisementManagement, name: 'App开屏广告管理' },
-            // { path: '/carPCouselManagementApp', component: carPCouselManagementApp, name: 'App轮播图管理' },
-            // { path: '/menuManagement', component: menuManagement, name: 'App菜单管理' },
             { path: '/carouselManagementPC', component: carouselManagementPC, name: '订单评价管理' },
             { path: '/bankManagement', component: bankManagement, name: '退货管理' }
         ]
@@ -192,16 +182,16 @@ let routes = [
             { path: '/unmatchProductList', component: unmatchProductList, name: '商户手续费记录' }
         ]
     },
-    {
-        path: '/',
-        component: Home,
-        name: '',
-        iconCls: 'fa fa-address-card',
-        leaf: true,//只有一个节点
-        children: [
-            { path: '/statistics', component: statistics, name: '统计管理' }
-        ]
-    },
+    // {
+    //     path: '/',
+    //     component: Home,
+    //     name: '',
+    //     iconCls: 'fa fa-address-card',
+    //     leaf: true,//只有一个节点
+    //     children: [
+    //         { path: '/statistics', component: statistics, name: '统计管理' }
+    //     ]
+    // },
     {
         path: '/',
         component: Home,

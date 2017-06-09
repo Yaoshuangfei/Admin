@@ -1,131 +1,105 @@
 <template>
 	<section>
 		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff">
 			<el-form :inline="true" :model="filters">
-				<el-form-item>
+				<!-- <el-form-item>
 					<el-input v-model="filters.name" placeholder="支付银行"></el-input>
+				</el-form-item> -->
+				<el-form-item label="状态">
+					<el-select v-model="filters.status" clearable>
+				      <el-option v-for="item in selectSubjectStatus" :label="item.label" :value="item.value">
+				      </el-option>
+				    </el-select>
+				</el-form-item>
+				<el-form-item label="搜索类型">
+				    <el-select v-model="filters.type" clearable>
+				      <el-option v-for="item in options" :label="item.label" :value="item.value">
+				      </el-option>
+				    </el-select>
+				</el-form-item>
+				<el-form-item>
+				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getUsers">查询</el-button>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" @click="handleAdd">增加</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="backName" label="银行名称">
+		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="orderNumber" label="订单编号">
 			</el-table-column>
-			<el-table-column prop="hot" label="是否热门">
+			<el-table-column prop="courierNumber" label="快递单号">
 			</el-table-column>
-			<el-table-column prop="backNumber" label="银行代号">
+			<el-table-column prop="userName" label="用户名">
 			</el-table-column>
-			<el-table-column prop="logo" label="logo">
+			<el-table-column prop="amountPaid" label="实付金额">
 			</el-table-column>
-			<el-table-column prop="one" label="单笔限额">
+			<el-table-column prop="orderTotal" label="订单总价">
 			</el-table-column>
-			<el-table-column prop="today" label="每日限额">
+			<el-table-column prop="orderStatus" label="订单状态">
 			</el-table-column>
-			<el-table-column prop="yday" label="每月限额">
+			<el-table-column prop="paymentMethod" label="支付方式">
 			</el-table-column>
-			<el-table-column prop="top" label="渐变色top">
+			<el-table-column prop="creationTime" label="创建时间">
 			</el-table-column>
-			<el-table-column prop="buttom" label="渐变色bootom">
+			<el-table-column prop="deliveryTime" label="发货时间">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
 					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button> -->
 					<!-- <el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
-					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
+					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
 		<!--工具条-->
-		<el-col :span="24" class="toolbar">
+		<el-col :span="24" class="toolbar" style="background:#fff;">
 			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog title="添加银行卡" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="160px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="支付平台名称：">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
+		<el-dialog title="订单详情" v-model="editFormVisible" :close-on-click-modal="false" >
+			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
+				<el-form-item label="订单号">
+					<div>{{orderDetails.orderNumber }}</div>
+					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
 				</el-form-item>
-				<el-form-item label="是否热门：">
-					<el-radio class="radio" v-model="radio" label="1">是</el-radio>
-  					<el-radio class="radio" v-model="radio" label="2">否</el-radio>
+				<el-form-item label="商品名称">
+					<div>{{orderDetails.commodityName}}</div>
 				</el-form-item>
-				<el-form-item label="银行名称：">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
+				<el-form-item label="用户名">
+					<div>{{orderDetails.userName }}</div>
 				</el-form-item>
-				<el-form-item label="银行卡类型：">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
+				<el-form-item label="实付金额">
+					<div>{{orderDetails.amountPaid }}</div>
 				</el-form-item>
-				<el-form-item label="银行代号：">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
+				<el-form-item label="订单总价">
+					<div>{{orderDetails.orderTotal }}</div>
 				</el-form-item>
-				<el-form-item label="银行LOGO：">
-					<el-col :span='10'>
-						<el-input v-model="addForm.name" auto-complete="off"></el-input>
-					</el-col>
-					<el-col :span='4'>
-						<el-button type='text'>上传图片</el-button>
-					</el-col>
+				<el-form-item label="订单状态">
+					<div>{{orderDetails.orderStatus }}</div>
 				</el-form-item>
-				<el-form-item label="单笔限额：">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
+				<el-form-item label="支付方式">
+					<div>{{orderDetails.paymentMethod }}</div>
 				</el-form-item>
-				<el-form-item label="每日限额：">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
+				<el-form-item label="创建时间">
+					<div>{{orderDetails.creationTime}}</div>
 				</el-form-item>
-				<el-form-item label="每月限额：">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="银行渐变色top：">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="银行渐变色bootom：">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
+				<el-form-item label="发货时间">
+					<div>{{orderDetails.deliveryTime}}</div>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
-				<el-button type="primary" @click.native="editFormVisible = false">取消</el-button>
-			</div>
-		</el-dialog>
-
-		<!--新增界面-->
-		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="addForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="addForm.addr"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="addFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
+				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button> -->
+				<el-button type="primary" @click.native="editFormVisible = false">关闭</el-button>
 			</div>
 		</el-dialog>
 	</section>
@@ -144,18 +118,46 @@
 				value:'',
 				value1:'',
 				value2:'',
+				selectSubjectStatus: [
+				{
+					value:'0',
+					label:'全部'
+				},{
+					value:'1',
+					label:'待付款'
+				},{
+					value:'2',
+					label:'待发货'
+				},{
+					value:'3',
+					label:'已发货'
+				},{
+					value:'4',
+					label:'待评价'
+				},{
+					value:'5',
+					label:'退货'
+				}],
 				options: [{
-		          value: '选项1',
-		          label: 'H5页面'
+		          value: '0',
+		          label: '全部'
 		        }, {
-		          value: '选项2',
-		          label: '文章链接'
+		          value: '1',
+		          label: '订单编号'
+		        }, {
+		          value: '2',
+		          label: '快递单号'
+		        }, {
+		          value: '3',
+		          label: '用户名'
 		        }],
 				filters: {
-					name: ''
+					name: '',
+					status:'',
+					type:''
 				},
 				users: [],
-				total: 0,
+				total: 100,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
@@ -179,29 +181,20 @@
 
 				addFormVisible: false,//新增界面是否显示
 				addLoading: false,
-				addFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
 				//新增界面数据
-				addForm: {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
+				orderDetails: {
 				},
-				table:[{
-					backName:'FuYou',
-					hot:'浦发银行',
-					backNumber:'098632712',
-					logo:'',
-					one:'29999',
-					today:'100000',
-					yday:'987890',
-					top:'1,233，1233,33',
-					buttom:'1,233，1233,33'
+				orderInformation:[{
+					orderNumber :'145877458784524c',
+					courierNumber :'145877458784524c',
+					userName:'吸引力量',
+					amountPaid :'300',
+					orderTotal :'900',
+					orderStatus :'待付款',
+					paymentMethod :'微信支付',
+					creationTime:'2017-09-08 17:09',
+					deliveryTime:'2017-09-08 17:09',
+					commodityName:'雨花说'
 				}]
 			}
 		},
@@ -279,9 +272,9 @@
 				});
 			},
 			//显示编辑界面
-			handleEdit: function (index, row) {
+			seeBtn: function (index, row) {
 				this.editFormVisible = true;
-				this.editForm = Object.assign({}, row);
+				this.orderDetails = Object.assign({}, row);
 			},
 			//显示新增界面
 			handleAdd: function () {
@@ -369,12 +362,15 @@
 			}
 		},
 		mounted() {
-			this.getlist();
+			// this.getlist();
 		}
 	}
 
 </script>
 
-<style scoped>
-
+<style>
+	.el-dialog--small {
+    	width: 25%;
+    	border-radius: 10px
+	}	
 </style>
