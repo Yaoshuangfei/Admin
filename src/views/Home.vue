@@ -1,47 +1,26 @@
 <template>
 	<el-row class="container">
-	<!-- 	<el-col :span="24" class="header">
-			<el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
-				吸引力
-			</el-col>
-			<el-col :span="10">
-				<div class="tools" @click.prevent="collapse">
-					<i class="fa fa-align-justify"></i>
-				</div>
-			</el-col>
-			<el-col :span="4" class="userinfo">
-				<el-dropdown trigger="hover">
-					<span class="el-dropdown-link userinfo-inner">
-					<img :src="this.sysUserAvatar" /> 
-					你好:
-					{{sysUserName}}</span>
-					<el-dropdown-menu slot="dropdown">
-						<el-dropdown-item>我的消息</el-dropdown-item>
-						<el-dropdown-item>设置</el-dropdown-item>
-						<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
-					</el-dropdown-menu>
-				</el-dropdown>
-			</el-col>
-		</el-col> -->
 		<el-col :span="24" class="main">
 			<aside :class="collapsed?'menu-collapsed':'menu-expanded'">
-				<div style="height: 158px"></div>
+				<div style="height: 283px;text-align: center;position: relative;border-bottom: 3px solid #4d6985;">
+					<img src="../assets/logos.png" alt="" style="margin-top: 50px;">
+					<div class="main_login">
+						<ul>
+							<li><span></span></li>
+							<li>
+								<p>
+									<span class="main_login_name">昵称</span>
+									<span class="main_login_write">注销</span>
+								</p>
+								<p style="font-size: 18px;">123456789</p>
+							</li>
+						</ul>
+					</div>
+				</div>
 				<!--导航菜单-->
-				<!-- <el-menu :default-active="$route.path" class="el-menu-vertical-demo" @open="handleopen" @close="handleclose" @select="handleselect"
-					 unique-opened router v-show="!collapsed">
-					<template v-for="(item,index) in meunList" >
-						<el-submenu>
-							<template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
-							<el-menu-item v-for="child in item.children" v-if="!child.hidden">{{child.name}}</el-menu-item>
-						</el-submenu>
-						<el-menu-item v-if="item.leaf&&item.children.length>0" ><i :class="item.iconCls"></i>{{item.children[0].name}}</el-menu-item>
-					</template>
-				</el-menu> -->
-				<div style="width: 230px;height: 80%;overflow-y: auto;">
-					
-				
-				<el-menu :default-active="$route.path" class="el-menu-vertical-demo" @open="handleopen" @close="handleclose" @select="handleselect"
-					 unique-opened router v-show="!collapsed">
+				<div style="width: 230px;height: 72%;overflow-y: auto;">
+				<el-menu :default-active="$route.path" class="el-menu-vertical-demo el-menu--dark" @open="handleopen" @close="handleclose" @select="handleselect"
+					 unique-opened router v-show="!collapsed" style="background: #2a3f54;">
 					<template  v-for="(item,index) in $router.options.routes"  v-if="!item.hidden">
 						<el-submenu :index="index+''" v-if="!item.leaf">
 							<template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
@@ -51,7 +30,7 @@
 					</template>
 				</el-menu>
 				<!--导航菜单-折叠后-->
-				<ul class="el-menu el-menu-vertical-demo collapsed" v-show="collapsed" ref="menuCollapsed">
+				<ul class="el-menu el-menu-vertical-demo  collapsed" v-show="collapsed" ref="menuCollapsed" style="background: #2a3f54;">
 					<li v-for="(item,index) in $router.options.routes" v-if="!item.hidden" class="el-submenu item">
 						<template v-if="!item.leaf">
 							<div class="el-submenu__title" style="padding-left: 20px;" @mouseover="showMenu(index,true)" @mouseout="showMenu(index,false)"><i :class="item.iconCls"></i></div>
@@ -68,32 +47,57 @@
 				</ul></div>
 			</aside>
 			<section class="content-container">
-				<div style="width: 1654px;position: fixed;z-index: 9999;top:-10px">
+				<el-col :span="24" style="position: fixed;z-index: 9999;top:-20px">
 						<el-col :span="24" class="header">
-			<el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
-				吸引力
-			</el-col>
-			<el-col :span="10">
-				<div class="tools" @click.prevent="collapse">
-					<i class="fa fa-align-justify"></i>
-				</div>
-			</el-col>
-			<el-col :span="4" class="userinfo">
-				<el-dropdown trigger="hover">
-					<span class="el-dropdown-link userinfo-inner">
-					<!-- <img :src="this.sysUserAvatar" />  -->
-					你好:
-					{{sysUserName}}</span>
-					<el-dropdown-menu slot="dropdown">
-						<el-dropdown-item>我的消息</el-dropdown-item>
-						<el-dropdown-item>设置</el-dropdown-item>
-						<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
-					</el-dropdown-menu>
-				</el-dropdown>
-			</el-col>
+							<el-row>
+								<el-col :xs="8" :sm="6" :md="4" :lg="4" style="margin-top: 0;">
+									<div class="grid-content bg-purple">
+										<div class="tools" @click.prevent="collapse">
+											<img src="../assets/icon_001.png" alt="" style="vertical-align: middle;">
+										</div>
+									</div>
+								</el-col>
+								<el-col :xs="4" :sm="6" :md="14" :lg="15" style="margin-top: 0;text-align: right;">
+									<div class="grid-content bg-purple-light">
+										<el-dropdown trigger="hover">
+										<span class="el-dropdown-link userinfo-inner">
+										<!-- <img :src="this.sysUserAvatar" />  -->
+										你好:
+										{{sysUserName}}</span>
+											<el-dropdown-menu slot="dropdown">
+												<el-dropdown-item>我的消息</el-dropdown-item>
+												<el-dropdown-item>设置</el-dropdown-item>
+												<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
+											</el-dropdown-menu>
+										</el-dropdown>
+									</div>
+								</el-col>
+							</el-row>
+			<!--<el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">-->
+				<!--吸引力-->
+			<!--</el-col>-->
+			<!--<el-col :span="24">-->
+				<!--<div class="tools" @click.prevent="collapse">-->
+					<!--<i class="fa fa-align-justify"></i>-->
+				<!--</div>-->
+				<!--<div style="float:right;">asd</div>-->
+			<!--</el-col>-->
+			<!--<el-col :span="14" class="userinfo">-->
+				<!--<el-dropdown trigger="hover">-->
+					<!--<span class="el-dropdown-link userinfo-inner">-->
+					<!--&lt;!&ndash; <img :src="this.sysUserAvatar" />  &ndash;&gt;-->
+					<!--你好:-->
+					<!--{{sysUserName}}</span>-->
+					<!--<el-dropdown-menu slot="dropdown">-->
+						<!--<el-dropdown-item>我的消息</el-dropdown-item>-->
+						<!--<el-dropdown-item>设置</el-dropdown-item>-->
+						<!--<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>-->
+					<!--</el-dropdown-menu>-->
+				<!--</el-dropdown>-->
+			<!--</el-col>-->
 		</el-col>
-				</div>
-				<div class="grid-content bg-purple-light">
+				</el-col>
+				<div class="grid-content bg-purple-light" style="padding-left: 20px;">
 					<el-col :span="24" class="breadcrumb-container">
 						<strong class="title">{{$route.name}}</strong>
 						<el-breadcrumb separator="/" class="breadcrumb-inner">
@@ -249,7 +253,7 @@
 		.header {
 			height: 60px;
 			line-height: 60px;
-			background: $color-primary;
+			background: $color-primarys;
 			color:#fff;
 			.userinfo {
 				text-align: right;
@@ -315,6 +319,47 @@
 				/*// position: absolute;*/
 				/*// top: 0px;*/
 				/*// bottom: 0px;*/
+				background: $color-header;
+				.main_login {
+					margin-top: 50px;
+					ul , li  {
+						list-style-type: none;
+						margin: 0;
+						padding: 0;
+					}
+					li {
+						display: inline-block;
+						vertical-align: middle;
+						p {
+							margin: 0;
+							padding: 0;
+						}
+					}
+					li:first-child span {
+						display: block;
+						width:41px;
+						height:41px;
+						border-radius: 50%;
+						border: 2px solid  rgba(247,247,247,.5);
+					}
+					li:last-child {
+						width:140px;
+						text-align: left;
+						padding-left: 10px;
+						color: $color-font;
+						span {
+							vertical-align: bottom;
+							display: inline-block;
+						}
+						.main_login_name {
+							font-size: 20px;
+							width:100px;
+						}
+						.main_login_write {
+							font-size: 14px;
+						}
+					}
+				}
 				.el-menu{
 					height: 100%;
 				}
@@ -342,6 +387,9 @@
 			.menu-expanded{
 				flex:0 0 230px;
 				width: 230px;
+
+				.el-menu {
+				}
 				/*overflow-y: auto;*/
 			}
 			.content-container {
@@ -353,7 +401,8 @@
 				// bottom: 0px;
 				// left: 230px;*/
 				overflow-y: scroll;
-				padding: 20px;
+				padding: 20px 20px 20px 0;
+				background: #f7f7f7;
 				.breadcrumb-container {
 					//margin-bottom: 15px;
 					.title {

@@ -138,7 +138,7 @@
                 });
               } else {
                 sessionStorage.setItem('user', JSON.stringify(user));
-                this.$router.push({ path: '/subjectCheckPending' });
+                this.$router.push({ path: '/main' });
               }
             });
           } else {
