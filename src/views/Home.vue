@@ -10,7 +10,7 @@
 							<li>
 								<p>
 									<span class="main_login_name">昵称</span>
-									<span class="main_login_write">注销</span>
+									<span class="main_login_write">注1销</span>
 								</p>
 								<p style="font-size: 18px;">123456789</p>
 							</li>
