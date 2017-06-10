@@ -106,7 +106,7 @@
 							</el-breadcrumb-item>
 						</el-breadcrumb>
 					</el-col>
-					<el-col :span="24" class="content-wrapper">
+					<el-col :span="24" class="content-wrapper" style="background: #f7f7f7;">
 						<transition name="fade" mode="out-in">
 							<router-view></router-view>
 						</transition>
@@ -402,7 +402,7 @@
 				// left: 230px;*/
 				overflow-y: scroll;
 				padding: 20px 20px 20px 0;
-				background: #fff;
+				background: #f7f7f7;
 				.breadcrumb-container {
 					//margin-bottom: 15px;
 					.title {
