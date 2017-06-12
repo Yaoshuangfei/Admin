@@ -30,85 +30,56 @@
 		</el-table>
 
 		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="background:#fff;">
-			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
-			</el-pagination>
-		</el-col>
+		<!--<el-col :span="24" class="toolbar" style="background:#fff;">-->
+			<!--&lt;!&ndash; <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> &ndash;&gt;-->
+			<!--<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">-->
+			<!--</el-pagination>-->
+		<!--</el-col>-->
 
 		<!--添加用户-->
-		<el-dialog title="订单详情" v-model="adduserVisible" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="订单号">
-					<div>{{orderDetails.orderNumber }}</div>
-					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
-				</el-form-item>
-				<el-form-item label="商品名称">
-					<div>{{orderDetails.commodityName}}</div>
-				</el-form-item>
+		<el-dialog title="添加用户" v-model="adduserVisible" :close-on-click-modal="false" >
+			<el-form :model="orderDetails" label-width="70px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="用户名">
-					<div>{{orderDetails.userName }}</div>
+					<el-input v-model="input" placeholder="请输入内容"></el-input>
 				</el-form-item>
-				<el-form-item label="实付金额">
-					<div>{{orderDetails.amountPaid }}</div>
+				<el-form-item label="密码">
+					<el-input v-model="input" placeholder="请输入内容"></el-input>
 				</el-form-item>
-				<el-form-item label="订单总价">
-					<div>{{orderDetails.orderTotal }}</div>
+				<el-form-item label="确认密码">
+					<el-input v-model="input" placeholder="请输入内容"></el-input>
 				</el-form-item>
-				<el-form-item label="订单状态">
-					<div>{{orderDetails.orderStatus }}</div>
+				<el-form-item label="描述">
+					<el-input
+							type="textarea"
+							:rows="2"
+							placeholder="请输入内容"
+							v-model="textarea">
+					</el-input>
 				</el-form-item>
-				<el-form-item label="支付方式">
-					<div>{{orderDetails.paymentMethod }}</div>
-				</el-form-item>
-				<el-form-item label="创建时间">
-					<div>{{orderDetails.creationTime}}</div>
-				</el-form-item>
-				<el-form-item label="发货时间">
-					<div>{{orderDetails.deliveryTime}}</div>
-				</el-form-item>
-				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
 				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button> -->
-				<el-button type="primary" @click.native="adduserVisible = false">关闭</el-button>
+				<el-button type="primary" @click.native="adduserVisible = false">下一步</el-button>
 			</div>
 		</el-dialog>
 		<!--编辑界面-->
-		<el-dialog title="订单详情" v-model="editFormVisible" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="订单号">
-					<div>{{orderDetails.orderNumber }}</div>
-					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
+		<el-dialog title="修改后台登录密码" v-model="editFormVisible" :close-on-click-modal="false" >
+			<el-form :model="orderDetails" label-width="100px" :rules="editFormRules" ref="editForm">
+				<el-form-item label="管理员账户">
+					<el-input v-model="input" placeholder="请输入内容"></el-input>
 				</el-form-item>
-				<el-form-item label="商品名称">
-					<div>{{orderDetails.commodityName}}</div>
+				<el-form-item label="旧密码">
+					<el-input v-model="input" placeholder="请输入内容"></el-input>
 				</el-form-item>
-				<el-form-item label="用户名">
-					<div>{{orderDetails.userName }}</div>
+				<el-form-item label="新密码">
+					<el-input v-model="input" placeholder="请输入内容"></el-input>
 				</el-form-item>
-				<el-form-item label="实付金额">
-					<div>{{orderDetails.amountPaid }}</div>
+				<el-form-item label="确认新密码">
+					<el-input v-model="input" placeholder="请输入内容"></el-input>
 				</el-form-item>
-				<el-form-item label="订单总价">
-					<div>{{orderDetails.orderTotal }}</div>
-				</el-form-item>
-				<el-form-item label="订单状态">
-					<div>{{orderDetails.orderStatus }}</div>
-				</el-form-item>
-				<el-form-item label="支付方式">
-					<div>{{orderDetails.paymentMethod }}</div>
-				</el-form-item>
-				<el-form-item label="创建时间">
-					<div>{{orderDetails.creationTime}}</div>
-				</el-form-item>
-				<el-form-item label="发货时间">
-					<div>{{orderDetails.deliveryTime}}</div>
-				</el-form-item>
-				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button> -->
+				 <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
 				<el-button type="primary" @click.native="editFormVisible = false">关闭</el-button>
 			</div>
 		</el-dialog>
@@ -128,6 +99,9 @@
                 value:'',
                 value1:'',
                 value2:'',
+				input:'',
+				textarea:'',
+                adduserVisible:false,
                 selectSubjectStatus: [
                     {
                         value:'0',
@@ -287,57 +261,57 @@
                 this.orderDetails = Object.assign({}, row);
             },
             //显示新增界面
-            adduser: function () {
+            AddUsers: function () {
                 this.adduserVisible = true;
             },
             //编辑
-            editSubmit: function () {
-                this.$refs.editForm.validate((valid) => {
-                    if (valid) {
-                        this.$confirm('确认提交吗？', '提示', {}).then(() => {
-                            this.editLoading = true;
-                            //NProgress.start();
-                            let para = Object.assign({}, this.editForm);
-                            para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-                            editUser(para).then((res) => {
-                                this.editLoading = false;
-                                //NProgress.done();
-                                this.$message({
-                                    message: '提交成功',
-                                    type: 'success'
-                                });
-                                this.$refs['editForm'].resetFields();
-                                this.editFormVisible = false;
-                                this.getUsers();
-                            });
-                        });
-                    }
-                });
-            },
+//            editSubmit: function () {
+//                this.$refs.editForm.validate((valid) => {
+//                    if (valid) {
+//                        this.$confirm('确认提交吗？', '提示', {}).then(() => {
+//                            this.editLoading = true;
+//                            //NProgress.start();
+//                            let para = Object.assign({}, this.editForm);
+//                            para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
+//                            editUser(para).then((res) => {
+//                                this.editLoading = false;
+//                                //NProgress.done();
+//                                this.$message({
+//                                    message: '提交成功',
+//                                    type: 'success'
+//                                });
+//                                this.$refs['editForm'].resetFields();
+//                                this.editFormVisible = false;
+//                                this.getUsers();
+//                            });
+//                        });
+//                    }
+//                });
+//            },
             //新增
-            addSubmit: function () {
-                this.$refs.addForm.validate((valid) => {
-                    if (valid) {
-                        this.$confirm('确认提交吗？', '提示', {}).then(() => {
-                            this.addLoading = true;
-                            //NProgress.start();
-                            let para = Object.assign({}, this.addForm);
-                            para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-                            addUser(para).then((res) => {
-                                this.addLoading = false;
-                                //NProgress.done();
-                                this.$message({
-                                    message: '提交成功',
-                                    type: 'success'
-                                });
-                                this.$refs['addForm'].resetFields();
-                                this.addFormVisible = false;
-                                this.getUsers();
-                            });
-                        });
-                    }
-                });
-            },
+//            addSubmit: function () {
+//                this.$refs.addForm.validate((valid) => {
+//                    if (valid) {
+//                        this.$confirm('确认提交吗？', '提示', {}).then(() => {
+//                            this.addLoading = true;
+//                            //NProgress.start();
+//                            let para = Object.assign({}, this.addForm);
+//                            para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
+//                            addUser(para).then((res) => {
+//                                this.addLoading = false;
+//                                //NProgress.done();
+//                                this.$message({
+//                                    message: '提交成功',
+//                                    type: 'success'
+//                                });
+//                                this.$refs['addForm'].resetFields();
+//                                this.adduserVisible = false;
+//                                this.getUsers();
+//                            });
+//                        });
+//                    }
+//                });
+//            },
             selsChange: function (sels) {
                 this.sels = sels;
             },

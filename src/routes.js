@@ -7,6 +7,9 @@ import { state } from './vuex/state'
 import Jurisdiction from './views/systemSettings/Jurisdiction.vue'
 import SystemPush from './views/systemSettings/SystemPush.vue'
 import ChangePasswords from './views/systemSettings/ChangePasswords.vue'
+import releaseLook from './views/systemSettings/releaseLook.vue'
+import releaseAdd from './views/systemSettings/releaseAdd.vue'
+import releaseReg from './views/systemSettings/releaseReg.vue'
 
 /*配置管理 configuration*/
 import banner from './views/configuration/banner.vue'
@@ -86,7 +89,10 @@ let routes = [
             { path: '/main', component: Main, name: '主页', hidden: true },
             { path: '/Jurisdiction', component: Jurisdiction, name: '权限管理' },
             { path: '/ChangePasswords', component: ChangePasswords, name: '更改密码' },
-            { path: '/SystemPush', component: SystemPush, name: '系统推送' }
+            { path: '/SystemPush', component: SystemPush, name: '系统推送' },
+            { path: '/releaseLook', component: releaseLook, name: '系统权限查看', hidden:true },
+            { path: '/releaseAdd', component: releaseAdd, name: '系统权限添加', hidden:true },
+            { path: '/releaseReg', component: releaseReg, name: '系统权限添加', hidden:true }
         ]
     },
     {

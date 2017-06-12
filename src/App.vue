@@ -33,6 +33,8 @@ body {
 	top: 0px;
 	bottom: 0px;
 	width: 100%;
+	height:100%;
+	background: url('./assets/bg.jpg')no-repeat top center;
 }
 
 .el-submenu [class^=fa] {

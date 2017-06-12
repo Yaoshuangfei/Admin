@@ -163,10 +163,13 @@
     border-radius: 5px;
     -moz-border-radius: 5px;
     background-clip: padding-box;
-    margin: 180px auto;
+    margin: -15% auto 0;
+    position: relative;
+    top:50%;
+    //transform: translateY(-50%);
     width: 350px;
     padding: 35px 35px 15px 35px;
-    background: #fff;
+    background: rgba(255,255,255,.9);
     border: 1px solid #eaeaea;
     box-shadow: 0 0 25px #cac6c6;
     .title {
