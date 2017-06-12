@@ -11,18 +11,33 @@
 			<el-col :span="24" class="permissions">修改权限</el-col>
 		</el-row>
 		<!--权限管理主体-->
-		<el-row>
+		<el-row style="margin-top: 20px;">
 			<el-col :span="21">
 				<el-tree
 						:data="data2"
 						show-checkbox
 						node-key="id"
-						default-expand-all
-						:props="defaultProps">
+						>
 				</el-tree>
 			</el-col>
 			<el-col :span="3">
-2
+				<div class="jurisdiction_right">
+					<ul>
+						<li>商品管理</li>
+						<li>评价管理</li>
+						<li>交易管理</li>
+						<li>物流管理</li>
+						<li>店铺管理</li>
+						<li>营销中心</li>
+						<li>客户服务</li>
+						<li>财务</li>
+						<li>网络电话管理</li>
+						<li>爱心公益管理</li>
+						<li>扫码付管理</li>
+						<li>特色服务</li>
+						<li>发票管理</li>
+					</ul>
+				</div>
 			</el-col>
 		</el-row>
 	</section>
@@ -387,4 +402,29 @@
 	/*.el-tree-node__content:hover {*/
 		/*background: transparent;*/
 	/*}*/
+	.jurisdiction_right ul {
+		margin: 0;
+		padding: 0;
+		width:100%;
+		border: 1px solid #cfcfcf;
+	}
+	.jurisdiction_right ul li{
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		text-align: center;
+		width:100%;
+		height:40px;
+		background:#eee;
+		line-height: 40px;
+		border-bottom: 1px solid #cfcfcf;
+		cursor: pointer;
+	}
+	.jurisdiction_right ul li:hover {
+		background: #48576a;
+		color: #fff;
+	}
+	.jurisdiction_right ul li:last-child {
+		border-bottom: none;
+	}
 </style>

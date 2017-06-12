@@ -5,8 +5,8 @@ import Main from './views/Home/indexMain.vue'
 import { state } from './vuex/state'
 /*系统管理 systemSettings*/
 import Jurisdiction from './views/systemSettings/Jurisdiction.vue'
-import ChangePassword from './views/systemSettings/ChangePassword.vue'
 import SystemPush from './views/systemSettings/SystemPush.vue'
+import ChangePasswords from './views/systemSettings/ChangePasswords.vue'
 
 /*配置管理 configuration*/
 import banner from './views/configuration/banner.vue'
@@ -85,7 +85,7 @@ let routes = [
         children: [
             { path: '/main', component: Main, name: '主页', hidden: true },
             { path: '/Jurisdiction', component: Jurisdiction, name: '权限管理' },
-            { path: '/ChangePassword ', component: ChangePassword , name: '更改密码' },
+            { path: '/ChangePasswords', component: ChangePasswords, name: '更改密码' },
             { path: '/SystemPush', component: SystemPush, name: '系统推送' }
         ]
     },
