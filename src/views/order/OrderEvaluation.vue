@@ -3,15 +3,6 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff">
 			<el-form :inline="true" :model="filters">
-				<!-- <el-form-item>
-					<el-input v-model="filters.name" placeholder="支付银行"></el-input>
-				</el-form-item> -->
-				<el-form-item label="状态">
-					<el-select v-model="filters.status" clearable>
-				      <el-option v-for="item in selectSubjectStatus" :label="item.label" :value="item.value">
-				      </el-option>
-				    </el-select>
-				</el-form-item>
 				<el-form-item label="搜索类型">
 				    <el-select v-model="filters.type" clearable>
 				      <el-option v-for="item in options" :label="item.label" :value="item.value">
@@ -28,10 +19,10 @@
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+		<el-table :data="orderEvaluate" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
 			<el-table-column prop="orderNumber" label="订单编号">
 			</el-table-column>
-			<el-table-column prop="courierNumber" label="快递单号">
+			<el-table-column prop="commodityName" label="商品名称">
 			</el-table-column>
 			<el-table-column prop="userName" label="用户名">
 			</el-table-column>
@@ -43,9 +34,9 @@
 			</el-table-column>
 			<el-table-column prop="paymentMethod" label="支付方式">
 			</el-table-column>
-			<el-table-column prop="creationTime" label="创建时间">
+			<el-table-column prop="evaluateTime" label="评价时间">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="发货时间">
+			<el-table-column prop="evaluate" label="评价">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
@@ -90,10 +81,10 @@
 					<div>{{orderDetails.paymentMethod }}</div>
 				</el-form-item>
 				<el-form-item label="创建时间">
-					<div>{{orderDetails.creationTime}}</div>
+					<div>{{orderDetails.evaluateTime}}</div>
 				</el-form-item>
 				<el-form-item label="发货时间">
-					<div>{{orderDetails.deliveryTime}}</div>
+					<div>{{orderDetails.evaluate}}</div>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
@@ -146,9 +137,6 @@
 		          label: '订单编号'
 		        }, {
 		          value: '2',
-		          label: '快递单号'
-		        }, {
-		          value: '3',
 		          label: '用户名'
 		        }],
 				filters: {
@@ -184,7 +172,7 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[{
+				orderEvaluate:[{
 					orderNumber :'145877458784524c',
 					courierNumber :'145877458784524c',
 					userName:'吸引力量',
@@ -192,8 +180,8 @@
 					orderTotal :'900',
 					orderStatus :'待付款',
 					paymentMethod :'微信支付',
-					creationTime:'2017-09-08 17:09',
-					deliveryTime:'2017-09-08 17:09',
+					evaluateTime:'2017-09-08 17:09',
+					evaluate:'差评',
 					commodityName:'雨花说'
 				}]
 			}

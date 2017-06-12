@@ -1,11 +1,8 @@
 <template>
 	<section>
 		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff">
+		<!-- <el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff">
 			<el-form :inline="true" :model="filters">
-				<!-- <el-form-item>
-					<el-input v-model="filters.name" placeholder="支付银行"></el-input>
-				</el-form-item> -->
 				<el-form-item label="状态">
 					<el-select v-model="filters.status" clearable>
 				      <el-option v-for="item in selectSubjectStatus" :label="item.label" :value="item.value">
@@ -25,44 +22,43 @@
 					<el-button type="primary" v-on:click="getUsers">查询</el-button>
 				</el-form-item>
 			</el-form>
-		</el-col>
+		</el-col> -->
 
 		<!--列表-->
+		<div class="top_text">平台分佣</div>
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="orderNumber" label="订单编号">
+			<el-table-column prop="orderNumber" label="等级">
 			</el-table-column>
-			<el-table-column prop="courierNumber" label="快递单号">
-			</el-table-column>
-			<el-table-column prop="userName" label="用户名">
-			</el-table-column>
-			<el-table-column prop="amountPaid" label="实付金额">
-			</el-table-column>
-			<el-table-column prop="orderTotal" label="订单总价">
-			</el-table-column>
-			<el-table-column prop="orderStatus" label="订单状态">
-			</el-table-column>
-			<el-table-column prop="paymentMethod" label="支付方式">
-			</el-table-column>
-			<el-table-column prop="creationTime" label="创建时间">
-			</el-table-column>
-			<el-table-column prop="deliveryTime" label="发货时间">
-			</el-table-column>
-			<el-table-column label="操作">
-				<template scope="scope">
-					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button> -->
-					<!-- <el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
-				</template>
+			<el-table-column prop="courierNumber" label="分佣比">
 			</el-table-column>
 		</el-table>
-
-		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="background:#fff;">
-			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
-			</el-pagination>
+		<div class="top_text">高级分佣</div>
+		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="orderNumber" label="邀请人数">
+			</el-table-column>
+			<el-table-column prop="courierNumber" label="分佣比">
+			</el-table-column>
+		</el-table>
+		<div class="top_text">创客商分佣</div>
+		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="orderNumber" label="创客商">
+			</el-table-column>
+			<el-table-column prop="courierNumber" label="分佣比">
+			</el-table-column>
+		</el-table>
+		<el-col :span="24">
+			<div class="bottom_btn">
+				<el-button type="primary" v-on:click="getUsers">确认</el-button>
+				<el-button type="primary" v-on:click="getUsers">重置</el-button>
+			</div>
+			
 		</el-col>
+		<!--工具条-->
+		<!-- <el-col :span="24" class="toolbar" style="background:#fff;"> -->
+			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
+			<!-- <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
+			</el-pagination>
+		</el-col> -->
 
 		<!--编辑界面-->
 		<el-dialog title="订单详情" v-model="editFormVisible" :close-on-click-modal="false" >
@@ -373,4 +369,15 @@
     	width: 25%;
     	border-radius: 10px
 	}	
+	.top_text {
+		font-size: 18px;
+		margin-top: 20px;
+		margin-bottom: 20px;
+		font-weight: 900
+	}
+	.bottom_btn {
+		margin-top: 20px;
+		margin-left: 90%;
+		width: 200px;
+	}
 </style>

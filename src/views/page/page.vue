@@ -3,75 +3,69 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff">
 			<el-form :inline="true" :model="filters">
-				<el-date-picker v-model="startTime" type="date" placeholder="选择日期时间">
-		        </el-date-picker>
-		        <span class="demonstration">至</span>
-		        <el-date-picker v-model="endTime" type="date" placeholder="选择日期时间">
-		        </el-date-picker>
-				<!-- <el-form-item>
-					<el-input v-model="filters.name" placeholder="支付银行"></el-input>
-				</el-form-item> -->
-				<el-form-item label="支付方式">
-					<el-select v-model="filters.status" clearable>
-				      <el-option v-for="item in selectSubjectStatus" :label="item.label" :value="item.value">
-				      </el-option>
-				    </el-select>
-				</el-form-item>
-				<el-form-item label="搜索类型">
-				    <el-select v-model="filters.type" clearable>
-				      <el-option v-for="item in options" :label="item.label" :value="item.value">
-				      </el-option>
-				    </el-select>
-				</el-form-item>
+				<!-- <template scope="scope"> -->
+					
+				<!-- </template> -->
 				<el-form-item>
-				    <el-input v-model="filters.name"></el-input>
+					<router-link :to="{ name: '添加千人千面', params: { id:1 }}">
+							<el-button  type="primary">添加</el-button>
+					</router-link>
 				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">分析</el-button>
-					<el-button type="primary" v-on:click="getUsers">导出</el-button>
-				</el-form-item>
+				
 			</el-form>
 		</el-col>
 
 		<!--列表-->
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="orderNumber" label="订单编号">
+			<el-table-column type="index">
 			</el-table-column>
-			<el-table-column prop="userName" label="用户名">
+			<el-table-column prop="courierNumber" label="所属板块名称">
 			</el-table-column>
-			<el-table-column prop="amountPaid" label="手机号">
+			<el-table-column prop="userName" label="状态">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="充值金额">
+			<el-table-column prop="userName" label="描述">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="充值手机号">
+			<el-table-column prop="userName" label="创建时间">
 			</el-table-column>
-			<el-table-column prop="creationTime" label="支付方式">
+			<el-table-column prop="userName" label="更新时间">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="成本">
-			</el-table-column>
-			<el-table-column prop="deliveryTime" label="手续费6%">
-			</el-table-column>
-			<el-table-column prop="deliveryTime" label="利润">
-			</el-table-column>
-			<el-table-column prop="deliveryTime" label="充值时间">
-			</el-table-column>
-			<!-- <el-table-column label="操作">
+			<el-table-column label="操作">
 				<template scope="scope">
-					<el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button>
-					<el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button>
 					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
+					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">修改</el-button>
+					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">启用</el-button>
 					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
 				</template>
-			</el-table-column> -->
+			</el-table-column>
 		</el-table>
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="background:#fff;">
-			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
-
+		<!--新增banner-->
+		<el-dialog title="添加banner" v-model="addbannerdiv" :close-on-click-modal="false" >
+			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
+				<el-form-item label="链接">
+					<el-input v-model="orderDetails.orderNumber" type="text" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="banner">
+					<el-input v-model="orderDetails.commodityName" type="text" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="序号">
+					<el-input v-model="orderDetails.userName" type="text" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="描述">
+					<el-input v-model="orderDetails.amountPaid" type="text" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-col :span='24'></el-col>
+			</el-form>
+			<div slot="footer" class="dialog-footer" style="text-align: center;">
+				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">添加</el-button>
+				<el-button type="primary" @click.native="addbannerdiv = false">取消</el-button>
+			</div>
+		</el-dialog>
 		<!--编辑界面-->
 		<el-dialog title="订单详情" v-model="editFormVisible" :close-on-click-modal="false" >
 			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
@@ -122,8 +116,6 @@
 		data() {
 			return {
 				radio: '0',
-				startTime:'',
-				endTime:'',
 				checked: true,
 				value:'',
 				value1:'',
@@ -134,16 +126,19 @@
 					label:'全部'
 				},{
 					value:'1',
-					label:'微信支付'
+					label:'待付款'
 				},{
 					value:'2',
-					label:'余额支付'
+					label:'待发货'
 				},{
 					value:'3',
-					label:'支付宝支付'
+					label:'已发货'
 				},{
 					value:'4',
-					label:'银行卡支付'
+					label:'待评价'
+				},{
+					value:'5',
+					label:'退货'
 				}],
 				options: [{
 		          value: '0',
@@ -153,10 +148,10 @@
 		          label: '订单编号'
 		        }, {
 		          value: '2',
-		          label: '用户名'
+		          label: '快递单号'
 		        }, {
 		          value: '3',
-		          label: '手机号'
+		          label: '用户名'
 		        }],
 				filters: {
 					name: '',
@@ -186,7 +181,7 @@
 					addr: ''
 				},
 
-				addFormVisible: false,//新增界面是否显示
+				addbannerdiv: false,//新增界面是否显示
 				addLoading: false,
 				//新增界面数据
 				orderDetails: {
@@ -283,16 +278,10 @@
 				this.editFormVisible = true;
 				this.orderDetails = Object.assign({}, row);
 			},
-			//显示新增界面
-			handleAdd: function () {
-				this.addFormVisible = true;
-				this.addForm = {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				};
+			//显示添加banner页面
+			addbanner: function (index, row) {
+				this.addbannerdiv = true;
+				// this.orderDetails = Object.assign({}, row);
 			},
 			//编辑
 			editSubmit: function () {
@@ -380,4 +369,10 @@
     	width: 25%;
     	border-radius: 10px
 	}	
+	.el-form-item__label{
+		text-align: left;
+	}
+	.el-dialog__body{
+		margin-left: 40px ! important ;
+	}
 </style>

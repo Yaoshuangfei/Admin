@@ -43,6 +43,9 @@ import MerchantCommission from './views/Finance/MerchantCommission.vue'
 
 // 用户管理 user 
 // 扫码付管理 scanCodePayment 
+//千人千面
+import page from './views/page/page.vue'
+import addpage from './views/page/addpage.vue'
 // 慈善公益管理 Charity
 // 充值管理 Recharge 
 
@@ -183,6 +186,20 @@ let routes = [
         children: [
             // { path: '/department', component: department, name: '员工管理' },
             // { path: '/menu', component: menu, name: '菜单管理' },
+            // { path: '/role', component: role, name: '组织管理' },
+            // { path: '/account', component: account, name: '账号管理' },
+            // { path: '/editPassword', component: editPassword, name: '修改密码' },
+            // { path: '/operationLog', component: operationLog, name: '操作日志' }
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '千人千面管理',
+        iconCls: 'el-icon-message',
+        children: [
+            { path: '/page', component: page, name: '千人千面' },
+            { path: '/addpage/:id', component: addpage, name: '添加千人千面', hidden: true  }
             // { path: '/role', component: role, name: '组织管理' },
             // { path: '/account', component: account, name: '账号管理' },
             // { path: '/editPassword', component: editPassword, name: '修改密码' },
