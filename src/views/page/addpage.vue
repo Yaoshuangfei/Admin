@@ -1,17 +1,36 @@
 <template>
 	<el-form label-width="120px" :model="add">
-	  <el-form-item label="所属板块名称">
+	  <el-form-item label="所属板块位置">
+	    <el-select v-model="add.orderSort" placeholder="请选择">
+	    	<el-option  v-for="item in options" :label="item.label" :value="item.value"></el-option>
+	    </el-select>
+	  </el-form-item>
+	  <el-form-item label="icon">
+	    <!-- <el-input v-model="add.icon" style="width: 300px;"></el-input> -->
+	    <input type="file" style="position:absolute;opacity:0;width:70px;height:30px;margin-right:10px"  @change="upload" id="fileInput">
+		<button type="button" class="el-button el-button--primary el-button--small">
+			<span>点击上传</span>
+		</button>
+		<button type="button" class="el-button el-button--primary el-button--small" id="btnClear" @click="clear">清空上传</button>
+		<!-- <span style="display: block;font-size: 12px">{{ imageChange }}</span> -->
+		
+		<el-col>
+			<img style="width: 40px;margin-top: 20px"  :src="iconImg">
+		</el-col>
+		<img style="width:150px;margin-top: 20px;margin-right: 20px" >
+	  </el-form-item>
+	  <el-form-item label="板块名称">
 	    <el-input v-model="add.name" style="width: 300px;"></el-input>
 	  </el-form-item>
 	  <el-form-item label="板块缩略图">
 	    <el-input v-model="add.img" style="width: 300px;"></el-input>
 	  </el-form-item>
 	  <el-form-item label="说明">
-	  	 <el-input type="textarea" v-model="add.explain" style="width: 300px;"></el-input>
+	  	 <el-input type="desc" v-model="add.explain"  :rows="10" style="width: 300px;"></el-input>
 	  </el-form-item>
 	  <el-form-item>
-		<el-button type="primary" v-on:click="getUsers">取消</el-button>
-		<el-button type="primary" v-on:click="getUsers">确认</el-button>
+		<el-button type="primary" v-on:click="getlist">确认</el-button>
+		<el-button type="primary">取消</el-button>
 	  </el-form-item>
 	</el-form>
 </template>
@@ -24,6 +43,21 @@
 	export default {
 		data() {
 			return {
+				options: [{
+		          value: 1,
+		          label: '模块一'
+		        },{
+		          value: 2,
+		          label: '模块二'
+		        }],
+				add:{
+					name:'',
+					orderSort:'',
+					desc:''
+				},
+				iconImg:'',
+				formData: new FormData(),
+        		fileImg: '',
 				labelPosition:'right',
 				radio: '0',
 				checked: true,
@@ -50,24 +84,6 @@
 					value:'5',
 					label:'退货'
 				}],
-				options: [{
-		          value: '0',
-		          label: '全部'
-		        }, {
-		          value: '1',
-		          label: '订单编号'
-		        }, {
-		          value: '2',
-		          label: '快递单号'
-		        }, {
-		          value: '3',
-		          label: '用户名'
-		        }],
-				filters: {
-					name: '',
-					status:'',
-					type:''
-				},
 				users: [],
 				total: 100,
 				page: 1,
@@ -95,30 +111,72 @@
 				addLoading: false,
 				//新增界面数据
 				orderDetails: {
-				},
-				add:{
-					name:'',
-					img:' ',
-					explain:''
 				}
 			}
 		},
+		computed: {
+	        // 实时更新上传图片的名字，仅读取，值只须为函数
+	        imageChange: function () {
+	            return this.fileImg
+	        }
+	    },
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
-			},
+			//        清空上传
+            clear(){
+                let btn = document.getElementById("btnClear");
+                let files = document.getElementById("fileInput");
+                this.fileImg = '';
+                // for IE, Opera, Safari, Chrome
+                if (files !== null && files.value) {
+                    files.value = "";
+                    this.formData = new FormData()
+                }
+            },
+        //图片上传
+            upload (event) {
+                this.formData = new FormData()
+                let file = event.target.files[0]
+                // console.log(file)
+                const self = this
+                // const flag = this.flag
+                if (file) {
+                    console.log('存在file', file)
+                    this.fileImg = file.name
+                    // console.log(this.formData)
+                    this.formData.append('file', file);
+                    console.log(this.formData);
+                    this.submitUpload()
+                } else {
+                    this.fileImg = ''
+                    console.log('不存在file', file)
+                    this.formData = new FormData()
+                }
+            },
+            submitUpload(){
+                // this.$confirm('确认修改吗？', '提示', {}).then(() => {
+                    const _this= this;
+                    _this.$http.post(baseUrl+'/api/attachment/upload', _this.formData, {
+                        progress(event) {
+                        }
+                    })
+                        .then(response => {
+                            const info = JSON.parse(response.bodyText);
+                            console.log(info)
+                            // const info = response.body
+              			_this.iconImg = info.data[0].baseUri+info.data[0].uri;
+              				console.log(info.data[0].baseUri+info.data[0].uri)
+                        }, error => _this.$emit('complete', 500, error.message))
+                // });
+            },
 			getlist(){
 				const _this = this
 				_this.table = []
 				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
+					name:'1',
+					icon:'',
+					picture:'',
+					desc:'',
+					orderSort:''
 				}
 				console.log(params)
 				$.post(baseUrl+"/admin/banner/getBannerByPage",

@@ -3,7 +3,9 @@
 		<el-col :span="24" class="main">
 			<aside :class="collapsed?'menu-collapsed':'menu-expanded'">
 				<div style="height: 283px;text-align: center;position: relative;border-bottom: 3px solid #4d6985;">
-					<img src="../assets/logos.png" alt="" style="margin-top: 50px;">
+					<router-link :to="{ name: '主页'}">
+						<img src="../assets/logos.png" alt="" style="margin-top: 50px;">
+					</router-link>
 					<div class="main_login">
 						<ul>
 							<li><span></span></li>

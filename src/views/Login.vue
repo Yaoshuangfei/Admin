@@ -32,8 +32,8 @@
         imgsrc: '',
         logining: false,
         ruleForm2: {
-          username: 'admin',
-          password: '123456',
+          username: '',
+          password: '',
         },
         rules2: {
           username: [

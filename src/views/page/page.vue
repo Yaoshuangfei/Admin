@@ -17,24 +17,24 @@
 
 		<!--列表-->
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column type="index">
+			<el-table-column prop="id" label="样式编号">
 			</el-table-column>
-			<el-table-column prop="courierNumber" label="所属板块名称">
+			<el-table-column prop="name" label="所属板块名称">
 			</el-table-column>
-			<el-table-column prop="userName" label="状态">
+			<el-table-column prop="status" :formatter='formatterStatus' label="状态">
 			</el-table-column>
-			<el-table-column prop="userName" label="描述">
+			<el-table-column prop="desc" label="描述">
 			</el-table-column>
-			<el-table-column prop="userName" label="创建时间">
+			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
 			</el-table-column>
-			<el-table-column prop="userName" label="更新时间">
+			<el-table-column prop="updateTime" :formatter='formatterTime' label="更新时间">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
 					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">修改</el-button>
+					<el-button type="text" size="small" @click="editBtn(scope.$index, scope.row)">修改</el-button>
 					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">启用</el-button>
-					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
+					<!-- <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button> -->
 				</template>
 			</el-table-column>
 		</el-table>
@@ -45,62 +45,40 @@
 			</el-pagination>
 		</el-col>
 		<!--新增banner-->
-		<el-dialog title="添加banner" v-model="addbannerdiv" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="链接">
-					<el-input v-model="orderDetails.orderNumber" type="text" auto-complete="off"></el-input>
+		<el-dialog title="修改" v-model="addbannerdiv" :close-on-click-modal="false" >
+			<el-form  label-width="100px" >
+				<el-form-item label="所属板块名称">
+					<el-input v-model="editForm.name" type="text" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="banner">
-					<el-input v-model="orderDetails.commodityName" type="text" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="序号">
-					<el-input v-model="orderDetails.userName" type="text" auto-complete="off"></el-input>
+				<el-form-item label="店铺样式表">
+					<el-input v-model="editForm.icon" type="text" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="描述">
-					<el-input v-model="orderDetails.amountPaid" type="text" auto-complete="off"></el-input>
+					<el-input v-model="editForm.desc" type="text" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">添加</el-button>
+				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">确定</el-button>
 				<el-button type="primary" @click.native="addbannerdiv = false">取消</el-button>
 			</div>
 		</el-dialog>
 		<!--编辑界面-->
-		<el-dialog title="订单详情" v-model="editFormVisible" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="订单号">
-					<div>{{orderDetails.orderNumber }}</div>
+		<el-dialog title="详情" v-model="editFormVisible" :close-on-click-modal="false" >
+			<el-form label-width="100px">
+				<el-form-item label="所属模块名称">
+					<div>{{seetable.name }}</div>
 					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
 				</el-form-item>
-				<el-form-item label="商品名称">
-					<div>{{orderDetails.commodityName}}</div>
+				<el-form-item label="店铺样式表">
+					<div>{{seetable.icon}}</div>
 				</el-form-item>
-				<el-form-item label="用户名">
-					<div>{{orderDetails.userName }}</div>
-				</el-form-item>
-				<el-form-item label="实付金额">
-					<div>{{orderDetails.amountPaid }}</div>
-				</el-form-item>
-				<el-form-item label="订单总价">
-					<div>{{orderDetails.orderTotal }}</div>
-				</el-form-item>
-				<el-form-item label="订单状态">
-					<div>{{orderDetails.orderStatus }}</div>
-				</el-form-item>
-				<el-form-item label="支付方式">
-					<div>{{orderDetails.paymentMethod }}</div>
-				</el-form-item>
-				<el-form-item label="创建时间">
-					<div>{{orderDetails.creationTime}}</div>
-				</el-form-item>
-				<el-form-item label="发货时间">
-					<div>{{orderDetails.deliveryTime}}</div>
+				<el-form-item label="描述">
+					<div>{{seetable.desc }}</div>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button> -->
 				<el-button type="primary" @click.native="editFormVisible = false">关闭</el-button>
 			</div>
 		</el-dialog>
@@ -115,11 +93,7 @@
 	export default {
 		data() {
 			return {
-				radio: '0',
-				checked: true,
-				value:'',
-				value1:'',
-				value2:'',
+				seetable:[],
 				selectSubjectStatus: [
 				{
 					value:'0',
@@ -172,14 +146,7 @@
 					]
 				},
 				//编辑界面数据
-				editForm: {
-					id: 0,
-					username: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				},
+				editForm: {},
 
 				addbannerdiv: false,//新增界面是否显示
 				addLoading: false,
@@ -201,41 +168,76 @@
 			}
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			formatterTime(row, column){
+				let curTime = row.createTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+			},
+			formatterStatus(row, column){
+				let status = ''
+				if(row.status === 0){
+					status = '关闭'
+				}else if(row.status === 1){
+					status = '开启'
+				}
+                return status
 			},
 			getlist(){
 				const _this = this
-				_this.table = []
-				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
-				}
-				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
-	                }
+				$.ajax({
+	              type:'POST',
+	              dataType:'json',
+	              url:baseUrl+"/api/indexStyle/find/page?pageNum="+this.page+"&pageSize=110",
+	              data:{},
+	              contentType:'application/json;charset=utf-8',
+	              error: function (XMLHttpRequest, textStatus, errorThrown) {},
+	              success:function(data){
+	                const info = data.data
+	                console.log(info)
+	                _this.orderInformation = info.list
+	                _this.total = info.total
 	              }
-	         	)
+	          });
+			},
+			//显示查看界面
+			seeBtn: function (index, row) {
+				this.editFormVisible = true;
+				this.seetable = row
+				console.log(row)
+			},
+			editBtn(index, row){
+				this.addbannerdiv = true;
+				this.editForm = row
+			},
+			//修改
+			editSubmit: function () {
+				const _this = this
+				const params = {
+		            id:this.editForm.id,
+		            name:this.editForm.name,
+		            icon:this.editForm.icon,
+		            picture:this.editForm.picture,
+		            desc:this.editForm.desc
+		          }
+				console.log(params)
+				$.ajax({
+		              type:'POST',
+		              dataType:'json',
+		              url:baseUrl+"/api/indexStyle/update",
+		              data:{},
+		              contentType:'application/json;charset=utf-8',
+		              error: function (XMLHttpRequest, textStatus, errorThrown) {},
+		              success:function(data){
+		                const info = data.data
+		                console.log(data)
+		                // _this.orderInformation = info.list
+		                // _this.total = info.total
+		              }
+		          });
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
+				this.getlist();
 			},
 			//获取用户列表
 			getUsers() {
@@ -273,39 +275,10 @@
 
 				});
 			},
-			//显示编辑界面
-			seeBtn: function (index, row) {
-				this.editFormVisible = true;
-				this.orderDetails = Object.assign({}, row);
-			},
 			//显示添加banner页面
 			addbanner: function (index, row) {
 				this.addbannerdiv = true;
 				// this.orderDetails = Object.assign({}, row);
-			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
 			},
 			//新增
 			addSubmit: function () {
@@ -358,7 +331,7 @@
 			}
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 
