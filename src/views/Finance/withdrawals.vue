@@ -27,7 +27,7 @@
 				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">分析</el-button>
+					<el-button type="primary" v-on:click="getlist">分析</el-button>
 					<el-button type="primary" v-on:click="getUsers">导出</el-button>
 				</el-form-item>
 			</el-form>
@@ -35,23 +35,21 @@
 
 		<!--列表-->
 		<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="orderMallId" label="订单编号">
-			</el-table-column>
 			<el-table-column prop="userName" label="用户名">
 			</el-table-column>
 			<el-table-column prop="mobile" label="手机号">
 			</el-table-column>
-			<el-table-column prop="quota" label="金额">
+			<el-table-column prop="amount" label="金额">
 			</el-table-column>
-			<el-table-column prop="type" :formatter='formatterStatus' label="支付">
+			<el-table-column label="支付方式">
+				<template scope="scope">
+					<div>{{scope.row.bankCode}}</div>
+					<div>{{scope.row.bankName}}</div>
+				</template>
 			</el-table-column>
-			<el-table-column prop="payType"  :formatter='formatterType' label="支付方式">
-			</el-table-column>
-			<el-table-column prop="centType" :formatter='formatter' label="佣金来源">
+			<el-table-column prop="status" :formatter='formatter' label="状态">
 			</el-table-column>
 			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
-			</el-table-column>
-			<el-table-column prop="remark" label="详情">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
@@ -208,30 +206,33 @@
 			getlist(){
 				const _this = this
 				const params = {
-					type:'',
 					pageNum:this.page,
 					pageSize:10,
 					startTime:'',
 					endTime:'',
-					payType:'',
-					tradeNo:'',
 					userName:'',
 					mobile:'',
-					sort:'4'
-
+					status:''
 				}
-				console.log(params)
+				// console.log(this.startTime)
+				// const time = 
+				if(this.startTime !== ''){
+					const startTime = this.dateStr(this.startTime.getTime())
+					const endTime = this.dateStr(this.endTime.getTime())
+					console.log(startTime)
+					console.log(endTime)
+				}
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
-	                url:baseUrl+'/api/admin/userCashFlow/selectUserFlowList',
+	                url:baseUrl+'/api/admin/userWithdrawal/findPage',
 	                data:JSON.stringify(params),
 	                contentType:'application/json;charset=utf-8',
 	                success:function(data){
 	                	const info = data.data
 	                  	console.log(info)
-	                  	_this.total = info.total
 	                  	_this.table = info.list
+	                  	_this.total = info.total
 	                }
 	            })
 			},
@@ -239,6 +240,33 @@
 				this.page = val;
 				this.getlist();
 			},
+			dateStr(getTime) {
+				let date = new Date(getTime),
+					Y = date.getFullYear(),
+					M = date.getMonth() + 1,
+					D = date.getDate(),
+					H = date.getHours(),
+					m = date.getMinutes(),
+					s = date.getSeconds();
+				//小于10的在前面补0
+				if(M < 10) {
+					M = '0' + M;
+				}
+				if(D < 10) {
+					D = '0' + D;
+				}
+				if(H < 10) {
+					H = '0' + H;
+				}
+				if(m < 10) {
+					m = '0' + m;
+				}
+				if(s < 10) {
+					s = '0' + s;
+				}
+				return (Y+"-"+M+"-"+D) 
+			},
+
 			//获取用户列表
 			getUsers() {
 				let para = {
@@ -369,78 +397,16 @@
                 curTime = new Date(curTime).toLocaleString()
                 return curTime
 			},
-			//支付方式
-			formatterType(row, column) {
-				let type = ''
-				if(row.payType === '0'){
-					type = '微信支付'
-				}else if(row.payType === '1'){
-					type = '支付宝支付'
-				}else if(row.payType === '2'){
-					type = '银联支付'
-				}else if(row.payType === '3'){
-					type = '余额支付'
-				}else if(row.payType === '4'){
-					type = '余额金豆混合支付'
-				}else if(row.payType === '5'){
-					type = '金豆支付'
-				}
-				return type
-			},
 			formatter(row, column){
 				let type = ''
-				if(row.centType === 1){
-					type = '购买平台身份'
-				}else if(row.centType === 2){
-					type = '购买店铺身份'
-				}else if(row.centType === 3){
-					type = '购买产品'
-				}else if(row.centType === 4){
-					type = '补货 '
-				}else if(row.centType === 5){
-					type = '业务充值'
-				}else if(row.centType === 6){
-					type = '扫码支付'
+				if(row.status === 1){
+					type = '申请中 '
+				}else if(row.status === 2){
+					type = '完成'
+				}else if(row.status === 3){
+					type = '提现失败'
 				}
 				return type
-			},
-			//支付
-			formatterStatus(row, column) {
-				let status = ''
-				if(row.type === 1){
-					status = '提现'
-				}else if(row.type === 2){
-					status = '分佣'
-				}else if(row.type === 3){
-					status = '业务充值'
-				}else if(row.type === 4){
-					status = '余额充值'
-				}else if(row.type === 5){
-					status = '商品购买'
-				}else if(row.type === 6){
-					status = '店铺身份购买'
-				}else if(row.type === 7){
-					status = '平台身份购买'
-				}else if(row.type === 8){
-					status = '补货'
-				}else if(row.type === 9){
-					status = '金豆充值'
-				}else if(row.type === 10){
-					status = '金豆支出'
-				}else if(row.type === 11){
-					status = '店铺收入'
-				}else if(row.type === 12){
-					status = '手续费'
-				}else if(row.type === 13){
-					status = '便付劵充值'
-				}else if(row.type === 14){
-					status = '便付劵转赠'
-				}else if(row.type === 15){
-					status = '便付劵兑换金豆'
-				}else if(row.type === 16){
-					status = '商家会员钱包转平台钱包'
-				}
-				return status
 			}
 		},
 		mounted() {

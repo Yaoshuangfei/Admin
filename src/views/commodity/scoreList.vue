@@ -2,15 +2,9 @@
 	<section>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="filters">
+			<el-form :inline="true">
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="手机号码"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-input v-model="filters.name" placeholder="用户名"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getUsers">添加</el-button>
 				</el-form-item>
 				<!-- <el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -20,28 +14,19 @@
 
 		<!--列表-->
 		<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min_width:1080px;">
-			<el-table-column prop="id" label="ID">
+			<el-table-column type="index" label="序号">
 			</el-table-column>
-			<el-table-column prop="name" label="用户名">
+			<el-table-column prop="name" label="标签名称">
 			</el-table-column>
-			<el-table-column prop="number" label="手机号码">
+			<el-table-column prop="number" label="标签简介">
 			</el-table-column>
-			<el-table-column prop="user_name" label="综合积分">
-			</el-table-column>
-			<el-table-column prop="loan" label="消费积分">
-			</el-table-column>
-			<el-table-column prop="loan_number" label="有效积分">
-			</el-table-column>
-			<el-table-column prop="min_company" label="添加时间">
-			</el-table-column>
-			<el-table-column prop="interest_rate" label="投资积分">
-			</el-table-column>
-			<el-table-column prop="data_qx" label="赠送积分">
+			<el-table-column prop="user_name" label="标签图标">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
+					<el-button size="small" type='text' @click="handleEdit(scope.$index, scope.row)">查看</el-button>
 					<el-button size="small" type='text' @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-					<el-button type="text" size="small" @click="handleEdit1(scope.$index, scope.row)">查看详情</el-button>
+					<el-button type="text" size="small" @click="handleEdit1(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>

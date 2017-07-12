@@ -35,6 +35,7 @@ import exchangeRecord from './views/shop/exchangeRecord.vue'
 /*财务管理 Finance*/
 import WebPipelining from './views/Finance/WebPipelining.vue'
 import CellularPhoneReplenishing  from './views/Finance/CellularPhoneReplenishing.vue'
+import withdrawals from './views/Finance/withdrawals.vue'
 import PersonalFlow from './views/Finance/PersonalFlow.vue'
 import ShopFlow from './views/Finance/ShopFlow.vue'
 import Donation from './views/Finance/Donation.vue'
@@ -44,14 +45,16 @@ import PublicWelfareFundRaising from './views/Finance/PublicWelfareFundRaising.v
 import MerchantCommission from './views/Finance/MerchantCommission.vue'
 
 
-// 用户管理 user 
+// 用户管理 UserAdministration 
+import userAdmin from './views/UserAdministration/userAdmin.vue'
 // 扫码付管理 scanCodePayment 
 //千人千面
 import page from './views/page/page.vue'
 import addpage from './views/page/addpage.vue'
 // 慈善公益管理 Charity
 // 充值管理 Recharge 
-
+import rechargeRecord from './views/Recharge/rechargeRecord.vue'
+import rechargeSpecification from './views/Recharge/rechargeSpecification.vue'
 // 网络电话管理 VoIP
 import department from './views/VoIP/department.vue'
 import menu from './views/VoIP/menu.vue'
@@ -95,7 +98,7 @@ let routes = [
             { path: '/SystemPush', component: SystemPush, name: '系统推送' },
             { path: '/releaseLook', component: releaseLook, name: '系统权限查看', hidden:true },
             { path: '/releaseAdd', component: releaseAdd, name: '系统权限添加', hidden:true },
-            { path: '/releaseReg', component: releaseReg, name: '系统权限添加', hidden:true }
+            { path: '/releaseReg', component: releaseReg, name: '系统权限添加1', hidden:true }
         ]
     },
     {
@@ -116,9 +119,9 @@ let routes = [
         name: '商品管理',
         iconCls: 'fa fa-id-card-o',
         children: [
-            { path: '/investorList', component: investorList, name: '投资人管理列表' },
-            { path: '/scoreList', component: scoreList, name: '积分管理' },
-            { path: '/invitation', component: invitation, name: '投资人邀请记录' }
+            { path: '/investorList', component: investorList, name: '商品分类管理' },
+            { path: '/scoreList', component: scoreList, name: '商品标签' },
+            { path: '/invitation', component: invitation, name: '商品管理' }
         ]
     },
     {
@@ -150,7 +153,8 @@ let routes = [
         iconCls: 'fa el-icon-date',
         children: [
             { path: '/WebPipelining', component: WebPipelining, name: '网站流水报表' },
-            { path: '/CellularPhoneReplenishing ', component: CellularPhoneReplenishing , name: '手机充值记录' },
+            { path: '/CellularPhoneReplenishing', component: CellularPhoneReplenishing, name: '手机充值记录' },
+            { path: '/withdrawals', component: withdrawals, name: '提现管理' },
             { path: '/PersonalFlow', component: PersonalFlow, name: '个人流水记录' },
             { path: '/ShopFlow', component: ShopFlow, name: '店铺流水记录' },
             { path: '/Donation', component: Donation, name: '转赠记录' },
@@ -162,7 +166,7 @@ let routes = [
     },
     // {
     //     path: '/',
-    //     component: Home,
+    //     component: Home, withdrawals
     //     name: '',
     //     iconCls: 'fa fa-address-card',
     //     leaf: true,//只有一个节点
@@ -181,7 +185,7 @@ let routes = [
             // { path: '/role', component: role, name: '组织管理' },
             // { path: '/account', component: account, name: '账号管理' },
             // { path: '/editPassword', component: editPassword, name: '修改密码' },
-            // { path: '/operationLog', component: operationLog, name: '操作日志' }
+            { path: '/userAdmin', component: userAdmin, name: '用户信息管理' }
         ]
     },
     {
@@ -236,8 +240,8 @@ let routes = [
             // { path: '/menu', component: menu, name: '菜单管理' },
             // { path: '/role', component: role, name: '组织管理' },
             // { path: '/account', component: account, name: '账号管理' },
-            // { path: '/editPassword', component: editPassword, name: '修改密码' },
-            // { path: '/operationLog', component: operationLog, name: '操作日志' }
+            { path: '/rechargeRecord', component: rechargeRecord, name: '充值记录' },
+            { path: '/rechargeSpecification', component: rechargeSpecification, name: '充值规格管理' }
         ]
     },
     {

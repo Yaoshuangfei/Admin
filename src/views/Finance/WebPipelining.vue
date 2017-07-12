@@ -2,51 +2,48 @@
 	<section>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff">
-			<el-form :inline="true" :model="filters">
+			<el-form :inline="true">
 				<el-date-picker v-model="startTime" type="date" placeholder="选择日期时间">
 		        </el-date-picker>
 		        <span class="demonstration">至</span>
 		        <el-date-picker v-model="endTime" type="date" placeholder="选择日期时间">
 		        </el-date-picker>
-				<!-- <el-form-item>
-					<el-input v-model="filters.name" placeholder="支付银行"></el-input>
-				</el-form-item> -->
 				<el-form-item label="支付方式">
-					<el-select v-model="filters.status" clearable>
+					<el-select v-model="payType" clearable>
 				      <el-option v-for="item in selectSubjectStatus" :label="item.label" :value="item.value">
 				      </el-option>
 				    </el-select>
 				</el-form-item>
 				<el-form-item label="搜索类型">
-				    <el-select v-model="filters.type" clearable>
+				    <el-select v-model="type" clearable>
 				      <el-option v-for="item in options" :label="item.label" :value="item.value">
 				      </el-option>
 				    </el-select>
 				</el-form-item>
 				<el-form-item>
-				    <el-input v-model="filters.name"></el-input>
+				    <el-input v-model="value"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getlist">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="orderNumber" label="订单编号">
+			<el-table-column prop="tradeNo" label="订单编号">
 			</el-table-column>
 			<el-table-column prop="userName" label="用户名">
 			</el-table-column>
-			<el-table-column prop="amountPaid" label="手机号">
+			<el-table-column prop="mobile" label="手机号">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="金额">
+			<el-table-column prop="quota" label="金额">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="支付方式">
+			<el-table-column prop="pay_type" :formatter='formatterType' label="支付方式">
 			</el-table-column>
-			<el-table-column prop="creationTime" label="创建时间">
+			<el-table-column prop="create_time" :formatter='formatterTime' label="创建时间">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="备注">
+			<el-table-column prop="remark" label="备注">
 			</el-table-column>
 			<!-- <el-table-column label="操作">
 				<template scope="scope">
@@ -117,35 +114,34 @@
 				radio: '0',
 				startTime:'',
 				endTime:'',
-				checked: true,
+				payType:'',
+				type:'',
 				value:'',
-				value1:'',
-				value2:'',
 				selectSubjectStatus: [
 				{
-					value:'0',
+					value:'',
 					label:'全部'
 				},{
-					value:'1',
+					value:'0',
 					label:'微信支付'
 				},{
-					value:'2',
-					label:'余额支付'
-				},{
-					value:'3',
+					value:'1',
 					label:'支付宝支付'
 				},{
+					value:'2',
+					label:'银联支付'
+				},{
+					value:'3',
+					label:'余额支付'
+				},{
 					value:'4',
-					label:'微信APP支付'
+					label:'余额金豆混合支付'
 				},{
 					value:'5',
-					label:'退货'
-				},{
-					value:'6',
-					label:'扫码付'
+					label:'金豆支付'
 				}],
 				options: [{
-		          value: '0',
+		          value: '',
 		          label: '全部'
 		        }, {
 		          value: '1',
@@ -163,7 +159,7 @@
 					type:''
 				},
 				users: [],
-				total: 100,
+				total: 0,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
@@ -190,18 +186,7 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[{
-					orderNumber :'145877458784524c',
-					courierNumber :'145877458784524c',
-					userName:'吸引力量',
-					amountPaid :'300',
-					orderTotal :'900',
-					orderStatus :'待付款',
-					paymentMethod :'微信支付',
-					creationTime:'2017-09-08 17:09',
-					deliveryTime:'2017-09-08 17:09',
-					commodityName:'雨花说'
-				}]
+				orderInformation:[]
 			}
 		},
 		methods: {
@@ -211,71 +196,51 @@
 			},
 			getlist(){
 				const _this = this
-				_this.table = []
+				this.listLoading = true;
+				// console.log(_this.startTime.toISOString())
+				// console.log(_this.endTime.toISOString())
+				console.log(_this.payType)
+				console.log(_this.type)
+				console.log(_this.value)
+				// _this.startTime = _this.formatDate(_this.startTime)
+				// _this.endTime = _this.formatDate(_this.endTime)
 				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
+					pageNum:this.page,
+					pageSize:10,
+					startTime:_this.startTime,
+					endTime:_this.endTime,
+					payType:_this.payType,
+					tradeNo:'',
+					userName:'',
+					mobile:'',
+					sort:'4'
+				}
+				if(_this.type === '1'){
+					params.tradeNo = this.value
+				}else if(_this.type === '2'){
+					params.userName = this.value
+				}else if(_this.type === '3'){
+					params.mobile = this.value
 				}
 				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/selectFlowList',
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	const info = data.data.list
+	                  	_this.total = data.data.total
+	                  	_this.orderInformation = info
+	                  	console.log(info)
+	                  	_this.listLoading = false;
 	                }
-	              }
-	         	)
+	            })
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
-			},
-			//获取用户列表
-			getUsers() {
-				let para = {
-					page: this.page,
-					name: this.filters.name
-				};
-				this.listLoading = true;
-				//NProgress.start();
-				getUserListPage(para).then((res) => {
-					this.total = res.data.total;
-					this.users = res.data.users;
-					this.listLoading = false;
-					//NProgress.done();
-				});
-			},
-			//删除
-			handleDel: function (index, row) {
-				this.$confirm('确认删除该记录吗?', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { id: row.id };
-					removeUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
+				this.getlist();
 			},
 			//显示编辑界面
 			seeBtn: function (index, row) {
@@ -293,82 +258,41 @@
 					addr: ''
 				};
 			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			//新增
-			addSubmit: function () {
-				this.$refs.addForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.addLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.addForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							addUser(para).then((res) => {
-								this.addLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['addForm'].resetFields();
-								this.addFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			selsChange: function (sels) {
-				this.sels = sels;
-			},
-			//批量删除
-			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
-				this.$confirm('确认删除选中记录吗？', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
+			//格式化时间
+			formatterTime(row,column){
+                let curTime = row.createTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+            },
+            //格式化支付类型
+            formatterType(row,column){
+                let curType = row.pay_type;
+                if(curType === 0){
+                	curType = '微信支付'
+                }else if(curType === 1){
+                	curType = '支付宝支付'
+                }else if(curType === 2){
+                	curType = '银联支付'
+                }else if(curType === 3){
+                	curType = '余额支付'
+                }else if(curType === 4){
+                	curType = '余额金豆混合支付'
+                }else if(curType === 5){
+                	curType = '金豆支付'
+                }
+                return curType
+            },
+            formatDate(date) {  
+			    var y = date.getFullYear();  
+			    var m = date.getMonth() + 1;  
+			    m = m < 10 ? '0' + m : m;  
+			    var d = date.getDate();  
+			    d = d < 10 ? ('0' + d) : d;  
+			    return y + '-' + m + '-' + d;  
 			}
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 

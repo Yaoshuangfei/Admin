@@ -7,22 +7,22 @@
     <el-form-item prop="checkPass">
       <el-input type="password" v-model="ruleForm2.password" auto-complete="off" placeholder="密码"></el-input>
     </el-form-item>
-    <el-form-item >
+    <!-- <el-form-item >
       <el-col :span='8' prop="yanzm">
         <el-input v-model="ruleForm2.code" auto-complete="off" placeholder="验证码"></el-input>
       </el-col>
       <el-col :span='12'><img :src='imgsrc' @click="getuid"></el-col>
-    </el-form-item>
+    </el-form-item> -->
     <!-- <el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox> -->
     <el-form-item style="width:100%;">
-      <el-button type="primary" style="width:100%;" @click.native.prevent="handleSubmit2" :loading="logining">登录</el-button>
-      <el-button @click.native.prevent="logi">测试</el-button>
+      <el-button type="primary" style="width:100%;" @click.native.prevent="logi" :loading="logining">登录</el-button>
+      <!-- <el-button @click.native.prevent="logi">测试</el-button> -->
     </el-form-item>
   </el-form>
 </template>
 
 <script>
-  import { requestLogin ,loginID } from '../api/api';
+  import { requestLogin ,loginID ,baseUrl} from '../api/api';
   import { state } from '../vuex/state'
   //import NProgress from 'nprogress'
   export default {
@@ -32,9 +32,8 @@
         imgsrc: '',
         logining: false,
         ruleForm2: {
-          username: 'sa',
-          password: 'p',
-          code:''
+          username: 'admin',
+          password: '123456',
         },
         rules2: {
           username: [
@@ -54,67 +53,41 @@
       };
     },
     methods: {
-      getuid() {
-        const _this = this
-        $.get("http://192.168.10.18:8080/shangfu-admin-web/verifyCode/loginCode  ",
-            function(data){
-                const info = eval('(' + data + ')');
-                console.log(info)
-                _this.uuid = info
-                _this.cli(info)
-              }
-         );
-      },
-       cli(uid){
-        this.imgsrc='http://192.168.10.10:8080/shangfu-admin-web/verifyCode/getImage?uuid='+uid+'&random='+Math.random()
-      },
+      // getuid() {
+      //   const _this = this
+      //   $.get("http://192.168.10.18:8080/shangfu-admin-web/verifyCode/loginCode  ",
+      //       function(data){
+      //           const info = eval('(' + data + ')');
+      //           console.log(info)
+      //           _this.uuid = info
+      //           _this.cli(info)
+      //         }
+      //    );
+      // },
+      //  cli(uid){
+      //   this.imgsrc='http://192.168.10.10:8080/shangfu-admin-web/verifyCode/getImage?uuid='+uid+'&random='+Math.random()
+      // },
       logi() {
-          // const account = this.ruleForm2.account;
-          const password = this.md5(this.ruleForm2.password);
-          // console.log(checkPass);
-          // const KEYDATA = account+'_sf_'+checkPass+'_sf_'+this.ruleForm2.yanzm;
-          // const Tm_num = new Date().getTime();
           const params = {
-              code: this.ruleForm2.code,
-              username: this.ruleForm2.username ,
-              md5Pwd: password,
-              uuid: this.uuid
+              userName: this.ruleForm2.username ,
+              password: this.ruleForm2.password
           }
           const _this = this
-          const key = false
-          console.log(params);
-           $.post("http://192.168.10.18:8080/shangfu-admin-web/system_login",
-             { param: JSON.stringify(params) },function(data){
-                const info = eval('(' + data + ')');
-                const response = JSON.parse(info)
-                console.log(response)
-                if(response.res === 1000000){
-                  state.loginID = true
-                  // window.location.href='/subjectCheckPending';
-                  console.log(state.loginID)
-                }else if(info.res === 1000001){
-                  console.log(info.resMsg)
+          $.ajax({
+                type:'POST',
+                dataType:'json',
+                url:baseUrl+"/api/core/adminLogin",
+                data:JSON.stringify(params),
+                contentType:'application/json;charset=utf-8',
+                success:function(data){
+                  console.log(data)
+                  state.storeId = data.data.storeId
+                  state.id = data.data.id
+                  document.cookie="token="+data.data.token;
+                  sessionStorage.setItem('user', JSON.stringify(_this.ruleForm2.username));
+                  _this.$router.push({ path: '/main' });
                 }
-              }
-         );
-          // console.log(param.KEYDATA);
-          // this.$http.post('http://192.168.10.18:8080/shangfu-admin-web/system_login', {KEYDATA:'sa_sfq2eqw_sfa'})
-          //   .then(response => {
-          //     console.log(response)
-          //     if (response.status === 200) {
-          //         if (response.code === 200) {
-          //             console.log(response.data)
-          //         }
-          //         console.log(response.data)
-          //         alert(response.data)
-          //       } else if (response.status === 400) {
-          //           alert(response.resMsg)
-          //       }
-          //   }, response => {
-          //     let ret = eval(response)
-          //       console.log(ret.data)
-          //       alert(ret.resMsg)
-          //   })
+            });
       },
       handleReset2() {
         this.$refs.ruleForm2.resetFields();
@@ -149,7 +122,7 @@
       }
     },
     mounted() {
-        this.getuid()
+        // this.getuid()
         // this.cli()
     },
   }

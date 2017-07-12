@@ -22,28 +22,28 @@
 				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getlist">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="orderNumber" label="订单编号">
+			<el-table-column prop="ddbh" label="订单编号">
 			</el-table-column>
-			<el-table-column prop="courierNumber" label="快递单号">
+			<el-table-column prop="expno" label="快递单号">
 			</el-table-column>
-			<el-table-column prop="userName" label="用户名">
+			<el-table-column prop="coreUser" label="用户名">
 			</el-table-column>
-			<el-table-column prop="amountPaid" label="实付金额">
+			<el-table-column prop="sfje" label="实付金额">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="订单总价">
+			<el-table-column prop="ddzj" label="订单总价">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="订单状态">
+			<el-table-column prop="orderStatus" :formatter='formatterStatus' label="订单状态">
 			</el-table-column>
-			<el-table-column prop="paymentMethod" label="支付方式">
+			<el-table-column prop="payMethod" :formatter='formatterType' label="支付方式">
 			</el-table-column>
-			<el-table-column prop="creationTime" label="创建时间">
+			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
 			</el-table-column>
 			<el-table-column prop="deliveryTime" label="发货时间">
 			</el-table-column>
@@ -66,34 +66,34 @@
 
 		<!--编辑界面-->
 		<el-dialog title="订单详情" v-model="editFormVisible" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
+			<el-form :model="seeForm" label-width="160px">
 				<el-form-item label="订单号">
-					<div>{{orderDetails.orderNumber }}</div>
+					<div>{{seeForm.orderNumber }}</div>
 					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
 				</el-form-item>
 				<el-form-item label="商品名称">
-					<div>{{orderDetails.commodityName}}</div>
+					<div>{{seeForm.attrName}}</div>
 				</el-form-item>
 				<el-form-item label="用户名">
-					<div>{{orderDetails.userName }}</div>
+					<div>{{seeForm.userName }}</div>
 				</el-form-item>
 				<el-form-item label="实付金额">
-					<div>{{orderDetails.amountPaid }}</div>
+					<div>{{seeForm.amountPaid }}</div>
 				</el-form-item>
 				<el-form-item label="订单总价">
-					<div>{{orderDetails.orderTotal }}</div>
+					<div>{{seeForm.orderTotal }}</div>
 				</el-form-item>
 				<el-form-item label="订单状态">
-					<div>{{orderDetails.orderStatus }}</div>
+					<div>{{seeForm.orderStatus }}</div>
 				</el-form-item>
 				<el-form-item label="支付方式">
-					<div>{{orderDetails.paymentMethod }}</div>
+					<div>{{seeForm.paymentMethod }}</div>
 				</el-form-item>
 				<el-form-item label="创建时间">
-					<div>{{orderDetails.creationTime}}</div>
+					<div>{{seeForm.creationTime}}</div>
 				</el-form-item>
 				<el-form-item label="发货时间">
-					<div>{{orderDetails.deliveryTime}}</div>
+					<div>{{seeForm.deliveryTime}}</div>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
@@ -147,9 +147,6 @@
 		        }, {
 		          value: '2',
 		          label: '快递单号'
-		        }, {
-		          value: '3',
-		          label: '用户名'
 		        }],
 				filters: {
 					name: '',
@@ -157,7 +154,7 @@
 					type:''
 				},
 				users: [],
-				total: 100,
+				total: 0,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
@@ -184,71 +181,98 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[{
-					orderNumber :'145877458784524c',
-					courierNumber :'145877458784524c',
-					userName:'吸引力量',
-					amountPaid :'300',
-					orderTotal :'900',
-					orderStatus :'待付款',
-					paymentMethod :'微信支付',
-					creationTime:'2017-09-08 17:09',
-					deliveryTime:'2017-09-08 17:09',
-					commodityName:'雨花说'
-				}]
+				orderInformation:[],
+				seeForm:[]
 			}
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			formatterTime(row, column){
+				let curTime = row.createTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+			},
+			//支付方式
+			formatterType: function (row, column) {
+				let type = ''
+				if(row.payMethod === '0'){
+					type = '微信支付'
+				}else if(row.payMethod === '1'){
+					type = '支付宝支付'
+				}else if(row.payMethod === '2'){
+					type = '银联支付'
+				}else if(row.payMethod === '3'){
+					type = '余额支付'
+				}else if(row.payMethod === '4'){
+					type = '余额金豆混合支付'
+				}else if(row.payMethod === '5'){
+					type = '金豆支付'
+				}
+				return type
+			},
+			//订单状态 orderStatus
+			formatterStatus: function (row, column) {
+				let status = ''
+				if(row.orderStatus === 1){
+					status = '支付中'
+				}else if(row.orderStatus === 2){
+					status = '支付成功'
+				}else if(row.orderStatus === 3){
+					status = '支付失败'
+				}else if(row.orderStatus === 4){
+					status = '已取消'
+				}else if(row.orderStatus === 5){
+					status = '卖家已发货'
+				}else if(row.orderStatus === 6){
+					status = '已收货'
+				}else if(row.orderStatus === 7){
+					status = '已评价'
+				}else if(row.orderStatus === 8){
+					status = '交易完成'
+				}else if(row.orderStatus === 9){
+					status = '售后处理'
+				}else if(row.orderStatus === 10){
+					status = '已删除'
+				}
+				return status
 			},
 			getlist(){
 				const _this = this
-				_this.table = []
+				_this.orderInformation = []
 				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
+					pageNum:this.page,
+					size:10
 				}
 				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
-	                }
-	              }
-	         	)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/orderMall/selectListAll",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
+                    success:function(data){
+                    	const info = data.data
+                    	console.log(info)
+                    	_this.total = info.total
+                    	// _this.orderInformation = info.list
+                    	for(var i = 0;i<info.list.length;i++){
+                    		console.log(info.list[i].orderGoods)
+                    		for(var x = 0;x<info.list[i].orderGoods.length;x++){
+                    			info.list[i].orderGoods[0].ddbh = info.list[i].id
+                    			info.list[i].orderGoods[0].sfje = info.list[i].totalMoney
+                    			info.list[i].orderGoods[0].coreUser = info.list[i].coreUser.nickName
+                    			info.list[i].orderGoods[0].payMethod = info.list[i].payMethod
+                    			info.list[i].orderGoods[0].ddzj =  info.list[i].productValue+ info.list[i].expressValue
+                    			_this.orderInformation.push(info.list[i].orderGoods[x])
+                    		}
+                    	}
+                    	console.log(_this.orderInformation)
+                    }
+                });
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
-			},
-			//获取用户列表
-			getUsers() {
-				let para = {
-					page: this.page,
-					name: this.filters.name
-				};
-				this.listLoading = true;
-				//NProgress.start();
-				getUserListPage(para).then((res) => {
-					this.total = res.data.total;
-					this.users = res.data.users;
-					this.listLoading = false;
-					//NProgress.done();
-				});
+				this.getlist();
 			},
 			//删除
 			handleDel: function (index, row) {
@@ -274,7 +298,8 @@
 			//显示编辑界面
 			seeBtn: function (index, row) {
 				this.editFormVisible = true;
-				this.orderDetails = Object.assign({}, row);
+				this.seeForm = row
+				console.log(row)
 			},
 			//显示新增界面
 			handleAdd: function () {
@@ -362,7 +387,7 @@
 			}
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 

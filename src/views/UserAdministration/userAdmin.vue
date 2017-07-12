@@ -1,0 +1,528 @@
+<template>
+	<section>
+		<!--工具条-->
+		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff">
+			<el-form :inline="true">
+				<el-form-item label="身份">
+				    <el-select v-model="userType" clearable>
+				      <el-option v-for="item in options" :label="item.label" :value="item.value">
+				      </el-option>
+				    </el-select>
+				</el-form-item>
+				<el-form-item label="条件">
+				    <el-select v-model="type" clearable>
+				      <el-option v-for="item in option" :label="item.label" :value="item.value">
+				      </el-option>
+				    </el-select>
+				</el-form-item>
+				<el-form-item>
+				    <el-input v-model="value"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="getlistinit">查询</el-button>
+				</el-form-item>
+			</el-form>
+		</el-col>
+		<!--列表-->
+		<el-table v-show="centertable" :data="table"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="nickName" label="昵称">
+			</el-table-column>
+			<el-table-column prop="headImg" label="头像">
+				<template scope="scope">
+					<img class="img" :src="scope.row.headImg" alt="">
+				</template>
+			</el-table-column>
+			<el-table-column prop="realName" label="真实姓名">
+			</el-table-column>
+			<el-table-column prop="mobile" label="手机号">
+			</el-table-column>
+			<el-table-column prop="gender" :formatter='formatSex' label="性别">
+			</el-table-column>
+			<el-table-column prop="crade" :formatter='formatType'  label="会员身份">
+			</el-table-column>
+			<el-table-column prop="identityCard" label="省份证">
+			</el-table-column>
+			<el-table-column prop="email" label="邮箱">
+			</el-table-column>
+			<el-table-column prop="availableIncome" label="账户余额">
+			</el-table-column>
+			<el-table-column prop="totalIncome"  label="扫码付收益">
+			</el-table-column>
+			<el-table-column prop="frozenIncome" label="冻结金额">
+			</el-table-column>
+			<el-table-column prop="availableIncome" label="可提金额">
+			</el-table-column>
+			<el-table-column prop="withdrawals" label="已提现">
+			</el-table-column>
+			<el-table-column prop="integral" label="金豆">
+			</el-table-column>
+			<el-table-column prop="bfTicket" label="便付券">
+			</el-table-column>
+			<el-table-column prop="quota" label="修改记录">
+			</el-table-column>
+			<el-table-column label="操作">
+				<template scope="scope">
+					<el-button type="text" size="small" @click="inviterBtn(scope.row)">查看上级</el-button>
+					<el-button type="text" size="small" @click="downinviterBtn(scope.row)">查看下级</el-button>
+					<el-button type="text" size="small" @click="commissionBtn(scope.row)">佣金记录</el-button>
+					<el-button type="text" size="small" @click="evaluateBtn(scope.row)">商品评价</el-button>
+					<el-button type="text" size="small" @click="accountFlowBtn(scope.row)">用户流水</el-button>
+				</template>
+			</el-table-column>
+		</el-table>
+		<!-- 下级   subordinatetable -->
+		<el-table v-show="subordinatetable" :data="table"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="nickName" label="昵称">
+			</el-table-column>
+			<el-table-column prop="headImg" label="头像">
+				<template scope="scope">
+					<img class="img" :src="scope.row.headImg" alt="">
+				</template>
+			</el-table-column>
+			<el-table-column prop="realName" label="真实姓名">
+			</el-table-column>
+			<el-table-column prop="mobile" label="手机号">
+			</el-table-column>
+			<el-table-column prop="gender" :formatter='formatSex' label="性别">
+			</el-table-column>
+			<el-table-column prop="crade" :formatter='formatType'  label="会员身份">
+			</el-table-column>
+			<el-table-column prop="identityCard" label="省份证">
+			</el-table-column>
+			<el-table-column prop="email" label="邮箱">
+			</el-table-column>
+			<el-table-column prop="availableIncome" label="账户余额">
+			</el-table-column>
+			<el-table-column prop="totalIncome"  label="扫码付收益">
+			</el-table-column>
+			<el-table-column prop="frozenIncome" label="冻结金额">
+			</el-table-column>
+			<el-table-column prop="availableIncome" label="可提金额">
+			</el-table-column>
+			<el-table-column prop="withdrawals" label="已提现">
+			</el-table-column>
+			<el-table-column prop="integral" label="金豆">
+			</el-table-column>
+			<el-table-column prop="bfTicket" label="便付券">
+			</el-table-column>
+			<el-table-column prop="quota" label="修改记录">
+			</el-table-column>
+			<el-table-column label="操作">
+				<template scope="scope">
+					<el-button type="text" size="small" @click="inviterBtn(scope.row)">查看上级</el-button>
+					<el-button type="text" size="small" @click="downinviterBtn(scope.row)">查看下级</el-button>
+					<el-button type="text" size="small" @click="commissionBtn(scope.row)">佣金记录</el-button>
+					<el-button type="text" size="small" @click="evaluateBtn(scope.row)">商品评价</el-button>
+					<el-button type="text" size="small" @click="accountFlowBtn(scope.row)">用户流水</el-button>
+				</template>
+			</el-table-column>
+		</el-table>
+		<!-- 佣金记录   commissiontable -->
+		<el-table v-show="commissiontable" :data="commisTable"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="orderGoodsId" label="订单商品编号">
+			</el-table-column>
+			<el-table-column prop="coreUserId" label="用户编号">
+			</el-table-column>
+			<el-table-column prop="totalMoney" label="分佣金额">
+			</el-table-column>
+			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
+			</el-table-column>
+			<el-table-column prop="updateTime" :formatter='formatterTime' label="更新时间">
+			</el-table-column>
+			<el-table-column prop="thawingTime" :formatter='formatterTime' label="解冻时间">
+			</el-table-column>
+			<el-table-column prop="remarks" label="备注信息">
+			</el-table-column>
+			<el-table-column prop="status" :formatter='formatterStatus' label="提现状态">
+			</el-table-column>
+		</el-table>
+		<!-- 商品评价   evaluatetable -->
+		<el-table v-show="evaluatetable" :data="evaltable"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="userName" label="用户名">
+			</el-table-column>
+			<el-table-column prop="userHeadImg" label=" 评价人头像">
+				<template scope="scope">
+					<img style="width: 100px" :src="scope.row.userHeadImg">
+				</template>
+			</el-table-column>
+			<el-table-column prop="content" label="评价内容">
+			</el-table-column>
+			<el-table-column prop="goodsScore" label="宝贝描述评分">
+			</el-table-column>
+			<el-table-column prop="sellerScore" label="卖家服务评分">
+			</el-table-column>
+			<el-table-column prop="logisticsScore" label="物流服务评分">
+			</el-table-column>
+			<el-table-column prop="crate" :formatter='formatCrate' label="评价等级">
+			</el-table-column>
+		</el-table>
+		<!-- 用户流水   accountFlowtable -->
+		<el-table v-show="accountFlowtable" :data="table"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="nickName" label="编号">
+			</el-table-column>
+			<el-table-column prop="realName" label="手机号码">
+			</el-table-column>
+			<el-table-column prop="mobile" label="用户昵称">
+			</el-table-column>
+			<el-table-column prop="identityCard" label="金额">
+			</el-table-column>
+			<el-table-column prop="email" label="支付">
+			</el-table-column>
+			<el-table-column prop="availableIncome" label="备注">
+			</el-table-column>
+			<el-table-column prop="totalIncome"  label="创建时间">
+			</el-table-column>
+		</el-table>
+		<!--工具条-->
+		<el-col :span="24" v-show="centertable" class="toolbar" style="background:#fff;">
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
+			</el-pagination>
+		</el-col>
+		<el-col :span="24" v-show="commissiontable" class="toolbar" style="background:#fff;">
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange1" :page-size="10" :total="total1" style="float:right;">
+			</el-pagination>
+		</el-col>
+		<el-col :span="24" v-show="evaluatetable" class="toolbar" style="background:#fff;">
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange2" :page-size="10" :total="total2" style="float:right;">
+			</el-pagination>
+		</el-col>
+		<!-- 充值类型添加 -->
+		<el-dialog title="查看上级" v-model="seeFormVisible" :close-on-click-modal="false" >
+			<el-form label-width="100px">
+				<el-form-item label="昵称">
+					{{rechargeList.nickName}}
+				</el-form-item>
+				<el-form-item label="头像">
+					 <img class="img" :src="rechargeList.headImg">
+				</el-form-item>
+				<el-form-item label="真实姓名">
+					{{rechargeList.realName}}
+				</el-form-item>
+				<el-form-item label="手机号">
+					{{rechargeList.mobile}}
+				</el-form-item>
+				<el-form-item label="性别">
+					{{rechargeList.gender}}
+				</el-form-item>
+				<el-form-item label="会员身份">
+					{{rechargeList.identityCard}}
+				</el-form-item>
+				<el-form-item label="身份证">
+					{{rechargeList.identityCard}}
+				</el-form-item>
+				<el-form-item label="邮箱">
+					{{rechargeList.email}}
+				</el-form-item>
+				<el-col :span='24'></el-col>
+			</el-form>
+			<div slot="footer" class="dialog-footer" style="text-align: center;">
+				<el-button type="primary" @click.native="seeFormVisible = false">关闭</el-button>
+			</div>
+		</el-dialog>
+	</section>
+</template>
+
+<script>
+	import { state } from '../../vuex/state'
+	import util from '../../common/js/util'
+	import {baseUrl , editUser, addUser } from '../../api/api';
+
+	export default {
+		data() {
+			return {
+				userType:'',
+				type:'',
+				value:'',
+				rechargeList:{},
+				centertable:true,//主体table
+				seeFormVisible: false,//上级
+				subordinatetable:false,//下级
+
+				commissiontable:false,//佣金
+				evaluatetable:false,//评价
+				accountFlowtable:false,//流水
+				option:[{
+		          value: 0,
+		          label: '全部'
+		        },{
+		          value: 1,
+		          label: '昵称'
+		        },{
+		          value: 2,
+		          label: '真实姓名'
+		        },{
+		          value: 3,
+		          label: '手机号'
+		        },{
+		          value: 4,
+		          label: '省份证'
+		        },{
+		          value: 5,
+		          label: '邮箱'
+		        }],
+				options: [{
+		          value: 1,
+		          label: '普通'
+		        },{
+		          value: 2,
+		          label: '创客'
+		        },{
+		          value: 3,
+		          label: '创客商'
+		        }],                     
+				total: 0,
+				page: 1,
+				total1: 0,
+				page1:1,
+				listLoading: false,
+				table:[],
+				commisTable:[],
+				evaltable:[],
+				yjid:'',
+				pjid:'',
+				lsid:'',
+				page2:1,
+				total2:0,
+				page3:1,
+				total3:0
+			}
+		},
+		methods: {
+			formatSex: function (row, column) {
+				return row.gender == 1 ? '男' : row.gender == 2 ? '女' : '未知';
+			},
+			formatType(row, column){
+				let type =''
+				if(row.crade === 1){
+					 type = '普通' 
+				}else if(row.crade === 2){
+					 type = '创客'
+				}else if(row.crade === 3){
+					 type = '创客商'
+				}
+				return type
+			},
+			formatterTime(row,column){
+                let curTime = row.createTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+            },
+            formatterStatus(row,column){
+            	return row.status == 1 ? '冻结中' : row.status == 2 ? '已解冻 ' : '退款作废';
+            },
+            formatCrate(row,column){
+            	return row.crate == 1 ? '好评' : row.crate == 2 ? '中评 ' : '差评';
+            },
+            // 搜索
+			getlistinit(){
+				this.page = 0
+				this.getlist()
+			},
+			// 初始化列表
+			getlist(){
+				const _this = this
+				const params = {
+					pageNum:this.page,
+					size:10,
+					crade:_this.userType,
+					nickName:'',
+					realName:'',
+					mobile:'',
+					email:'',
+					identityCard:''
+				}
+				if(_this.type === 1){
+					params.nickName = _this.value
+				}else if(_this.type === 2){
+					params.realName = _this.value
+				}else if(_this.type === 3){
+					params.mobile = _this.value
+				}else if(_this.type === 4){
+					params.identityCard = _this.value
+				}else if(_this.type === 5){
+					params.email = _this.value
+				}
+				console.log(params)
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+"/api/admin/userInfo/find/member",
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                 	_this.table = data.data.list
+	                 	_this.total = data.data.total
+	                }
+	            });
+			},
+			// 查看上级
+			inviterBtn(row) {
+				const _this = this
+				console.log(row)
+				if(row.inviterId === null){
+					alert('没有上级')
+					return
+				}
+				_this.rechargeList = []
+				this.seeFormVisible = true
+				const params = {
+					inviterId:row.inviterId
+				}
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+"/api/admin/userInfo/person/superior",
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                  	_this.rechargeList = data.data
+	                  	console.log(_this.rechargeList)
+	                  	if(_this.rechargeList.gender === 1){
+	                  		_this.rechargeList.gender = '男'
+	                  	}else if(_this.rechargeList.gender === 2){
+	                  		_this.rechargeList.gender = '女'
+	                  	}else{
+	                  		_this.rechargeList.gender = '未知'
+	                  	}
+	                  	if(_this.rechargeList.crade === 1){
+							 _this.rechargeList.crade = '普通' 
+						}else if(_this.rechargeList.crade === 2){
+							 _this.rechargeList.crade = '创客'
+						}else if(_this.rechargeList.crade === 3){
+							 _this.rechargeList.crade = '创客商'
+						}
+
+	                }
+	            });
+			},
+			// 查看下级
+			downinviterBtn(row) {
+				const _this = this
+				const params = {
+					userId:row.id,
+					pageNum:this.page,
+					size:10
+				}
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+"/api/admin/userInfo/person/subordinate",
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                }
+	            });
+			},
+			//佣金记录
+			commissionBtn(row) {
+				this.yjid = row.id
+				this.showCommiss()
+			},
+			showCommiss(){
+				const _this = this
+				const params = {
+					userId:this.yjid,
+					pageNum:this.page1,
+					size:10
+				}
+				console.log(params)
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+"/api/admin/userInfo/person/commission",
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                  	_this.centertable = false
+	                  	_this.commissiontable = true
+	                  	_this.commisTable = data.data.list
+	                  	_this.total1 = data.data.total
+	                  	console.log(_this.commisTable)
+	                }
+	            });
+			},
+			//商品评价记录
+			evaluateBtn(row) {
+				this.pjid = row.id
+				this.showEvaluat()
+			},
+			showEvaluat(){
+				const _this = this
+				const params = {
+					userId:this.pjid,
+					pageNum:this.page2,
+					size:10
+				}
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+"/api/admin/userInfo/person/evaluate",
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                  	_this.total2 = data.data.total
+	                  	_this.evaltable = data.data.list
+	                  	_this.centertable = false
+	                  	_this.evaluatetable = true
+	                }
+	            });
+			},
+			//个人流水记录
+			accountFlowBtn(row) {
+				this.lsid = row.id
+				this.showAccouont()
+			},
+			showAccouont() {
+				const _this = this
+				const params = {
+					userId:this.lsid,
+					pageNum:this.page3,
+					size:10
+				}
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+"/api/admin/userInfo/person/accountFlow",
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                }
+	            });
+			},
+			//分页
+			handleCurrentChange(val) {
+				this.page = val;
+				this.getlist();
+			},
+			handleCurrentChange1(val) {
+				this.page1 = val;
+				this.showCommiss();
+			},
+			handleCurrentChange2(val) {
+				this.page2 = val;
+				this.showEvaluat();
+			}
+		},
+		mounted() {
+			this.getlist();
+		}
+	}
+
+</script>
+
+<style>
+	.el-dialog--small {
+    	width: 25%;
+    	border-radius: 10px
+	}	
+	.img {
+		width:70px;
+		height:70px;
+	}
+</style>

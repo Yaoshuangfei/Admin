@@ -34,33 +34,35 @@
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="orderMallId" label="订单编号">
+		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="orderNumber" label="订单编号">
 			</el-table-column>
 			<el-table-column prop="userName" label="用户名">
 			</el-table-column>
-			<el-table-column prop="mobile" label="手机号">
+			<el-table-column prop="amountPaid" label="手机号">
 			</el-table-column>
-			<el-table-column prop="quota" label="金额">
+			<el-table-column prop="orderTotal" label="充值金额">
 			</el-table-column>
-			<el-table-column prop="type" :formatter='formatterStatus' label="支付">
+			<el-table-column prop="orderStatus" label="充值手机号">
 			</el-table-column>
-			<el-table-column prop="payType"  :formatter='formatterType' label="支付方式">
+			<el-table-column prop="creationTime" label="支付方式">
 			</el-table-column>
-			<el-table-column prop="centType" :formatter='formatter' label="佣金来源">
+			<el-table-column prop="deliveryTime" label="成本">
 			</el-table-column>
-			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
+			<el-table-column prop="deliveryTime" label="手续费6%">
 			</el-table-column>
-			<el-table-column prop="remark" label="详情">
+			<el-table-column prop="deliveryTime" label="利润">
 			</el-table-column>
-			<el-table-column label="操作">
+			<el-table-column prop="deliveryTime" label="充值时间">
+			</el-table-column>
+			<!-- <el-table-column label="操作">
 				<template scope="scope">
-					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button>
-					<el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
+					<el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button>
+					<el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button>
 					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<!-- <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button> -->
+					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
 				</template>
-			</el-table-column>
+			</el-table-column> -->
 		</el-table>
 
 		<!--工具条-->
@@ -119,7 +121,6 @@
 	export default {
 		data() {
 			return {
-				table:[],
 				radio: '0',
 				startTime:'',
 				endTime:'',
@@ -163,7 +164,7 @@
 					type:''
 				},
 				users: [],
-				total: 1,
+				total: 100,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
@@ -205,39 +206,44 @@
 			}
 		},
 		methods: {
+			//性别显示转换
+			formatSex: function (row, column) {
+				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			},
 			getlist(){
 				const _this = this
+				_this.table = []
 				const params = {
-					type:'',
 					pageNum:this.page,
 					pageSize:10,
+					type:'3',
 					startTime:'',
 					endTime:'',
 					payType:'',
 					tradeNo:'',
 					userName:'',
 					mobile:'',
-					sort:'4'
-
+					sort:'4',
 				}
 				console.log(params)
-				$.ajax({
-	                type:'POST',
-	                dataType:'json',
-	                url:baseUrl+'/api/admin/userCashFlow/selectUserFlowList',
-	                data:JSON.stringify(params),
-	                contentType:'application/json;charset=utf-8',
-	                success:function(data){
-	                	const info = data.data
-	                  	console.log(info)
-	                  	_this.total = info.total
-	                  	_this.table = info.list
-	                }
-	            })
+				$.post(baseUrl+"/api/admin/userCashFlow/selectUserFlowList",
+	             { param: JSON.stringify(params) },
+	             function(data){
+	             	// const info = eval('(' + data + ')');
+	              //   const response = JSON.parse(info);
+	              //   const list = response.obj.results
+	                console.log(data)
+	                // _this.page = response.obj.total
+	                // _this.total = response.obj.totalRecord
+	                // for(var i = 0;i<list.length;i++){
+	                // 	_this.table.push(list[i])
+	                // }
+	              }
+	         	)
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getlist();
+				this.getUsers();
 			},
 			//获取用户列表
 			getUsers() {
@@ -363,84 +369,6 @@
 				}).catch(() => {
 
 				});
-			},
-			formatterTime(row, column){
-				let curTime = row.createTime;
-                curTime = new Date(curTime).toLocaleString()
-                return curTime
-			},
-			//支付方式
-			formatterType(row, column) {
-				let type = ''
-				if(row.payType === '0'){
-					type = '微信支付'
-				}else if(row.payType === '1'){
-					type = '支付宝支付'
-				}else if(row.payType === '2'){
-					type = '银联支付'
-				}else if(row.payType === '3'){
-					type = '余额支付'
-				}else if(row.payType === '4'){
-					type = '余额金豆混合支付'
-				}else if(row.payType === '5'){
-					type = '金豆支付'
-				}
-				return type
-			},
-			formatter(row, column){
-				let type = ''
-				if(row.centType === 1){
-					type = '购买平台身份'
-				}else if(row.centType === 2){
-					type = '购买店铺身份'
-				}else if(row.centType === 3){
-					type = '购买产品'
-				}else if(row.centType === 4){
-					type = '补货 '
-				}else if(row.centType === 5){
-					type = '业务充值'
-				}else if(row.centType === 6){
-					type = '扫码支付'
-				}
-				return type
-			},
-			//支付
-			formatterStatus(row, column) {
-				let status = ''
-				if(row.type === 1){
-					status = '提现'
-				}else if(row.type === 2){
-					status = '分佣'
-				}else if(row.type === 3){
-					status = '业务充值'
-				}else if(row.type === 4){
-					status = '余额充值'
-				}else if(row.type === 5){
-					status = '商品购买'
-				}else if(row.type === 6){
-					status = '店铺身份购买'
-				}else if(row.type === 7){
-					status = '平台身份购买'
-				}else if(row.type === 8){
-					status = '补货'
-				}else if(row.type === 9){
-					status = '金豆充值'
-				}else if(row.type === 10){
-					status = '金豆支出'
-				}else if(row.type === 11){
-					status = '店铺收入'
-				}else if(row.type === 12){
-					status = '手续费'
-				}else if(row.type === 13){
-					status = '便付劵充值'
-				}else if(row.type === 14){
-					status = '便付劵转赠'
-				}else if(row.type === 15){
-					status = '便付劵兑换金豆'
-				}else if(row.type === 16){
-					status = '商家会员钱包转平台钱包'
-				}
-				return status
 			}
 		},
 		mounted() {

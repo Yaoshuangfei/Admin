@@ -2,24 +2,9 @@
 	<section>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="filters">
+			<el-form :inline="true">
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="手机号码"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-input v-model="filters.name" placeholder="用户名"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-input v-model="filters.name" placeholder="省份证号码"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-input v-model="filters.name" placeholder="业务员姓名"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-input v-model="filters.name" placeholder="邀请人手机"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getUsers">添加</el-button>
 				</el-form-item>
 				<!-- <el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -29,39 +14,24 @@
 
 		<!--列表-->
 		<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 500px;">
-			<el-table-column prop="id" label="序号" >
+			<el-table-column type="index" label="序号" >
 			</el-table-column>
-			<el-table-column prop="name" label="用户名">
+			<el-table-column prop="name" label="分类名称">
 			</el-table-column>
-			<el-table-column prop="number" label="手机号码">
+			<el-table-column prop="number" label="顺序">
 			</el-table-column>
-			<el-table-column prop="user_name" label="VIP等级">
+			<el-table-column prop="user_name" label="状态">
 			</el-table-column>
-			<el-table-column prop="loan" label="账户余额(元)">
+			<el-table-column prop="loan" label="上级分类">
 			</el-table-column>
-			<el-table-column prop="loan_number" label="待收金额(元)">
-			</el-table-column>
-			<el-table-column prop="min_company" label="待收利息(元)">
-			</el-table-column>
-			<el-table-column prop="interest_rate" label="客户来源">
-			</el-table-column>
-			<el-table-column prop="data_qx" label="邀请人">
-			</el-table-column>
-			<el-table-column prop="time" label="注册时间">
-			</el-table-column>
-			<el-table-column prop="toubiao" label="最近登录">
-			</el-table-column>
-			<el-table-column prop="fs_time" label="银行卡管理">
-				<template scope="scope">
-					<el-button type='text' size="small" @click="handleEdit(scope.$index, scope.row)">详情</el-button>
-				</template>
+			<el-table-column prop="loan_number" label="是否有节点">
 			</el-table-column>
 			<el-table-column label="操作" width="150">
 				<template scope="scope">
-					<el-button type='text' size="small" @click="handleEdit1(scope.$index, scope.row)">详情</el-button>
-					<el-button type='text' size="small" @click="handleEdit2(scope.$index, scope.row)">提现</el-button>
-					<el-button type='text' size="small" @click="handleEdit3(scope.$index, scope.row)">重置密码</el-button>
-					<!-- <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button> -->
+					<el-button type='text' size="small" @click="handleEdit1(scope.$index, scope.row)">启用</el-button>
+					<el-button type='text' size="small" @click="handleEdit2(scope.$index, scope.row)">查看</el-button>
+					<el-button type='text' size="small" @click="handleEdit3(scope.$index, scope.row)">修改</el-button>
+					<el-button type="text" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>

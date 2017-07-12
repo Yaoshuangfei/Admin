@@ -20,30 +20,23 @@
 
 		<!--列表-->
 		<el-table :data="orderEvaluate" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="orderNumber" label="订单编号">
+			<el-table-column prop="orderId" label="订单号">
 			</el-table-column>
-			<el-table-column prop="commodityName" label="商品名称">
+			<el-table-column prop="orderGoods.productName" label="商品名">
 			</el-table-column>
-			<el-table-column prop="userName" label="用户名">
+			<el-table-column prop="coreUser.nickName" label="用户名">
 			</el-table-column>
-			<el-table-column prop="amountPaid" label="实付金额">
+			<el-table-column prop="orderGoods.orderStatus" :formatter='formatterStatus' label="订单状态">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="订单总价">
+			<el-table-column prop="orderMall.payMethod" :formatter='formatterType' label="支付方式">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="订单状态">
+			<el-table-column prop="createTime" :formatter='formatterTime' label="评价时间">
 			</el-table-column>
-			<el-table-column prop="paymentMethod" label="支付方式">
-			</el-table-column>
-			<el-table-column prop="evaluateTime" label="评价时间">
-			</el-table-column>
-			<el-table-column prop="evaluate" label="评价">
+			<el-table-column prop="content" label="评价">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
-					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button> -->
-					<!-- <el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
+					<el-button type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -135,9 +128,6 @@
 		        }, {
 		          value: '1',
 		          label: '订单编号'
-		        }, {
-		          value: '2',
-		          label: '用户名'
 		        }],
 				filters: {
 					name: '',
@@ -145,7 +135,7 @@
 					type:''
 				},
 				users: [],
-				total: 100,
+				total: 0,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
@@ -187,41 +177,107 @@
 			}
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			formatterTime(row, column){
+				let curTime = row.createTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+			},
+			//支付方式
+			formatterType(row, column) {
+				let type = ''
+				if(row.orderMall.payMethod === '0'){
+					type = '微信支付'
+				}else if(row.orderMall.payMethod === '1'){
+					type = '支付宝支付'
+				}else if(row.orderMall.payMethod === '2'){
+					type = '银联支付'
+				}else if(row.orderMall.payMethod === '3'){
+					type = '余额支付'
+				}else if(row.orderMall.payMethod === '4'){
+					type = '余额金豆混合支付'
+				}else if(row.orderMall.payMethod === '5'){
+					type = '金豆支付'
+				}
+				return type
+			},
+			//订单状态 orderStatus
+			formatterStatus(row, column) {
+				let status = ''
+				if(row.orderGoods.orderStatus === 1){
+					status = '支付中'
+				}else if(row.orderGoods.orderStatus === 2){
+					status = '支付成功'
+				}else if(row.orderGoods.orderStatus === 3){
+					status = '支付失败'
+				}else if(row.orderGoods.orderStatus === 4){
+					status = '已取消'
+				}else if(row.orderGoods.orderStatus === 5){
+					status = '卖家已发货'
+				}else if(row.orderGoods.orderStatus === 6){
+					status = '已收货'
+				}else if(row.orderGoods.orderStatus === 7){
+					status = '已评价'
+				}else if(row.orderGoods.orderStatus === 8){
+					status = '交易完成'
+				}else if(row.orderGoods.orderStatus === 9){
+					status = '售后处理'
+				}else if(row.orderGoods.orderStatus === 10){
+					status = '已删除'
+				}
+				return status
 			},
 			getlist(){
 				const _this = this
-				_this.table = []
+				_this.orderEvaluate = []
 				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
+					pageNum:this.page,
+					size:10
 				}
-				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
-	                }
-	              }
-	         	)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/ordersEvaluate/selectAll",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
+                    success:function(data){
+                    	console.log(data.data.list)
+                    	_this.orderEvaluate = data.data.list
+                    	_this.total = data.data.total
+                    }
+                });
+			},
+			handleDelete(row){
+				console.log(row)
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/ordersEvaluate/delete ",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
+                    success:function(data){
+                    	if(data.code === 1){
+                    		this.$message({
+							message: '删除成功',
+								type: 'success'
+							});
+                    	}else{
+                    		this.$message({
+							message:data.msg,
+								type: 'success'
+							});
+                    	}
+                    }
+                });
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
+				this.getlist();
 			},
 			//获取用户列表
 			getUsers() {
@@ -350,7 +406,7 @@
 			}
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 

@@ -2,7 +2,7 @@
 	<section>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff">
-			<el-form :inline="true" :model="filters">
+			<el-form :inline="true">
 				<el-date-picker v-model="startTime" type="date" placeholder="选择日期时间">
 		        </el-date-picker>
 		        <span class="demonstration">至</span>
@@ -12,7 +12,7 @@
 					<el-input v-model="filters.name" placeholder="支付银行"></el-input>
 				</el-form-item> -->
 				<el-form-item label="支付方式">
-					<el-select v-model="filters.status" clearable>
+					<el-select v-model="filters.tags" clearable>
 				      <el-option v-for="item in selectSubjectStatus" :label="item.label" :value="item.value">
 				      </el-option>
 				    </el-select>
@@ -24,10 +24,10 @@
 				    </el-select>
 				</el-form-item>
 				<el-form-item>
-				    <el-input v-model="filters.name"></el-input>
+				    <el-input v-model="filters.value"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">分析</el-button>
+					<el-button type="primary" v-on:click="getlist">搜索</el-button>
 					<el-button type="primary" v-on:click="getUsers">导出</el-button>
 				</el-form-item>
 			</el-form>
@@ -35,34 +35,27 @@
 
 		<!--列表-->
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="orderNumber" label="订单编号">
+			<el-table-column type="index" label="序号">
 			</el-table-column>
-			<el-table-column prop="userName" label="用户名">
+			<el-table-column prop="userName" label="昵称">
 			</el-table-column>
-			<el-table-column prop="amountPaid" label="手机号">
+			<el-table-column prop="mobile" label="手机号">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="充值金额">
+			<el-table-column prop="attrName" label="充值号码">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="充值手机号">
+			<el-table-column prop="quantity" :formatter='formatterType' label="充值类型">
 			</el-table-column>
-			<el-table-column prop="creationTime" label="支付方式">
+			<el-table-column prop="productPrice" label="充值金额">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="成本">
+			<el-table-column prop="productName" label="原价">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="手续费6%">
+			<el-table-column prop="createTime" :formatter='formatterTime' label="充值时间">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="利润">
-			</el-table-column>
-			<el-table-column prop="deliveryTime" label="充值时间">
-			</el-table-column>
-			<!-- <el-table-column label="操作">
+			<el-table-column label="操作">
 				<template scope="scope">
-					<el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button>
-					<el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button>
 					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
 				</template>
-			</el-table-column> -->
+			</el-table-column>
 		</el-table>
 
 		<!--工具条-->
@@ -159,8 +152,8 @@
 		          label: '手机号'
 		        }],
 				filters: {
-					name: '',
-					status:'',
+					tags: '',
+					value:'',
 					type:''
 				},
 				users: [],
@@ -191,18 +184,7 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[{
-					orderNumber :'145877458784524c',
-					courierNumber :'145877458784524c',
-					userName:'吸引力量',
-					amountPaid :'300',
-					orderTotal :'900',
-					orderStatus :'待付款',
-					paymentMethod :'微信支付',
-					creationTime:'2017-09-08 17:09',
-					deliveryTime:'2017-09-08 17:09',
-					commodityName:'雨花说'
-				}]
+				orderInformation:[]
 			}
 		},
 		methods: {
@@ -212,35 +194,36 @@
 			},
 			getlist(){
 				const _this = this
-				_this.table = []
 				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
+					pageNum:this.page,
+					pageSize:10,
+					startTime:'',
+					endTime:'',
+					attrName:'',
+					mobile:'',
+					userName:'',
+					tags:''
 				}
-				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
+				console.log(this.startTime)
+				console.log(this.endTime)
+				console.log(this.filters)
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/find/businessCard',
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                	const info = data.data
+	                  	console.log(info)
+	                  	_this.total = info.total
+	                  	_this.orderInformation = info.list
 	                }
-	              }
-	         	)
+	            })
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
+				this.getlist();
 			},
 			//获取用户列表
 			getUsers() {
@@ -345,31 +328,27 @@
 			selsChange: function (sels) {
 				this.sels = sels;
 			},
-			//批量删除
-			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
-				this.$confirm('确认删除选中记录吗？', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
+			formatterTime(row, column){
+				let curTime = row.createTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+			},
+			formatterType(row, column){
+				let type = ''
+				if(row.quantity === 1){
+					type = '话费充值'
+				}else if(row.quantity === 2){
+					type = '流量充值'
+				}else if(row.quantity === 3){
+					type = '加油卡'
+				}else if(row.quantity === 4){
+					type = '视频充值'
+				}
+				return type
 			}
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 
