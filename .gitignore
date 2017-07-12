@@ -3,5 +3,4 @@ node_modules/
 npm-debug.log
 .editorconfig
 dist/
-src/api/api.js
 .idea
