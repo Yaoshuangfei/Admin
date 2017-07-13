@@ -23,14 +23,23 @@
 	    <el-input v-model="add.name" style="width: 300px;"></el-input>
 	  </el-form-item>
 	  <el-form-item label="板块缩略图">
-	    <el-input v-model="add.img" style="width: 300px;"></el-input>
+	  	 <input type="file" style="position:absolute;opacity:0;width:70px;height:30px;margin-right:10px"  @change="upload1" id="fileInput">
+		<button type="button" class="el-button el-button--primary el-button--small">
+			<span>点击上传</span>
+		</button>
+	    <!-- <el-input v-model="add.img" style="width: 300px;"></el-input> -->
+	    <el-col>
+			<img style="width: 40px;margin-top: 20px"  :src="iconImg1">
+		</el-col>
 	  </el-form-item>
-	  <el-form-item label="说明">
-	  	 <el-input type="desc" v-model="add.explain"  :rows="10" style="width: 300px;"></el-input>
+	  <el-form-item label="描述">
+	  	 <el-input type="desc" v-model="add.desc"  :rows="10" style="width: 300px;"></el-input>
 	  </el-form-item>
 	  <el-form-item>
 		<el-button type="primary" v-on:click="getlist">确认</el-button>
-		<el-button type="primary">取消</el-button>
+		<router-link :to="{ name: '千人千面'}">
+			<el-button  type="primary">取消</el-button>
+		</router-link>
 	  </el-form-item>
 	</el-form>
 </template>
@@ -56,6 +65,7 @@
 					desc:''
 				},
 				iconImg:'',
+				iconImg1:'',
 				formData: new FormData(),
         		fileImg: '',
 				labelPosition:'right',
@@ -168,31 +178,65 @@
                         }, error => _this.$emit('complete', 500, error.message))
                 // });
             },
+            upload1 (event) {
+                this.formData = new FormData()
+                let file = event.target.files[0]
+                // console.log(file)
+                const self = this
+                // const flag = this.flag
+                if (file) {
+                    console.log('存在file', file)
+                    this.fileImg = file.name
+                    // console.log(this.formData)
+                    this.formData.append('file', file);
+                    console.log(this.formData);
+                    this.submitUpload1()
+                } else {
+                    this.fileImg = ''
+                    console.log('不存在file', file)
+                    this.formData = new FormData()
+                }
+            },
+            submitUpload1(){
+                // this.$confirm('确认修改吗？', '提示', {}).then(() => {
+                    const _this= this;
+                    _this.$http.post(baseUrl+'/api/attachment/upload', _this.formData, {
+                        progress(event) {
+                        }
+                    })
+                        .then(response => {
+                            const info = JSON.parse(response.bodyText);
+                            console.log(info)
+                            // const info = response.body
+              			_this.iconImg1 = info.data[0].baseUri+info.data[0].uri;
+              				console.log(info.data[0].baseUri+info.data[0].uri)
+                        }, error => _this.$emit('complete', 500, error.message))
+                // });
+            },
 			getlist(){
 				const _this = this
 				_this.table = []
 				const params = {
-					name:'1',
-					icon:'',
-					picture:'',
-					desc:'',
-					orderSort:''
+					name:this.add.name,
+					icon:this.iconImg,
+					picture:this.iconImg1,
+					desc:this.add.desc,
+					orderSort:this.add.orderSort
 				}
 				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
-	                }
-	              }
-	         	)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/indexStyle/add",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	if(data.code === 1){
+                    		 _this.$router.push({ path: '/page' });
+                    	}
+                    }
+                });
 			},
 			handleCurrentChange(val) {
 				this.page = val;

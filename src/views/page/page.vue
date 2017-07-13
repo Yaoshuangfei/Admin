@@ -33,8 +33,9 @@
 				<template scope="scope">
 					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
 					<el-button type="text" size="small" @click="editBtn(scope.$index, scope.row)">修改</el-button>
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">启用</el-button>
-					<!-- <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button> -->
+					<el-button v-if="scope.row.status === 0" type="text" size="small" @click="enableBtn(scope.$index, scope.row)">启用</el-button>
+					<el-button v-if="scope.row.status === 1" type="text" size="small" @click="disableBtn(scope.$index, scope.row)">禁用</el-button>
+					<el-button type="text" size="small" @click="deldetBtn(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -51,7 +52,8 @@
 					<el-input v-model="editForm.name" type="text" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="店铺样式表">
-					<el-input v-model="editForm.icon" type="text" auto-complete="off"></el-input>
+					<img style="width: 150px" :src="editForm.picture">
+					<!-- <el-input v-model="editForm.icon" type="text" auto-complete="off"></el-input> -->
 				</el-form-item>
 				<el-form-item label="描述">
 					<el-input v-model="editForm.desc" type="text" auto-complete="off"></el-input>
@@ -71,7 +73,7 @@
 					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
 				</el-form-item>
 				<el-form-item label="店铺样式表">
-					<div>{{seetable.icon}}</div>
+					<img style="width: 150px" :src="seetable.picture">
 				</el-form-item>
 				<el-form-item label="描述">
 					<div>{{seetable.desc }}</div>
@@ -224,20 +226,87 @@
 		              type:'POST',
 		              dataType:'json',
 		              url:baseUrl+"/api/indexStyle/update",
-		              data:{},
+		              data:JSON.stringify(params),
 		              contentType:'application/json;charset=utf-8',
-		              error: function (XMLHttpRequest, textStatus, errorThrown) {},
 		              success:function(data){
 		                const info = data.data
 		                console.log(data)
-		                // _this.orderInformation = info.list
-		                // _this.total = info.total
+		                if(data.code === 1){
+		                	_this.addbannerdiv = false
+		                	_this.getlist()
+		                }
 		              }
 		          });
 			},
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getlist();
+			},
+			// 启用
+			enableBtn(index, row){
+				const _this = this
+				const params = {
+		            id:row.id
+		          }
+				console.log(params)
+				$.ajax({
+		              type:'POST',
+		              dataType:'json',
+		              url:baseUrl+"/api/indexStyle/enable",
+		              data:JSON.stringify(params),
+		              contentType:'application/json;charset=utf-8',
+		              success:function(data){
+		                const info = data.data
+		                console.log(data)
+		                if(data.code === 1){
+		                	_this.getlist()
+		                }
+		              }
+		          });
+			},
+			// 禁用
+			disableBtn(index, row){
+				const _this = this
+				const params = {
+		            id:row.id
+		          }
+				console.log(params)
+				$.ajax({
+		              type:'POST',
+		              dataType:'json',
+		              url:baseUrl+"/api/indexStyle/disable",
+		              data:JSON.stringify(params),
+		              contentType:'application/json;charset=utf-8',
+		              success:function(data){
+		                const info = data.data
+		                console.log(data)
+		                if(data.code === 1){
+		                	_this.getlist()
+		                }
+		              }
+		          });
+			},
+			// 删除
+			deldetBtn(index, row) {
+				const _this = this
+				const params = {
+		            id:row.id
+		          }
+				console.log(params)
+				$.ajax({
+		              type:'POST',
+		              dataType:'json',
+		              url:baseUrl+"/api/indexStyle/delete/one",
+		              data:JSON.stringify(params),
+		              contentType:'application/json;charset=utf-8',
+		              success:function(data){
+		                const info = data.data
+		                console.log(data)
+		                if(data.code === 1){
+		                	_this.getlist()
+		                }
+		              }
+		          });
 			},
 			//获取用户列表
 			getUsers() {
