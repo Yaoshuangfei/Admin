@@ -51,11 +51,14 @@
 			</el-table-column>
 			<el-table-column prop="createTime" :formatter='formatterTime' label="充值时间">
 			</el-table-column>
-		<!-- 	<el-table-column label="操作">
+			<el-table-column prop="orderStatus" :formatter='formatterStatus' label="状态">
+			</el-table-column>
+			<el-table-column label="操作">
 				<template scope="scope">
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
+					<el-button type="text" size="small" @click="upBtn(scope.row)">充值</el-button>
+					<el-button type="text" size="small" @click="notpassBtn(scope.row)">不通过</el-button>
 				</template>
-			</el-table-column> -->
+			</el-table-column>
 		</el-table>
 
 		<!--工具条-->
@@ -188,9 +191,40 @@
 			}
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			//充值
+			upBtn(row) {
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/finish/businessCard',
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                  	_this.getlist()
+	                }
+	            })
+			},
+			notpassBtn(row){
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/fail/businessCard',
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                  	_this.getlist()
+	                }
+	            })
 			},
 			getlist(){
 				const _this = this
@@ -202,6 +236,7 @@
 					attrName:'',
 					mobile:'',
 					userName:'',
+					orderStatus:'2',
 					tags:''
 				}
 				console.log(this.startTime)
@@ -210,7 +245,7 @@
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
-	                url:baseUrl+'/api/admin/userCashFlow/find/businessCard',
+	                url:baseUrl+'/api/admin/userCashFlow/manage/businessCard',
 	                data:JSON.stringify(params),
 	                contentType:'application/json;charset=utf-8',
 	                success:function(data){
@@ -345,7 +380,17 @@
 					type = '视频充值'
 				}
 				return type
+			},
+			formatterStatus(row, column){
+				let status = ''
+				if(row.orderStatus === 2){
+					status = '充值中'
+				}else if(row.orderStatus === 8){
+					status = '已完成'
+				}
+				return status
 			}
+
 		},
 		mounted() {
 			this.getlist();

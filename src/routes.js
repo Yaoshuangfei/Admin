@@ -34,6 +34,7 @@ import exchangeRecord from './views/shop/exchangeRecord.vue'
 
 /*财务管理 Finance*/
 import WebPipelining from './views/Finance/WebPipelining.vue'
+import CellAdmin  from './views/Finance/CellAdmin.vue'
 import CellularPhoneReplenishing  from './views/Finance/CellularPhoneReplenishing.vue'
 import withdrawals from './views/Finance/withdrawals.vue'
 import PersonalFlow from './views/Finance/PersonalFlow.vue'
@@ -153,6 +154,7 @@ let routes = [
         iconCls: 'fa el-icon-date',
         children: [
             { path: '/WebPipelining', component: WebPipelining, name: '网站流水报表' },
+            { path: '/CellAdmin', component: CellAdmin, name: '手机充值管理' },
             { path: '/CellularPhoneReplenishing', component: CellularPhoneReplenishing, name: '手机充值记录' },
             { path: '/withdrawals', component: withdrawals, name: '提现管理' },
             { path: '/PersonalFlow', component: PersonalFlow, name: '个人流水记录' },

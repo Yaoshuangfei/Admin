@@ -22,30 +22,30 @@
 				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getlist">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column type="index">
+			<el-table-column type="index" label="序号">
 			</el-table-column>
-			<el-table-column prop="courierNumber" label="店铺名">
+			<el-table-column prop="name" label="店铺名">
 			</el-table-column>
-			<el-table-column prop="userName" label="用户名">
+			<el-table-column prop="coreUser.nickName" label="用户名">
 			</el-table-column>
-			<el-table-column prop="amountPaid" label="手机号">
+			<el-table-column prop="coreUser.mobile" label="手机号">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="销量">
+			<el-table-column prop="orderSum" label="销量">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="交易额">
+			<el-table-column prop="turnoverSum" label="交易额">
 			</el-table-column>
-			<el-table-column prop="paymentMethod" label="账户余额">
+			<el-table-column prop="coreUser.availableIncome" label="账户余额">
 			</el-table-column>
-			<el-table-column prop="creationTime" label="已提现金额">
+			<el-table-column prop="withdrawalsSum" label="已提现金额">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="状态">
+			<el-table-column prop="status" :formatter='formatterType' label="状态">
 			</el-table-column>
 			<el-table-column prop="deliveryTime" label="手续费1/%">
 			</el-table-column>
@@ -53,11 +53,12 @@
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
-					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button> -->
-					<!-- <el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
 					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">通过</el-button>
-					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
+					<el-button type="text" v-if='scope.row.status === 0' size="small" @click="passBtn(scope.row)">通过</el-button>
+					<el-button type="text" v-if='scope.row.status === 0 ' size="small" @click="notpassBtn(scope.row)">不通过</el-button>
+					<!-- <el-button type="text" v-if='scope.row.index === 1' size="small" @click="enableBtn(scope.row)">启用</el-button> -->
+					<el-button type="text" v-if='scope.row.status === 1' size="small" @click="closeBtn(scope.row)">禁用</el-button>
+					<!-- <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button> -->
 				</template>
 			</el-table-column>
 		</el-table>
@@ -125,36 +126,30 @@
 				value2:'',
 				selectSubjectStatus: [
 				{
-					value:'0',
+					value:'',
 					label:'全部'
 				},{
-					value:'1',
-					label:'待付款'
+					value:1,
+					label:'审核通过'
 				},{
-					value:'2',
-					label:'待发货'
+					value:2,
+					label:'审核未通过'
 				},{
-					value:'3',
-					label:'已发货'
-				},{
-					value:'4',
-					label:'待评价'
-				},{
-					value:'5',
-					label:'退货'
+					value:0,
+					label:'待审核'
 				}],
 				options: [{
 		          value: '0',
 		          label: '全部'
 		        }, {
 		          value: '1',
-		          label: '订单编号'
+		          label: '店铺名'
 		        }, {
 		          value: '2',
-		          label: '快递单号'
+		          label: '用户名'
 		        }, {
 		          value: '3',
-		          label: '用户名'
+		          label: '手机号'
 		        }],
 				filters: {
 					name: '',
@@ -189,56 +184,142 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[{
-					orderNumber :'145877458784524c',
-					courierNumber :'145877458784524c',
-					userName:'吸引力量',
-					amountPaid :'300',
-					orderTotal :'900',
-					orderStatus :'待付款',
-					paymentMethod :'微信支付',
-					creationTime:'2017-09-08 17:09',
-					deliveryTime:'2017-09-08 17:09',
-					commodityName:'雨花说'
-				}]
+				orderInformation:[]
 			}
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			formatterType(row,column){
+				let type = ''
+				if(row.status === 0){
+					type = '待审核'
+				}else if(row.status === 1){
+					type = '审核通过'
+				}else if(row.status === 2){
+					type = '审核未通过'
+				}else if(row.status === 3){
+					type = '删除'
+				}
+				return type
 			},
 			getlist(){
 				const _this = this
-				_this.table = []
+				_this.orderInformation = []
 				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
+					pageNum:this.page,
+					size:10,
+					name:'',
+					nickName:'',
+					mobile:'',
+					status:this.filters.status,
+					id:''
+				}
+				if(this.filters.type === '1'){
+					params.name = this.filters.name
+				}else if(this.filters.type === '2'){
+					params.nickName = this.filters.name
+				}else if(this.filters.type === '3'){
+					params.mobile = this.filters.name
+				}else if(this.filters.type === '0'){
+					params.name = ''
 				}
 				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
-	                }
-	              }
-	         	)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/find/page",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	const info = data.data
+                    	_this.orderInformation = info.list
+                    	_this.total = info.total
+                    }
+                });
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
+				this.getlist();
+			},
+			passBtn(row){
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/pass/status",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	if(data.code === 1){
+                    		 _this.getlist()
+                    	}
+                    }
+                });
+			},
+			notpassBtn(row){
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/notPass/status",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	if(data.code === 1){
+                    		 _this.getlist()
+                    	}
+                    }
+                });
+			},
+			enableBtn(row){
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/enable/status",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	if(data.code === 1){
+                    		 _this.getlist()
+                    	}
+                    }
+                });
+			},
+			closeBtn(row){
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/close/status",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	if(data.code === 1){
+                    		 _this.getlist()
+                    	}
+                    }
+                });
 			},
 			//获取用户列表
 			getUsers() {
@@ -367,7 +448,7 @@
 			}
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 

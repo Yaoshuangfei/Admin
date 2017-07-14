@@ -55,7 +55,9 @@
 				<template scope="scope">
 					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button>
 					<el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
+					<!-- <el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button> -->
+					<el-button type="text" v-if='scope.row.status === 1' size="small" @click="clearBtn(scope.row)">不通过</el-button>
+					<el-button type="text" v-if='scope.row.status === 1' size="small" @click="uploadBtn(scope.row)">打款</el-button>
 					<!-- <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button> -->
 				</template>
 			</el-table-column>
@@ -69,40 +71,15 @@
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog title="订单详情" v-model="editFormVisible" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="订单号">
-					<div>{{orderDetails.orderNumber }}</div>
-					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
-				</el-form-item>
-				<el-form-item label="商品名称">
-					<div>{{orderDetails.commodityName}}</div>
-				</el-form-item>
-				<el-form-item label="用户名">
-					<div>{{orderDetails.userName }}</div>
-				</el-form-item>
-				<el-form-item label="实付金额">
-					<div>{{orderDetails.amountPaid }}</div>
-				</el-form-item>
-				<el-form-item label="订单总价">
-					<div>{{orderDetails.orderTotal }}</div>
-				</el-form-item>
-				<el-form-item label="订单状态">
-					<div>{{orderDetails.orderStatus }}</div>
-				</el-form-item>
-				<el-form-item label="支付方式">
-					<div>{{orderDetails.paymentMethod }}</div>
-				</el-form-item>
-				<el-form-item label="创建时间">
-					<div>{{orderDetails.creationTime}}</div>
-				</el-form-item>
-				<el-form-item label="发货时间">
-					<div>{{orderDetails.deliveryTime}}</div>
+		<el-dialog title="不通过" v-model="editFormVisible" :close-on-click-modal="false" >
+			<el-form  label-width="100px">
+				<el-form-item label="不通过理由">
+					<el-input v-model="notogood" type="text"></el-input>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button> -->
+				<el-button type="primary" @click.native="clearSubmit" :loading="editLoading">保存</el-button>
 				<el-button type="primary" @click.native="editFormVisible = false">关闭</el-button>
 			</div>
 		</el-dialog>
@@ -117,6 +94,8 @@
 	export default {
 		data() {
 			return {
+				notogood:'',
+				notogoodId:'',
 				table:[],
 				radio: '0',
 				startTime:'',
@@ -239,6 +218,48 @@
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getlist();
+			},
+			// 打款
+			uploadBtn(row){
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userWithdrawal/finish',
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                  	_this.getlist()
+	                }
+	            })
+			},
+			// 不通过
+			clearBtn(row){
+				this.editFormVisible = true
+				this.notogoodId = row.id
+			},
+			clearSubmit(){
+				const _this = this
+				const params = {
+					id:this.notogoodId,
+					remarks:this.notogood
+				}
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userWithdrawal/finish',
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                  	_this.editFormVisible = false
+	                  	_this.getlist()
+	                }
+	            })
 			},
 			dateStr(getTime) {
 				let date = new Date(getTime),
