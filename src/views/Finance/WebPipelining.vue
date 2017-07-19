@@ -39,9 +39,9 @@
 			</el-table-column>
 			<el-table-column prop="quota" label="金额">
 			</el-table-column>
-			<el-table-column prop="pay_type" :formatter='formatterType' label="支付方式">
+			<el-table-column prop="payType" :formatter='formatterType' label="支付方式">
 			</el-table-column>
-			<el-table-column prop="create_time" :formatter='formatterTime' label="创建时间">
+			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
 			</el-table-column>
 			<el-table-column prop="remark" label="备注">
 			</el-table-column>
@@ -186,7 +186,8 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[]
+				orderInformation:[],
+				cxparams:{}
 			}
 		},
 		methods: {
@@ -197,13 +198,12 @@
 			getlist(){
 				const _this = this
 				this.listLoading = true;
-				// console.log(_this.startTime.toISOString())
-				// console.log(_this.endTime.toISOString())
-				console.log(_this.payType)
-				console.log(_this.type)
-				console.log(_this.value)
-				// _this.startTime = _this.formatDate(_this.startTime)
-				// _this.endTime = _this.formatDate(_this.endTime)
+				if(this.startTime !== ''){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== ''){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
 				const params = {
 					pageNum:this.page,
 					pageSize:10,
@@ -223,6 +223,7 @@
 					params.mobile = this.value
 				}
 				console.log(params)
+				_this.cxparams = params
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
@@ -235,12 +236,35 @@
 	                  	_this.orderInformation = info
 	                  	console.log(info)
 	                  	_this.listLoading = false;
+	                  	_this.startTime = ''
+	                  	_this.endTime = ''
 	                }
 	            })
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getlist();
+				this.getcxlist();
+			},
+			getcxlist(){
+				const _this = this
+				const params = _this.cxparams
+				params.pageNum = this.page
+				this.listLoading = true
+				console.log(_this.cxparams)
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/selectFlowList',
+	                data:JSON.stringify(_this.cxparams),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	const info = data.data.list
+	                  	_this.total = data.data.total
+	                  	_this.orderInformation = info
+	                  	console.log(info)
+	                  	_this.listLoading = false;
+	                }
+	            })
 			},
 			//显示编辑界面
 			seeBtn: function (index, row) {
@@ -281,15 +305,7 @@
                 	curType = '金豆支付'
                 }
                 return curType
-            },
-            formatDate(date) {  
-			    var y = date.getFullYear();  
-			    var m = date.getMonth() + 1;  
-			    m = m < 10 ? '0' + m : m;  
-			    var d = date.getDate();  
-			    d = d < 10 ? ('0' + d) : d;  
-			    return y + '-' + m + '-' + d;  
-			}
+            }
 		},
 		mounted() {
 			this.getlist();

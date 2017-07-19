@@ -355,7 +355,7 @@
             drawCharts() {
                 this.drawColumnChart()
                 this.drawPieChart()
-                this.drawMapChart()
+                // this.drawMapChart()
             },
         },
         mounted: function () {

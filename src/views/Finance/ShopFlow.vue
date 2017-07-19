@@ -27,8 +27,8 @@
 				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">分析</el-button>
-					<el-button type="primary" v-on:click="getUsers">导出</el-button>
+					<el-button type="primary" v-on:click="getlist">查询</el-button>
+					<el-button type="primary">导出</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -173,7 +173,7 @@
 					birth: '',
 					addr: ''
 				},
-
+				cxparams:{},
 				addFormVisible: false,//新增界面是否显示
 				addLoading: false,
 				//新增界面数据
@@ -196,20 +196,33 @@
 		methods: {
 			getlist(){
 				const _this = this
+				if(this.startTime !== ''){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== ''){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
 				const params = {
 					type:'',
 					pageNum:this.page,
 					pageSize:10,
-					startTime:'',
-					endTime:'',
-					payType:'',
+					startTime:_this.startTime,
+					endTime:_this.endTime,
+					payType:this.filters.status,
 					tradeNo:'',
 					userName:'',
 					mobile:'',
 					sort:'4'
-
+				}
+				if(this.filters.type === '1'){
+					params.tradeNo = this.filters.name
+				}else if(this.filters.type === '2'){
+					params.userName = this.filters.name
+				}else if(this.filters.type === '3'){
+					params.mobile = this.filters.name
 				}
 				console.log(params)
+				_this.cxparams = params
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
@@ -221,48 +234,32 @@
 	                  	console.log(info)
 	                  	_this.total = info.total
 	                  	_this.orderInformation = info.list
+	                  	_this.startTime = ''
+	                  	_this.endTime = ''
 	                }
 	            })
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getlist();
+				this.getcxlist();
 			},
-			//获取用户列表
-			getUsers() {
-				let para = {
-					page: this.page,
-					name: this.filters.name
-				};
-				this.listLoading = true;
-				//NProgress.start();
-				getUserListPage(para).then((res) => {
-					this.total = res.data.total;
-					this.users = res.data.users;
-					this.listLoading = false;
-					//NProgress.done();
-				});
-			},
-			//删除
-			handleDel: function (index, row) {
-				this.$confirm('确认删除该记录吗?', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { id: row.id };
-					removeUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
+			getcxlist(){
+				const _this = this
+				const params = _this.cxparams
+				params.pageNum = this.page
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/selectFlowList',
+	                data:JSON.stringify(_this.cxparams),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	const info = data.data.list
+	                  	_this.total = data.data.total
+	                  	_this.orderInformation = info
+	                  	console.log(info)
+	                }
+	            })
 			},
 			//显示编辑界面
 			seeBtn: function (index, row) {
@@ -279,54 +276,6 @@
 					birth: '',
 					addr: ''
 				};
-			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			//新增
-			addSubmit: function () {
-				this.$refs.addForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.addLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.addForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							addUser(para).then((res) => {
-								this.addLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['addForm'].resetFields();
-								this.addFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
 			},
 			selsChange: function (sels) {
 				this.sels = sels;

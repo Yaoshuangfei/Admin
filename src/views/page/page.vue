@@ -244,7 +244,7 @@
 			},
 			// 启用
 			enableBtn(index, row){
-				const _this = this
+				const _this = this       
 				const params = {
 		            id:row.id
 		          }

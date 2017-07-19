@@ -11,7 +11,7 @@
 				<!-- <el-form-item>
 					<el-input v-model="filters.name" placeholder="支付银行"></el-input>
 				</el-form-item> -->
-				<el-form-item label="支付方式">
+				<el-form-item label="业务充值类型">
 					<el-select v-model="filters.tags" clearable>
 				      <el-option v-for="item in selectSubjectStatus" :label="item.label" :value="item.value">
 				      </el-option>
@@ -127,29 +127,29 @@
 					label:'全部'
 				},{
 					value:'1',
-					label:'微信支付'
+					label:'话费充值'
 				},{
 					value:'2',
-					label:'余额支付'
+					label:'流量充值'
 				},{
 					value:'3',
-					label:'支付宝支付'
+					label:'加油卡'
 				},{
 					value:'4',
-					label:'银行卡支付'
+					label:'视频充值'
 				}],
 				options: [{
-		          value: '0',
+		          value: '',
 		          label: '全部'
 		        }, {
 		          value: '1',
-		          label: '订单编号'
+		          label: '充值号码'
 		        }, {
 		          value: '2',
-		          label: '用户名'
+		          label: '手机号码'
 		        }, {
 		          value: '3',
-		          label: '手机号'
+		          label: '用户名'
 		        }],
 				filters: {
 					tags: '',
@@ -184,7 +184,8 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[]
+				orderInformation:[],
+				cxparams:{}
 			}
 		},
 		methods: {
@@ -194,19 +195,32 @@
 			},
 			getlist(){
 				const _this = this
+				this.listLoading = true
+				if(this.startTime !== ''){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== ''){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
 				const params = {
 					pageNum:this.page,
 					pageSize:10,
-					startTime:'',
-					endTime:'',
+					startTime:_this.startTime,
+					endTime:_this.endTime,
 					attrName:'',
 					mobile:'',
 					userName:'',
-					tags:''
+					tags:this.filters.tags
 				}
-				console.log(this.startTime)
-				console.log(this.endTime)
-				console.log(this.filters)
+				if(this.filters.type === '1'){
+					params.attrName = this.filters.value
+				}else if(this.filters.type === '2'){
+					params.mobile = this.filters.value
+				}else if(this.filters.type === '3'){
+					params.userName = this.filters.value
+				}
+				console.log(params)
+				_this.cxparams = params
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
@@ -218,12 +232,33 @@
 	                  	console.log(info)
 	                  	_this.total = info.total
 	                  	_this.orderInformation = info.list
+	                  	_this.startTime = ''
+	                  	_this.endTime = ''
+	                  	_this.listLoading = false
 	                }
 	            })
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getlist();
+				this.getcxlist();
+			},
+			getcxlist(){
+				const _this = this
+				const params = _this.cxparams
+				params.pageNum = this.page
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/selectFlowList',
+	                data:JSON.stringify(_this.cxparams),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	const info = data.data.list
+	                  	_this.total = data.data.total
+	                  	_this.orderInformation = info
+	                  	console.log(info)
+	                }
+	            })
 			},
 			//获取用户列表
 			getUsers() {

@@ -1,7 +1,7 @@
 <template>
 	<section>
 		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff">
+		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff" v-show="centertable">
 			<el-form :inline="true">
 				<el-form-item label="身份">
 				    <el-select v-model="userType" clearable>
@@ -22,6 +22,9 @@
 					<el-button type="primary" v-on:click="getlistinit">查询</el-button>
 				</el-form-item>
 			</el-form>
+		</el-col>
+		<el-col v-show="notgo">
+			<el-button type="primary" v-on:click="ungo">返回</el-button>
 		</el-col>
 		<!--列表-->
 		<el-table v-show="centertable" :data="table"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
@@ -47,6 +50,9 @@
 			<el-table-column prop="availableIncome" label="账户余额">
 			</el-table-column>
 			<el-table-column prop="totalIncome"  label="扫码付收益">
+				<template scope="scope">
+					<el-col style="margin-left: 30px">/</el-col>
+				</template>
 			</el-table-column>
 			<el-table-column prop="frozenIncome" label="冻结金额">
 			</el-table-column>
@@ -70,51 +76,44 @@
 				</template>
 			</el-table-column>
 		</el-table>
-		<!-- 下级   subordinatetable -->
-		<el-table v-show="subordinatetable" :data="table"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+		<!-- 查看上级 -->
+		<el-table v-show="seeFormVisible" :data="rechargeList"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
 			<el-table-column prop="nickName" label="昵称">
 			</el-table-column>
 			<el-table-column prop="headImg" label="头像">
 				<template scope="scope">
-					<img class="img" :src="scope.row.headImg" alt="">
+					<img style="width: 50px" :src="scope.row.headImg">
 				</template>
 			</el-table-column>
-			<el-table-column prop="realName" label="真实姓名">
+			<el-table-column prop="mobile" label="手机号码">
 			</el-table-column>
-			<el-table-column prop="mobile" label="手机号">
+			<el-table-column prop="crade" :formatter='formatterVip' label="会员等级">
+			</el-table-column>
+			<el-table-column prop="isAgent" :formatter='formatterType' label="是否是代理商">
 			</el-table-column>
 			<el-table-column prop="gender" :formatter='formatSex' label="性别">
 			</el-table-column>
-			<el-table-column prop="crade" :formatter='formatType'  label="会员身份">
+			<el-table-column prop="inviteTotal"  label="累计邀请人数">
 			</el-table-column>
-			<el-table-column prop="identityCard" label="省份证">
+		</el-table>
+		<!-- 下级   subordinatetable -->
+		<el-table v-show="subordinatetable" :data="downList"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="nickName" label="昵称">
 			</el-table-column>
-			<el-table-column prop="email" label="邮箱">
-			</el-table-column>
-			<el-table-column prop="availableIncome" label="账户余额">
-			</el-table-column>
-			<el-table-column prop="totalIncome"  label="扫码付收益">
-			</el-table-column>
-			<el-table-column prop="frozenIncome" label="冻结金额">
-			</el-table-column>
-			<el-table-column prop="availableIncome" label="可提金额">
-			</el-table-column>
-			<el-table-column prop="withdrawals" label="已提现">
-			</el-table-column>
-			<el-table-column prop="integral" label="金豆">
-			</el-table-column>
-			<el-table-column prop="bfTicket" label="便付券">
-			</el-table-column>
-			<el-table-column prop="quota" label="修改记录">
-			</el-table-column>
-			<el-table-column label="操作">
+			<el-table-column prop="headImg" label="头像">
 				<template scope="scope">
-					<el-button type="text" size="small" @click="inviterBtn(scope.row)">查看上级</el-button>
-					<el-button type="text" size="small" @click="downinviterBtn(scope.row)">查看下级</el-button>
-					<el-button type="text" size="small" @click="commissionBtn(scope.row)">佣金记录</el-button>
-					<el-button type="text" size="small" @click="evaluateBtn(scope.row)">商品评价</el-button>
-					<el-button type="text" size="small" @click="accountFlowBtn(scope.row)">用户流水</el-button>
+					<img style="width: 50px" :src="scope.row.headImg">
 				</template>
+			</el-table-column>
+			<el-table-column prop="mobile" label="手机号码">
+			</el-table-column>
+			<el-table-column prop="crade" :formatter='formatterVip' label="会员等级">
+			</el-table-column>
+			<el-table-column prop="isAgent" :formatter='formatterType' label="是否是代理商">
+			</el-table-column>
+			<el-table-column prop="gender" :formatter='formatSex' label="性别">
+			</el-table-column>
+			<el-table-column prop="inviteTotal"  label="累计邀请人数">
 			</el-table-column>
 		</el-table>
 		<!-- 佣金记录   commissiontable -->
@@ -186,8 +185,8 @@
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange2" :page-size="10" :total="total2" style="float:right;">
 			</el-pagination>
 		</el-col>
-		<!-- 充值类型添加 -->
-		<el-dialog title="查看上级" v-model="seeFormVisible" :close-on-click-modal="false" >
+		
+		<el-dialog title="查看上级" :close-on-click-modal="false" >
 			<el-form label-width="100px">
 				<el-form-item label="昵称">
 					{{rechargeList.nickName}}
@@ -199,7 +198,7 @@
 					{{rechargeList.realName}}
 				</el-form-item>
 				<el-form-item label="手机号">
-					{{rechargeList.mobile}}
+					{{rechargeList.inviteCode}}
 				</el-form-item>
 				<el-form-item label="性别">
 					{{rechargeList.gender}}
@@ -230,10 +229,11 @@
 	export default {
 		data() {
 			return {
+				downList:[],
 				userType:'',
 				type:'',
 				value:'',
-				rechargeList:{},
+				rechargeList:[],
 				centertable:true,//主体table
 				seeFormVisible: false,//上级
 				subordinatetable:false,//下级
@@ -241,6 +241,7 @@
 				commissiontable:false,//佣金
 				evaluatetable:false,//评价
 				accountFlowtable:false,//流水
+				notgo:false,
 				option:[{
 		          value: 0,
 		          label: '全部'
@@ -290,6 +291,21 @@
 		methods: {
 			formatSex: function (row, column) {
 				return row.gender == 1 ? '男' : row.gender == 2 ? '女' : '未知';
+			},
+			formatterVip: function (row, column) {
+				return row.gender == 2 ? '创客' : row.gender == 3 ? '合作商' : '普通';
+			},
+			formatterType: function (row, column) {
+				return row.gender == 1 ? '是' : row.gender == 0 ? '否' : '未知';
+			},
+			ungo(){
+				this.centertable = true
+				this.notgo = false
+				this.commissiontable = false//佣金
+				this.evaluatetable = false//评价
+				this.accountFlowtable = false//流水
+				this.seeFormVisible = false//上级
+				this.subordinatetable = false//下级
 			},
 			formatType(row, column){
 				let type =''
@@ -359,13 +375,17 @@
 			// 查看上级
 			inviterBtn(row) {
 				const _this = this
+				
+				_this.rechargeList = []
 				console.log(row)
 				if(row.inviterId === null){
 					alert('没有上级')
 					return
 				}
-				_this.rechargeList = []
+				this.centertable = false
 				this.seeFormVisible = true
+				this.notgo = true
+				_this.rechargeList = []
 				const params = {
 					inviterId:row.inviterId
 				}
@@ -377,22 +397,22 @@
 	                contentType:'application/json;charset=utf-8',
 	                success:function(data){
 	                  	console.log(data)
-	                  	_this.rechargeList = data.data
-	                  	console.log(_this.rechargeList)
-	                  	if(_this.rechargeList.gender === 1){
-	                  		_this.rechargeList.gender = '男'
-	                  	}else if(_this.rechargeList.gender === 2){
-	                  		_this.rechargeList.gender = '女'
-	                  	}else{
-	                  		_this.rechargeList.gender = '未知'
-	                  	}
-	                  	if(_this.rechargeList.crade === 1){
-							 _this.rechargeList.crade = '普通' 
-						}else if(_this.rechargeList.crade === 2){
-							 _this.rechargeList.crade = '创客'
-						}else if(_this.rechargeList.crade === 3){
-							 _this.rechargeList.crade = '创客商'
-						}
+	                  	_this.rechargeList.push(data.data) 
+	     //              	console.log(_this.rechargeList)
+	     //              	if(_this.rechargeList.gender === 1){
+	     //              		_this.rechargeList.gender = '男'
+	     //              	}else if(_this.rechargeList.gender === 2){
+	     //              		_this.rechargeList.gender = '女'
+	     //              	}else{
+	     //              		_this.rechargeList.gender = '未知'
+	     //              	}
+	     //              	if(_this.rechargeList.crade === 1){
+						// 	 _this.rechargeList.crade = '普通' 
+						// }else if(_this.rechargeList.crade === 2){
+						// 	 _this.rechargeList.crade = '创客'
+						// }else if(_this.rechargeList.crade === 3){
+						// 	 _this.rechargeList.crade = '创客商'
+						// }
 
 	                }
 	            });
@@ -400,6 +420,10 @@
 			// 查看下级
 			downinviterBtn(row) {
 				const _this = this
+				_this.subordinatetable = true
+				_this.centertable = false
+				_this.notgo = true
+				// _this.downList = []
 				const params = {
 					userId:row.id,
 					pageNum:this.page,
@@ -413,12 +437,15 @@
 	                contentType:'application/json;charset=utf-8',
 	                success:function(data){
 	                  	console.log(data)
+	                  	_this.downList = data.data.list
+	                  	console.log(_this.downList)
 	                }
 	            });
 			},
 			//佣金记录
 			commissionBtn(row) {
 				this.yjid = row.id
+				this.notgo = true
 				this.showCommiss()
 			},
 			showCommiss(){
@@ -448,6 +475,7 @@
 			//商品评价记录
 			evaluateBtn(row) {
 				this.pjid = row.id
+				this.notgo = true
 				this.showEvaluat()
 			},
 			showEvaluat(){
@@ -475,6 +503,7 @@
 			//个人流水记录
 			accountFlowBtn(row) {
 				this.lsid = row.id
+				this.notgo = true
 				this.showAccouont()
 			},
 			showAccouont() {
@@ -492,6 +521,8 @@
 	                contentType:'application/json;charset=utf-8',
 	                success:function(data){
 	                  	console.log(data)
+	                  	_this.centertable = false
+	                  	_this.accountFlowtable = true
 	                }
 	            });
 			},

@@ -11,7 +11,7 @@
 				<!-- <el-form-item>
 					<el-input v-model="filters.name" placeholder="支付银行"></el-input>
 				</el-form-item> -->
-				<el-form-item label="支付方式">
+				<el-form-item label="状态">
 					<el-select v-model="filters.status" clearable>
 				      <el-option v-for="item in selectSubjectStatus" :label="item.label" :value="item.value">
 				      </el-option>
@@ -27,7 +27,7 @@
 				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getlist">分析</el-button>
+					<el-button type="primary" v-on:click="getlist">查询</el-button>
 					<el-button type="primary" v-on:click="getUsers">导出</el-button>
 				</el-form-item>
 			</el-form>
@@ -110,29 +110,23 @@
 					label:'全部'
 				},{
 					value:'1',
-					label:'微信支付'
+					label:'申请中'
 				},{
 					value:'2',
-					label:'余额支付'
+					label:'完成'
 				},{
 					value:'3',
-					label:'支付宝支付'
-				},{
-					value:'4',
-					label:'银行卡支付'
+					label:'提现失败'
 				}],
 				options: [{
 		          value: '0',
 		          label: '全部'
 		        }, {
 		          value: '1',
-		          label: '订单编号'
+		          label: '手机号码'
 		        }, {
 		          value: '2',
 		          label: '用户名'
-		        }, {
-		          value: '3',
-		          label: '手机号'
 		        }],
 				filters: {
 					name: '',
@@ -178,29 +172,35 @@
 					creationTime:'2017-09-08 17:09',
 					deliveryTime:'2017-09-08 17:09',
 					commodityName:'雨花说'
-				}]
+				}],
+				cxparams:{}
 			}
 		},
 		methods: {
 			getlist(){
 				const _this = this
+				if(this.startTime !== ''){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== ''){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
 				const params = {
 					pageNum:this.page,
 					pageSize:10,
-					startTime:'',
-					endTime:'',
+					startTime:_this.startTime,
+					endTime:_this.endTime,
 					userName:'',
 					mobile:'',
-					status:''
+					status:this.filters.status
 				}
-				// console.log(this.startTime)
-				// const time = 
-				if(this.startTime !== ''){
-					const startTime = this.dateStr(this.startTime.getTime())
-					const endTime = this.dateStr(this.endTime.getTime())
-					console.log(startTime)
-					console.log(endTime)
+				if(this.filters.type === '1'){
+					params.mobile = this.filters.name
+				}else if(this.filters.type === '2'){
+					params.userName = this.filters.name
 				}
+				console.log(params)
+				this.cxparams = params
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
@@ -212,12 +212,32 @@
 	                  	console.log(info)
 	                  	_this.table = info.list
 	                  	_this.total = info.total
+	                  	_this.startTime = ''
+	                  	_this.endTime = ''
 	                }
 	            })
 			},
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getlist();
+			},
+			getcxlist(){
+				const _this = this
+				const params = _this.cxparams
+				params.pageNum = this.page
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/selectFlowList',
+	                data:JSON.stringify(_this.cxparams),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	const info = data.data.list
+	                  	_this.total = data.data.total
+	                  	_this.orderInformation = info
+	                  	console.log(info)
+	                }
+	            })
 			},
 			// 打款
 			uploadBtn(row){
@@ -261,33 +281,6 @@
 	                }
 	            })
 			},
-			dateStr(getTime) {
-				let date = new Date(getTime),
-					Y = date.getFullYear(),
-					M = date.getMonth() + 1,
-					D = date.getDate(),
-					H = date.getHours(),
-					m = date.getMinutes(),
-					s = date.getSeconds();
-				//小于10的在前面补0
-				if(M < 10) {
-					M = '0' + M;
-				}
-				if(D < 10) {
-					D = '0' + D;
-				}
-				if(H < 10) {
-					H = '0' + H;
-				}
-				if(m < 10) {
-					m = '0' + m;
-				}
-				if(s < 10) {
-					s = '0' + s;
-				}
-				return (Y+"-"+M+"-"+D) 
-			},
-
 			//获取用户列表
 			getUsers() {
 				let para = {

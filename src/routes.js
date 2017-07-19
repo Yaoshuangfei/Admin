@@ -154,7 +154,6 @@ let routes = [
         iconCls: 'fa el-icon-date',
         children: [
             { path: '/WebPipelining', component: WebPipelining, name: '网站流水报表' },
-            { path: '/CellAdmin', component: CellAdmin, name: '手机充值管理' },
             { path: '/CellularPhoneReplenishing', component: CellularPhoneReplenishing, name: '手机充值记录' },
             { path: '/withdrawals', component: withdrawals, name: '提现管理' },
             { path: '/PersonalFlow', component: PersonalFlow, name: '个人流水记录' },
@@ -242,7 +241,8 @@ let routes = [
             // { path: '/menu', component: menu, name: '菜单管理' },
             // { path: '/role', component: role, name: '组织管理' },
             // { path: '/account', component: account, name: '账号管理' },
-            { path: '/rechargeRecord', component: rechargeRecord, name: '充值记录' },
+            { path: '/CellAdmin', component: CellAdmin, name: '手机充值管理' },
+            // { path: '/rechargeRecord', component: rechargeRecord, name: '充值记录' },
             { path: '/rechargeSpecification', component: rechargeSpecification, name: '充值规格管理' }
         ]
     },

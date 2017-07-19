@@ -4,11 +4,8 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true">
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">添加</el-button>
+					<el-button type="primary" v-on:click="addShow">添加</el-button>
 				</el-form-item>
-				<!-- <el-form-item>
-					<el-button type="primary" @click="handleAdd">新增</el-button>
-				</el-form-item> -->
 			</el-form>
 		</el-col>
 
@@ -18,15 +15,20 @@
 			</el-table-column>
 			<el-table-column prop="name" label="标签名称">
 			</el-table-column>
-			<el-table-column prop="number" label="标签简介">
+			<el-table-column prop="synopsis" label="标签简介">
 			</el-table-column>
-			<el-table-column prop="user_name" label="标签图标">
+			<el-table-column prop="icon" label="标签图标">
+				<template scope="scope">
+					<img class="img" :src="scope.row.icon" alt="">
+				</template>
+			</el-table-column>
+			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
-					<el-button size="small" type='text' @click="handleEdit(scope.$index, scope.row)">查看</el-button>
-					<el-button size="small" type='text' @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-					<el-button type="text" size="small" @click="handleEdit1(scope.$index, scope.row)">删除</el-button>
+					<!-- <el-button size="small" type='text' @click="seeBtn(scope.row)">查看</el-button> -->
+					<el-button size="small" type='text' @click="editBtn(scope.row)">修改</el-button>
+					<el-button type="text" size="small" @click="deldetBtn(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -34,79 +36,59 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog title="修改积分" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="用户ID：" >{{editForm.name}}</el-form-item>
-				<el-form-item label="手机号码：">{{editForm.name}}</el-form-item>
-				<el-form-item label="客户姓名：" >{{editForm.name}}</el-form-item>
-				<el-form-item label="现有积分：" >{{editForm.name}}</el-form-item>
-				<el-form-item label="修改积分：" >
+		<el-dialog title="修改商品标签" v-model="editFormVisible" :close-on-click-modal="false">
+			<el-form :model="editForm" label-width="80px">
+				<el-form-item label="标签名称">
 					<el-input v-model="editForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="备注：">
-					<el-input type="textarea" v-model="bzvalue"></el-input>
+				<el-form-item label="标签图标">
+					<input type="file" style="position:absolute;opacity:0;width:70px;height:30px;margin-right:10px"  @change="uploadEdit" id="fileInput">
+					<button type="button" class="el-button el-button--primary el-button--small">
+						<span>点击上传</span>
+					</button>
+					<!-- <button type="button" class="el-button el-button--primary el-button--small" id="btnClear" @click="clear">清空上传</button> -->
+					<!-- <span style="display: block;font-size: 12px">{{ imageChange }}</span> -->
+					<!--<button type="button" class="el-button el-button&#45;&#45;primary el-button&#45;&#45;small" id="btnClear" @click="clear">清空上传</button>-->
+					<!--<span style="display: block;font-size: 12px">{{ imageChange }}</span>-->
+					<!-- <el-input v-model="addForm.name" auto-complete="off"></el-input> -->
+				</el-form-item>
+				<el-col :span="24">
+					<img style="margin-left: 80px;margin-bottom: 20px;" class="img" :src="editForm.icon" alt="">
+				</el-col>
+				<el-form-item label="标签详情">
+					<el-input v-model="editForm.synopsis" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<!-- <el-button @click.native="editFormVisible = false">取消</el-button> -->
+				<el-button type="primary" @click.native="editFormVisible = false">取消</el-button>
 				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
 			</div>
-		</el-dialog>
-		<el-dialog title="积分详情" v-model="editFormVisible1" :close-on-click-modal="false">
-			<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 500px;">
-			<el-table-column prop="id" label="ID" >
-			</el-table-column>
-			<el-table-column prop="name" label="用户名">
-			</el-table-column>
-			<el-table-column prop="number" label="手机号码">
-			</el-table-column>
-			<el-table-column prop="user_name" label="积分类型">
-			</el-table-column>
-			<el-table-column prop="loan" label="积分变动数值">
-			</el-table-column>
-			<el-table-column prop="loan_number" label="变动类型">
-			</el-table-column>
-			<el-table-column prop="min_company" label="记录时间">
-			</el-table-column>
-			<el-table-column prop="" label="备注">
-			</el-table-column>
-			<el-table-column prop="" label="操作">
-			</el-table-column>
-		</el-table>
-
-		<!--工具条-->
-		<el-col :span="24" class="toolbar">
-			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
-			</el-pagination>
-		</el-col>
 		</el-dialog>
 
 		<!--新增界面-->
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="姓名" prop="name">
+			<el-form :model="addForm" label-width="80px">
+				<el-form-item label="标签名称">
 					<el-input v-model="addForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="addForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
+				<el-form-item label="标签图标">
+					<input type="file" style="position:absolute;opacity:0;width:70px;height:30px;margin-right:10px"  @change="upload" id="fileInput">
+					<button type="button" class="el-button el-button--primary el-button--small">
+						<span>点击上传</span>
+					</button>
+					<button type="button" class="el-button el-button--primary el-button--small" id="btnClear" @click="clear">清空上传</button>
+					<span style="display: block;font-size: 12px">{{ imageChange }}</span>
+					<!--<button type="button" class="el-button el-button&#45;&#45;primary el-button&#45;&#45;small" id="btnClear" @click="clear">清空上传</button>-->
+					<!--<span style="display: block;font-size: 12px">{{ imageChange }}</span>-->
+					<!-- <el-input v-model="addForm.name" auto-complete="off"></el-input> -->
 				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="addForm.addr"></el-input>
+				<el-form-item label="标签详情">
+					<el-input v-model="addForm.synopsis" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -118,512 +100,224 @@
 </template>
 
 <script>
+	import { state } from '../../vuex/state'
 	import util from '../../common/js/util'
-	//import NProgress from 'nprogress'
-	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
+	import {baseUrl , editUser, addUser } from '../../api/api'
 
 	export default {
 		data() {
 			return {
-				filters: {
-					name: ''
-				},
-				users: [],
 				total: 0,
 				page: 1,
 				listLoading: false,
-				sels: [],//列表选中列
-
 				editFormVisible: false,//编辑界面是否显示
-				editFormVisible1: false,//编辑界面是否显示
 				editLoading: false,
-				editFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
 				//编辑界面数据
-				editForm: {
-					id: 0,
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				},
-				bzvalue:'',
-				editForm1: {
-					id: 0,
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				},
-
+				editForm: {},
 				addFormVisible: false,//新增界面是否显示
 				addLoading: false,
-				addFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
 				//新增界面数据
-				addForm: {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				},
-				table:[{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				}]
+				addForm: {},
+				table:[],
+				url:'',
+				editurl:'',
+                formData: new FormData(),
+                formDataEdit: new FormData(),
+                fileImg: ''
 			}
 		},
+		computed: {
+            // 实时更新上传图片的名字，仅读取，值只须为函数
+            imageChange: function () {
+                return this.fileImg
+            }
+        },
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			uploadEdit (event) {
+                this.formDataEdit = new FormData()
+                let file = event.target.files[0]
+                const self = this
+                if (file) {
+                    console.log('存在file', file)
+                    this.fileImg = file.name
+                    // console.log(this.formData)
+                    this.formDataEdit.append('file', file);
+                    this.editUpload()
+                    console.log(this.formDataEdit);
+                } else {
+                    this.fileImg = ''
+                    console.log('不存在file', file)
+                    this.formDataEdit = new FormData()
+                }
+            },
+            editUpload(){
+                // this.$confirm('确认修改吗？', '提示', {}).then(() => {
+                    const _this= this;
+                    _this.$http.post(baseUrl+'/api/attachment/upload', _this.formDataEdit, {
+                        progress(event) {
+                        }
+                    })
+                        .then(response => {
+                            const info = JSON.parse(response.bodyText);
+                            // const info = response.body
+							_this.editurl = info.data[0].baseUri+info.data[0].uri;
+							_this.editForm.icon = _this.editurl
+                        }, error => _this.$emit('complete', 500, error.message))
+                // });
+            },
+			clear(){
+                let btn = document.getElementById("btnClear");
+                let files = document.getElementById("fileInput");
+                this.fileImg = '';
+                if (files !== null && files.value) {
+                    files.value = "";
+                    this.formData = new FormData()
+                }
+            },
+		    //图片上传
+            upload (event) {
+                this.formData = new FormData()
+                let file = event.target.files[0]
+                const self = this
+                if (file) {
+                    console.log('存在file', file)
+                    this.fileImg = file.name
+                    // console.log(this.formData)
+                    this.formData.append('file', file);
+                    this.submitUpload()
+                    console.log(this.formData);
+                } else {
+                    this.fileImg = ''
+                    console.log('不存在file', file)
+                    this.formData = new FormData()
+                }
+            },
+            //添加
+            submitUpload(){
+                // this.$confirm('确认修改吗？', '提示', {}).then(() => {
+                    const _this= this;
+                    _this.$http.post(baseUrl+'/api/attachment/upload', _this.formData, {
+                        progress(event) {
+                        }
+                    })
+                        .then(response => {
+                            const info = JSON.parse(response.bodyText);
+                            // const info = response.body
+							_this.url = info.data[0].baseUri+info.data[0].uri;
+                        }, error => _this.$emit('complete', 500, error.message))
+                // });
+            },
+            addSubmit: function () {
+				const _this = this
+				_this.table = []
+				const params = {
+					name:this.addForm.name,
+					icon:this.url,
+					synopsis:this.addForm.synopsis
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goodsTag/add",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	const info = data.data
+                    	console.log(data)
+                    	_this.addFormVisible = false
+                    	_this.getlist()
+                    }
+                });
+			},
+			// 删除
+			deldetBtn(row){
+				console.log(row)
+				const _this = this
+				_this.table = []
+				const params = {
+					id:row.id
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goodsTag/delete",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	_this.getlist()
+                    }
+                });
+			},
+			// 修改
+			editBtn(row){
+				this.editFormVisible = true
+				this.editForm = row
+			},
+			// 保存修改
+			editSubmit(){
+				const _this = this
+				const params = {
+					id:this.editForm.id,
+					name:this.editForm.name,
+					icon:this.editForm.icon,
+					synopsis:this.editForm.synopsis,
+					status:0
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goodsTag/update",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	_this.editFormVisible = false
+                    	_this.getlist()
+                    }
+                });
+			},
+			getlist(){
+				const _this = this
+				_this.table = []
+				const params = {
+					pageNum:this.page,
+					size:10,
+					name:''
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goodsTag/selectList",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	const info = data.data
+                    	console.log(data)
+                    	_this.table = info.list
+                    	_this.total = info.total
+                    }
+                });
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
+				this.getlist();
 			},
-			//获取用户列表
-			getUsers() {
-				let para = {
-					page: this.page,
-					name: this.filters.name
-				};
-				this.listLoading = true;
-				//NProgress.start();
-				getUserListPage(para).then((res) => {
-					this.total = res.data.total;
-					this.users = res.data.users;
-					this.listLoading = false;
-					//NProgress.done();
-				});
+			addShow(){
+				this.addFormVisible = true
 			},
-			//删除
-			handleDel: function (index, row) {
-				this.$confirm('确认删除该记录吗?', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { id: row.id };
-					removeUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
-			},
-			//显示编辑界面
-			handleEdit: function (index, row) {
-				this.editFormVisible = true;
-				this.editForm = Object.assign({}, row);
-			},
-			handleEdit1: function (index, row) {
-				this.editFormVisible1 = true;
-				this.editForm = Object.assign({}, row);
-			},
-			//显示新增界面
-			handleAdd: function () {
-				this.addFormVisible = true;
-				this.addForm = {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				};
-			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			//新增
-			addSubmit: function () {
-				this.$refs.addForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.addLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.addForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							addUser(para).then((res) => {
-								this.addLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['addForm'].resetFields();
-								this.addFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			selsChange: function (sels) {
-				this.sels = sels;
-			},
-			//批量删除
-			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
-				this.$confirm('确认删除选中记录吗？', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
-			}
+			formatterTime(row,column){
+                let curTime = row.createTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+            }
 		},
 		mounted() {
-			this.getUsers();
+			this.getlist();
 		}
 	}
 

@@ -27,7 +27,7 @@
 				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">分析</el-button>
+					<el-button type="primary" v-on:click="getlist">查询</el-button>
 					<el-button type="primary" v-on:click="getUsers">导出</el-button>
 				</el-form-item>
 			</el-form>
@@ -53,14 +53,14 @@
 			</el-table-column>
 			<el-table-column prop="remark" label="详情">
 			</el-table-column>
-			<el-table-column label="操作">
-				<template scope="scope">
+			<!-- <el-table-column label="操作"> -->
+				<!-- <template scope="scope"> -->
 					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button>
 					<el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
+					<!-- <el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button> -->
 					<!-- <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button> -->
-				</template>
-			</el-table-column>
+				<!-- </template> -->
+			<!-- </el-table-column> -->
 		</el-table>
 
 		<!--工具条-->
@@ -129,20 +129,26 @@
 				value2:'',
 				selectSubjectStatus: [
 				{
-					value:'0',
+					value:'',
 					label:'全部'
 				},{
-					value:'1',
+					value:'0',
 					label:'微信支付'
 				},{
-					value:'2',
-					label:'余额支付'
-				},{
-					value:'3',
+					value:'1',
 					label:'支付宝支付'
 				},{
+					value:'2',
+					label:'银联支付'
+				},{
+					value:'3',
+					label:'余额支付'
+				},{
 					value:'4',
-					label:'银行卡支付'
+					label:'余额金豆混合支付'
+				},{
+					value:'5',
+					label:'金豆支付'
 				}],
 				options: [{
 		          value: '0',
@@ -201,26 +207,40 @@
 					creationTime:'2017-09-08 17:09',
 					deliveryTime:'2017-09-08 17:09',
 					commodityName:'雨花说'
-				}]
+				}],
+				cxparams:{}
 			}
 		},
 		methods: {
 			getlist(){
 				const _this = this
+				if(this.startTime !== ''){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== ''){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
 				const params = {
 					type:'',
 					pageNum:this.page,
 					pageSize:10,
-					startTime:'',
-					endTime:'',
-					payType:'',
+					startTime:_this.startTime,
+					endTime:_this.endTime,
+					payType:this.filters.status,
 					tradeNo:'',
 					userName:'',
 					mobile:'',
 					sort:'4'
-
+				}
+				if(this.filters.type === '1'){
+					params.tradeNo = this.filters.name
+				}else if(this.filters.type === '2'){
+					params.userName = this.filters.name
+				}else if(this.filters.type === '3'){
+					params.mobile = this.filters.name
 				}
 				console.log(params)
+				_this.cxparams = params
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
@@ -232,12 +252,33 @@
 	                  	console.log(info)
 	                  	_this.total = info.total
 	                  	_this.table = info.list
+	                  	_this.startTime = ''
+	                  	_this.endTime = ''
 	                }
 	            })
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getlist();
+				this.getcxlist();
+			},
+			getcxlist(){
+				const _this = this
+				const params = _this.cxparams
+				params.pageNum = this.page
+				console.log(params)
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/selectFlowList',
+	                data:JSON.stringify(_this.cxparams),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                	const info = data.data
+	                  	console.log(info)
+	                  	_this.total = info.total
+	                  	_this.table = info.list
+	                }
+	            })
 			},
 			//获取用户列表
 			getUsers() {

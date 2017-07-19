@@ -10,18 +10,28 @@
 		</el-col>
 		<!--列表-->
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column type="index">
+			<el-table-column type="index" label="序号">
 			</el-table-column>
-			<el-table-column prop="courierNumber" label="图片">
+			<el-table-column prop="picture" label="图片">
+				<template scope="scope">
+					<img class="img" :src="scope.row.picture" alt="">
+				</template>
 			</el-table-column>
-			<el-table-column prop="userName" label="创建时间">
+			<el-table-column prop="link"  label="链接">
+			</el-table-column>
+			<el-table-column prop="status" :formatter='formatterType' label="状态">
+			</el-table-column>
+			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
+			</el-table-column>
+			<el-table-column prop="desc" label="描述">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">启用</el-button>
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">修改</el-button>
-					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
+					<el-button type="text" size="small" v-if="scope.row.status === 0" @click="upBtn(scope.row)">启用</el-button>
+					<el-button type="text" size="small" v-if="scope.row.status === 1" @click="nupBtn(scope.row)">禁用</el-button>
+					<!-- <el-button type="text" size="small" @click="seeBtn(scope.row)">查看</el-button> -->
+					<el-button type="text" size="small" @click="editBtn(scope.row)">修改</el-button>
+					<el-button type="text" size="small" @click="deldetBtn(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -69,40 +79,41 @@
 			</div>
 		</el-dialog>
 		<!--编辑界面-->
-		<el-dialog title="订单详情" v-model="editFormVisible" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="订单号">
-					<div>{{orderDetails.orderNumber }}</div>
-					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
+		<el-dialog title="修改banner" v-model="editFormVisible" :close-on-click-modal="false" >
+			<el-form :model="orderDetails" label-width="80px" :rules="editFormRules" ref="editForm">
+				<el-form-item label="链接">
+					<el-input v-model="orderDetails.link" type="text" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="商品名称">
-					<div>{{orderDetails.commodityName}}</div>
+				<el-form-item label="banner">
+					<input type="file" style="position:absolute;opacity:0;width:70px;height:30px;margin-right:10px"  @change="uploadnoe" id="fileInput">
+					<button type="button" class="el-button el-button--primary el-button--small">
+						<span>上传新图片</span>
+					</button>
 				</el-form-item>
-				<el-form-item label="用户名">
-					<div>{{orderDetails.userName }}</div>
+				<el-col :span="24">
+					<img style="margin-left: 80px;margin-bottom: 20px;" class="img" :src="orderDetails.picture" alt="">
+				</el-col>
+				<el-form-item label="序号">
+					<el-input v-model="orderDetails.orderSort" type="text" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="实付金额">
-					<div>{{orderDetails.amountPaid }}</div>
-				</el-form-item>
-				<el-form-item label="订单总价">
-					<div>{{orderDetails.orderTotal }}</div>
-				</el-form-item>
-				<el-form-item label="订单状态">
-					<div>{{orderDetails.orderStatus }}</div>
-				</el-form-item>
-				<el-form-item label="支付方式">
-					<div>{{orderDetails.paymentMethod }}</div>
-				</el-form-item>
-				<el-form-item label="创建时间">
-					<div>{{orderDetails.creationTime}}</div>
-				</el-form-item>
-				<el-form-item label="发货时间">
-					<div>{{orderDetails.deliveryTime}}</div>
+				<!-- <el-form-item label="图片位置"> -->
+					<!-- <el-select v-model="orderDetails.poType" placeholder="请选择">
+				    <el-option
+				      v-for="item in options"
+				      :key="item.value"
+				      :label="item.label"
+				      :value="item.value">
+				    </el-option>
+				  </el-select> -->
+					<!-- <el-input v-model="orderDetails.poType" type="text" auto-complete="off"></el-input> -->
+				<!-- </el-form-item> -->
+				<el-form-item label="描述">
+					<el-input v-model="orderDetails.desc" type="text" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button> -->
+				<el-button type="primary" @click.native="upBanner" :loading="editLoading">保存</el-button>
 				<el-button type="primary" @click.native="editFormVisible = false">关闭</el-button>
 			</div>
 		</el-dialog>
@@ -124,6 +135,7 @@
 					desc:''
 				},
 				url:'',
+				editurl:'',
 				radio: '0',
 				checked: true,
 				value:'',
@@ -162,7 +174,7 @@
 					type:''
 				},
 				users: [],
-				total: 100,
+				total: 1,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
@@ -189,19 +201,9 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[{
-					orderNumber :'145877458784524c',
-					courierNumber :'145877458784524c',
-					userName:'吸引力量',
-					amountPaid :'300',
-					orderTotal :'900',
-					orderStatus :'待付款',
-					paymentMethod :'微信支付',
-					creationTime:'2017-09-08 17:09',
-					deliveryTime:'2017-09-08 17:09',
-					commodityName:'雨花说'
-				}],
+				orderInformation:[],
 				formData: new FormData(),
+				formData1: new FormData(),
                 fileImg: ''
 			}
 		},
@@ -212,6 +214,14 @@
             }
         },
 		methods: {
+			formatterTime(row,column){
+                let curTime = row.createTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+            },
+            formatterType(row,column){
+            	return row.status == 0 ? '禁用' : '启用 ' ;
+            },
 			//清空上传
             clear(){
                 let btn = document.getElementById("btnClear");
@@ -247,7 +257,7 @@
 			uploadBanner(){
 				this.$confirm('确认修改吗？', '提示', {}).then(() => {
                     const _this= this;
-                    _this.$http.post('http://121.43.178.109:8080/ser/api/attachment/upload', _this.formData, {
+                    _this.$http.post(baseUrl+'/api/attachment/upload', _this.formData, {
                         progress(event) {
                         }
                     })
@@ -259,11 +269,43 @@
                         }, error => _this.$emit('complete', 500, error.message))
                 });
 			},
+			uploadnoe (event) {
+                this.formData1 = new FormData()
+                let file = event.target.files[0]
+                // console.log(file)
+                const self = this
+                // const flag = this.flag
+                if (file) {
+                    console.log('存在file', file)
+                    this.formData1.append('file', file);
+                    this.uploadBannerone()
+                } else {
+                    this.fileImg = ''
+                    console.log('不存在file', file)
+                    this.formData1 = new FormData()
+                }
+            },
+			uploadBannerone(){
+				// this.$confirm('确认修改吗？', '提示', {}).then(() => {
+                    const _this= this;
+                    _this.$http.post(baseUrl+'/api/attachment/upload', _this.formData1, {
+                        progress(event) {
+                        }
+                    })
+                        .then(response => {
+                        	console.log(response)
+                            const info = JSON.parse(response.bodyText);
+							_this.editurl = info.data[0].baseUri+info.data[0].uri;
+							// _this.getUrl()
+							_this.orderDetails.picture = _this.editurl
+                        }, error => _this.$emit('complete', 500, error.message))
+                // });
+			},
 			getUrl(){
 				const _this = this
 				const params = {
 					link:this.banner.link,
-					picture:1111,
+					picture:this.url,
 					orderSort:this.banner.orderSort,
 					poType:this.banner.poType,
 					desc:this.banner.desc
@@ -277,8 +319,11 @@
                     contentType:'application/json;charset=utf-8',
                     error: function (XMLHttpRequest, textStatus, errorThrown) {},
                     success:function(data){
-                    	const info = data.data
-                    	console.log(info)
+                    	console.log(data)
+                    	if(data.code === 1){
+                    		_this.addbannerdiv = false
+                    		_this.getlist()
+                    	}
                     }
                 });
             },
@@ -291,13 +336,15 @@
 				$.ajax({
                     type:'POST',
                     dataType:'json',
-                    url:baseUrl+"/api/indexAdvert/add/admin",
+                    url:baseUrl+"/api/indexAdvert/find/admin/page?pageNum="+this.page+"&pageSize=10",
                     data:JSON.stringify(params),
                     contentType:'application/json;charset=utf-8',
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
                     success:function(data){
                     	const info = data.data
-                    	console.log(info)
+                    	console.log(data)
+                    	_this.orderInformation = info.list
+                    	_this.total = data.data.total
+                    	console.log(data)
                     }
                 });
 			},
@@ -305,124 +352,92 @@
 				this.page = val;
 				this.getUsers();
 			},
-			//获取用户列表
-			getUsers() {
-				let para = {
-					page: this.page,
-					name: this.filters.name
-				};
-				this.listLoading = true;
-				//NProgress.start();
-				getUserListPage(para).then((res) => {
-					this.total = res.data.total;
-					this.users = res.data.users;
-					this.listLoading = false;
-					//NProgress.done();
-				});
+			upBtn(row){
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/indexAdvert/enable",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	_this.getlist()
+                    }
+                });
 			},
-			//删除
-			handleDel: function (index, row) {
-				this.$confirm('确认删除该记录吗?', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { id: row.id };
-					removeUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
+			nupBtn(row){
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/indexAdvert/disable",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	_this.getlist()
+                    }
+                });
 			},
-			//显示编辑界面
-			seeBtn: function (index, row) {
+			editBtn(row){
 				this.editFormVisible = true;
-				this.orderDetails = Object.assign({}, row);
+				console.log(row)
+				this.orderDetails = row
+				this.orderDetails.poType = this.orderDetails.poType.toString()
+			},
+			upBanner(){
+				const _this = this
+				const params = {
+					id:_this.orderDetails.id,
+					link:_this.orderDetails.link,
+					picture:_this.orderDetails.picture,
+					orderSort:_this.orderDetails.orderSort,
+					desc:_this.orderDetails.desc
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/indexAdvert/update",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	_this.editFormVisible = false
+                    	_this.getlist()
+                    }
+                });
+			},
+			deldetBtn(row){
+				const _this = this
+				const params = {
+					id:row.id
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/indexAdvert/delete/one",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	_this.getlist()
+                    }
+                });
 			},
 			//显示添加banner页面
 			addbanner: function (index, row) {
 				this.addbannerdiv = true;
-				// this.orderDetails = Object.assign({}, row);
-			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			//新增
-			addSubmit: function () {
-				this.$refs.addForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.addLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.addForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							addUser(para).then((res) => {
-								this.addLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['addForm'].resetFields();
-								this.addFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			selsChange: function (sels) {
-				this.sels = sels;
-			},
-			//批量删除
-			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
-				this.$confirm('确认删除选中记录吗？', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
 			}
 		},
 		mounted() {

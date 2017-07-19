@@ -11,7 +11,7 @@
 				<!-- <el-form-item>
 					<el-input v-model="filters.name" placeholder="支付银行"></el-input>
 				</el-form-item> -->
-				<el-form-item label="支付方式">
+				<el-form-item label="业务充值类型">
 					<el-select v-model="filters.tags" clearable>
 				      <el-option v-for="item in selectSubjectStatus" :label="item.label" :value="item.value">
 				      </el-option>
@@ -28,7 +28,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getlist">搜索</el-button>
-					<el-button type="primary" v-on:click="getUsers">导出</el-button>
+					<el-button type="primary">导出</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -126,33 +126,33 @@
 				value2:'',
 				selectSubjectStatus: [
 				{
-					value:'0',
+					value:'',
 					label:'全部'
 				},{
 					value:'1',
-					label:'微信支付'
+					label:'话费充值'
 				},{
 					value:'2',
-					label:'余额支付'
+					label:'流量充值'
 				},{
 					value:'3',
-					label:'支付宝支付'
+					label:'加油卡'
 				},{
 					value:'4',
-					label:'银行卡支付'
+					label:'视频充值'
 				}],
 				options: [{
 		          value: '0',
 		          label: '全部'
 		        }, {
 		          value: '1',
-		          label: '订单编号'
+		          label: '充值号码'
 		        }, {
 		          value: '2',
-		          label: '用户名'
+		          label: '手机号码'
 		        }, {
 		          value: '3',
-		          label: '手机号'
+		          label: '用户名'
 		        }],
 				filters: {
 					tags: '',
@@ -187,7 +187,8 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[]
+				orderInformation:[],
+				cxparams:{}
 			}
 		},
 		methods: {
@@ -228,20 +229,36 @@
 			},
 			getlist(){
 				const _this = this
+				_this.listLoading = true
+					// console.log(_this.startTime.toISOString())
+					// console.log(_this.endTime.toISOString())
+					
+				if(this.startTime !== ''){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== ''){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
 				const params = {
 					pageNum:this.page,
 					pageSize:10,
-					startTime:'',
-					endTime:'',
+					startTime:_this.startTime,
+					endTime:_this.endTime,
 					attrName:'',
 					mobile:'',
 					userName:'',
 					orderStatus:'2',
-					tags:''
+					tags:this.filters.tags
 				}
-				console.log(this.startTime)
-				console.log(this.endTime)
-				console.log(this.filters)
+				console.log(params)
+				if(this.filters.type === '1'){
+					params.attrName = this.filters.value
+				}else if(this.filters.type === '2'){
+					params.mobile = this.filters.value
+				}else if(this.filters.type === '3'){
+					params.userName = this.filters.value
+				}
+				_this.cxparams = params
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
@@ -253,12 +270,33 @@
 	                  	console.log(info)
 	                  	_this.total = info.total
 	                  	_this.orderInformation = info.list
+	                  	_this.startTime = ''
+	                  	_this.endTime = ''
+	                  	_this.listLoading = false
 	                }
 	            })
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getlist();
+				this.getcxlist();
+			},
+			getcxlist(){
+				const _this = this
+				const params = _this.cxparams
+				params.pageNum = this.page
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/selectFlowList',
+	                data:JSON.stringify(_this.cxparams),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	const info = data.data.list
+	                  	_this.total = data.data.total
+	                  	_this.orderInformation = info
+	                  	console.log(info)
+	                }
+	            })
 			},
 			//获取用户列表
 			getUsers() {
@@ -312,54 +350,6 @@
 					addr: ''
 				};
 			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			//新增
-			addSubmit: function () {
-				this.$refs.addForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.addLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.addForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							addUser(para).then((res) => {
-								this.addLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['addForm'].resetFields();
-								this.addFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
 			selsChange: function (sels) {
 				this.sels = sels;
 			},
@@ -390,7 +380,6 @@
 				}
 				return status
 			}
-
 		},
 		mounted() {
 			this.getlist();
