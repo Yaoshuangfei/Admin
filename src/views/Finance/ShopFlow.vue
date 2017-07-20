@@ -250,7 +250,7 @@
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
-	                url:baseUrl+'/api/admin/userCashFlow/selectFlowList',
+	                url:baseUrl+'/api/admin/userCashFlow/selectStoreFlowList',
 	                data:JSON.stringify(_this.cxparams),
 	                contentType:'application/json;charset=utf-8',
 	                success:function(data){
