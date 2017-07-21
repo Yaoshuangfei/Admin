@@ -186,9 +186,9 @@
 		data() {
 			return {
 				paramData:[
-					{name:'',required:'',value:''}],
+					{name:'',required:'0',value:''}],
 				itemData:[
-					{name:'',value:''}],
+					{name:'',values:''}],
 				tableAll:[],
 				value22:'',
 				options: [{

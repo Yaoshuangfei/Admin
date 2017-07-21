@@ -5,9 +5,9 @@
 			<el-col :span="4">
 				<div class="grid-content bg-purple Finance">
 					<p>用户总数</p>
-					<p>1234</p>
+					<p>{{userNum}}</p>
 					<p>
-						<span>5%</span>
+						<span>{{userNumPrice}}%</span>
 						<span>来自上周</span>
 					</p>
 				</div>
@@ -15,9 +15,9 @@
 			<el-col :span="4">
 				<div class="grid-content bg-purple Finance">
 					<p>总营业额</p>
-					<p>1234</p>
+					<p>{{TotalTurnover}}</p>
 					<p>
-						<span>5%</span>
+						<span>{{TotalTurnoverPrice}}%</span>
 						<span>来自上周</span>
 					</p>
 				</div>
@@ -25,9 +25,9 @@
 			<el-col :span="4">
 				<div class="grid-content bg-purple Finance">
 					<p>商户入驻</p>
-					<p>1234</p>
+					<p>{{Merchant}}</p>
 					<p>
-						<span>5%</span>
+						<span>{{MerchantPrice}}%</span>
 						<span>来自上周</span>
 					</p>
 				</div>
@@ -35,9 +35,9 @@
 			<el-col :span="4">
 				<div class="grid-content bg-purple Finance">
 					<p>充值金额</p>
-					<p>1234</p>
+					<p>{{Recharge}}</p>
 					<p>
-						<span>5%</span>
+						<span>{{RechargePrice}}%</span>
 						<span>来自上周</span>
 					</p>
 				</div>
@@ -45,9 +45,9 @@
 			<el-col :span="4">
 				<div class="grid-content bg-purple Finance">
 					<p>公益收益</p>
-					<p>1234</p>
+					<p>{{publicWelfare}}</p>
 					<p>
-						<span>5%</span>
+						<span>{{publicWelfarePrice}}%</span>
 						<span>来自上周</span>
 					</p>
 				</div>
@@ -55,9 +55,9 @@
 			<el-col :span="4">
 				<div class="grid-content bg-purple Finance">
 					<p>历史提现</p>
-					<p>1234</p>
+					<p>{{History}}</p>
 					<p>
-						<span>5%</span>
+						<span>{{HistoryPrice}}%</span>
 						<span>来自上周</span>
 					</p>
 				</div>
@@ -142,7 +142,9 @@
 <!--</script>-->
 <script>
     import echarts from 'echarts'
-//    import 'echarts/map/js/china.js';
+	import { state } from '../../vuex/state'
+	import util from '../../common/js/util'
+	import {baseUrl , editUser, addUser } from '../../api/api';
     export default {
         data() {
             return {
@@ -151,10 +153,117 @@
                 chartBar: null,
                 chartLine: null,
                 chartPie: null,
-                chartmap: null
+                chartmap: null,
+                userNum:'',
+                TotalTurnover:'',
+                Merchant:'',
+                Recharge:'',
+                publicWelfare:'0',
+                History:'',
+
+                userNumPrice:'',
+                TotalTurnoverPrice:'',
+                MerchantPrice:'',
+                RechargePrice:'',
+                publicWelfarePrice:'0',
+                HistoryPrice:''
             }
         },
         methods: {
+        	getlist(){
+        		const _this = this
+        		$.ajax({
+                    type:'GET',
+                    dataType:'json',
+                    url:baseUrl+"/api/orderMall/selectGroupOfSys",
+                    data:{},
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        const info = data.data
+                        for(var i = 0;i<info.length;i++){
+                        	if(info[i].type === 1){
+                        		if(info[i].countAll === null){
+                        			_this.userNum = 0
+                        		}else{
+                        			_this.userNum = info[i].countAll
+                        		}
+                        		if(info[i].avgPrice === null){
+                        			_this.userNumPrice = 0
+                        		}else{
+                        			_this.userNumPrice = info[i].avgPrice*100
+                        		}
+                        		// _this.userNum = info[i].countAll
+                        		// _this.userNumPrice = info[i].avgPrice*100
+                        	}else if(info[i].type === 2){
+                        		if(info[i].countAll === null){
+                        			_this.TotalTurnover = 0
+                        		}else{
+                        			_this.TotalTurnover = info[i].countAll
+                        		}
+                        		if(info[i].avgPrice === null){
+                        			_this.TotalTurnoverPrice = 0
+                        		}else{
+                        			_this.TotalTurnoverPrice = info[i].avgPrice*100
+                        		}
+                        		// _this.TotalTurnover = info[i].countAll
+                        		// _this.TotalTurnoverPrice = info[i].avgPrice*100
+                        	}else if(info[i].type === 3){
+                        		if(info[i].countAll === null){
+                        			_this.Merchant = 0
+                        		}else{
+                        			_this.Merchant = info[i].countAll
+                        		}
+                        		if(info[i].avgPrice === null){
+                        			_this.MerchantPrice = 0
+                        		}else{
+                        			_this.MerchantPrice = info[i].avgPrice*100
+                        		}
+                        		// _this.Merchant = info[i].countAll
+                        		// _this.MerchantPrice = info[i].avgPrice*100
+                        	}else if(info[i].type === 4){
+                        		if(info[i].countAll === null){
+                        			_this.Recharge = 0
+                        		}else{
+                        			_this.Recharge = info[i].countAll
+                        		}
+                        		if(info[i].avgPrice === null){
+                        			_this.RechargePrice = 0
+                        		}else{
+                        			_this.RechargePrice = info[i].avgPrice*100
+                        		}
+                        		// _this.Recharge = info[i].countAll
+                        		// _this.RechargePrice = info[i].avgPrice*100
+                        	}else if(info[i].type === 5){
+                        		if(info[i].countAll === null){
+                        			_this.publicWelfare = 0
+                        		}else{
+                        			_this.publicWelfare = info[i].countAll
+                        		}
+                        		if(info[i].avgPrice === null){
+                        			_this.publicWelfarePrice = 0
+                        		}else{
+                        			_this.publicWelfarePrice = info[i].avgPrice*100
+                        		}
+                        		// _this.publicWelfarePrice = info[i].avgPrice*100
+                        	}else if(info[i].type === 6){
+                        		if(info[i].countAll === null){
+                        			_this.History = 0
+                        		}else{
+                        			_this.History = info[i].countAll
+                        		}
+                        		if(info[i].avgPrice === null){
+                        			_this.HistoryPrice = 0
+                        		}else{
+                        			_this.HistoryPrice = info[i].avgPrice*100
+                        		}
+                        		// _this.HistoryPrice = info[i].avgPrice*100
+                        	}
+                        }
+
+                    }
+                });
+        	},
             drawColumnChart() {
                 this.chartColumn = echarts.init(document.getElementById('chartColumn'));
                 this.chartColumn.setOption({
@@ -360,6 +469,7 @@
         },
         mounted: function () {
             this.drawCharts()
+           	this.getlist()
         },
         updated: function () {
             this.drawCharts()
