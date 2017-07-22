@@ -124,19 +124,34 @@
 					label:'全部'
 				},{
 					value:'1',
-					label:'待付款'
+					label:'支付中'
 				},{
 					value:'2',
-					label:'待发货'
+					label:'支付成功'
 				},{
 					value:'3',
-					label:'已发货'
+					label:'支付失败'
 				},{
 					value:'4',
-					label:'待评价'
+					label:'已取消'
 				},{
 					value:'5',
-					label:'退货'
+					label:'卖家已发货'
+				},{
+					value:'6',
+					label:'已收货'
+				},{
+					value:'7',
+					label:'已评价'
+				},{
+					value:'8',
+					label:'交易完成'
+				},{
+					value:'9',
+					label:'售后处理'
+				},{
+					value:'10',
+					label:'已删除'
 				}],
 				options: [{
 		          value: '0',
@@ -240,7 +255,15 @@
 				_this.orderInformation = []
 				const params = {
 					pageNum:this.page,
-					size:10
+					size:10,
+					orderStatus:this.filters.status,
+					orderId:'',
+					expno:''
+				}
+				if(this.filters.type === '1'){
+					params.orderId = this.filters.name
+				}else if(this.filters.type === '2'){
+					params.expno = this.filters.name
 				}
 				console.log(params)
 				$.ajax({

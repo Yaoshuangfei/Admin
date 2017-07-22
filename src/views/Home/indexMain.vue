@@ -1,5 +1,6 @@
 <template>
 	<section style="background: #f7f7f7;">
+		
 		<!--顶部数据-->
 		<el-row :gutter="20" class="main_top">
 			<el-col :span="4">
@@ -63,6 +64,11 @@
 				</div>
 			</el-col>
 		</el-row>
+		<!-- <el-row :span="24">
+			<el-radio-group v-model="radio3" @change='clickRadio'>
+				<el-radio-button  v-for="item in ruleAll" :label="item.id">{{item.name}}</el-radio-button>
+		  	</el-radio-group>
+		</el-row> -->
 		<!--统计图-->
 		<el-row class="statistics">
 			<el-col :span="24" class="statistics_title">
@@ -72,14 +78,9 @@
 						<span>周报表</span>
 					</div>
 					<div style="float:right;margin-right: 2%;" class="statistics_title_right">
-						<span class="wrapper">
-							  <el-radio-group v-model="radio3" class="wrapper_btn" style="position: relative;top:-5px;">
-								<el-radio-button label="周报表" class="wrapper_btn_01"></el-radio-button>
-								<el-radio-button label="月报表"></el-radio-button>
-								<el-radio-button label="季度报表"></el-radio-button>
-								<el-radio-button label="年报表"></el-radio-button>
-							  </el-radio-group>
-  						</span>
+						<el-radio-group v-model="radio3" @change='clickRadio'>
+				<el-radio-button  v-for="item in ruleAll" :label="item.id">{{item.name}}</el-radio-button>
+		  	</el-radio-group>
 					</div>
 				</div>
 			</el-col>
@@ -102,15 +103,7 @@
 					<div class="statistics_bottom_left_top">待办事项</div>
 					<div class="statistics_bottom_main">
 						<ul>
-							<li>1、中国地图，省份用户监测</li>
-							<li>1、中国地图，省份用户监测</li>
-							<li>1、中国地图，省份用户监测</li>
-							<li>1、中国地图，省份用户监测</li>
-							<li></li>
-							<li></li>
-							<li></li>
-							<li></li>
-							<li></li>
+							<li v-for="item in daibanList">{{item.notifyContent}}</li>
 						</ul>
 					</div>
 				</div>
@@ -125,21 +118,6 @@
 	</section>
 </template>
 
-<!--<script>-->
-    <!--import echarts from 'echarts'-->
-	<!--export default {-->
-        <!--data () {-->
-            <!--return {-->
-                <!--radio3: '报表',-->
-                <!--chartColumn: null,-->
-                <!--chartBar: null,-->
-                <!--chartLine: null,-->
-                <!--chartPie: null-->
-            <!--};-->
-        <!--}-->
-	<!--}-->
-
-<!--</script>-->
 <script>
     import echarts from 'echarts'
 	import { state } from '../../vuex/state'
@@ -148,6 +126,22 @@
     export default {
         data() {
             return {
+            	 ruleAll:[{
+                	name:'日报表',
+                	id:0
+                },{
+                	name:'周报表',
+                	id:1
+                },{
+                	name:'月报表',
+                	id:2
+                },{
+                	name:'季报表',
+                	id:3
+                },{
+                	name:'年报表',
+                	id:4
+                }],
                 radio3: '报表',
                 chartColumn: null,
                 chartBar: null,
@@ -166,7 +160,9 @@
                 MerchantPrice:'',
                 RechargePrice:'',
                 publicWelfarePrice:'0',
-                HistoryPrice:''
+                HistoryPrice:'',
+
+                daibanList:[]
             }
         },
         methods: {
@@ -264,6 +260,41 @@
                     }
                 });
         	},
+        	getUser(){
+        		const _this = this
+        		$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/notify/selectListGroupOfSystem",
+                    data:JSON.stringify([5,6,13]),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	const info = data.data
+                    	console.log(data)
+                    	_this.daibanList = info
+                    	// _this.total = info.total
+                    }
+                });
+        	},
+        	getPosition(){
+        		const _this = this
+        		$.ajax({
+                    type:'GET',
+                    dataType:'json',
+                    url:baseUrl+"/api/orderMall/selectCountGroupByCounty",
+                    // data:JSON.stringify([5,6,13]),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	const info = data.data
+                    	console.log(data)
+                    	// _this.daibanList = info
+                    	// _this.total = info.total
+                    }
+                });
+        	},
+        	clickRadio(row){
+        		console.log(row)
+        	},
             drawColumnChart() {
                 this.chartColumn = echarts.init(document.getElementById('chartColumn'));
                 this.chartColumn.setOption({
@@ -327,140 +358,6 @@
                     ]
                 });
             },
-//            drawMapChart() {
-//                this.chartPie = echarts.init(document.getElementById('chartmap'));
-//                this.chartPie.setOption({
-//                    title : {
-//                        text: '各微商销量',
-//                        subtext: '纯属虚构',
-//                        x:'center'
-//                    },
-//                    tooltip : {
-//                        trigger: 'item'
-//                    },
-//                    legend: {
-//                        orient: 'vertical',
-//                        x:'left',
-//                        data:['蜂蜜','巧克力','水果']
-//                    },
-//                    dataRange: {
-//                        min: 0,
-//                        max: 2500,
-//                        x: 'left',
-//                        y: 'bottom',
-//                        text:['高','低'],           // 文本，默认为数值文本
-//                        calculable : true
-//                    },
-//                    toolbox: {
-//                        show: true,
-//                        orient : 'vertical',
-//                        x: 'right',
-//                        y: 'center',
-//                        feature : {
-//                            mark : {show: true},
-//                            dataView : {show: true, readOnly: false},
-//                            restore : {show: true},
-//                            saveAsImage : {show: true}
-//                        }
-//                    },
-//                    series : [
-//                        {
-//                            name: '蜂蜜',
-//                            type: 'map',
-//                            mapType: 'china',
-//                            roam: false,
-//                            itemStyle:{
-//                                normal:{label:{show:true}},
-//                                emphasis:{label:{show:true}}
-//                            },
-//                            data:[
-//                                {name: '北京',value: Math.round(Math.random()*1000)},
-//                                {name: '天津',value: Math.round(Math.random()*1000)},
-//                                {name: '上海',value: Math.round(Math.random()*1000)},
-//                                {name: '重庆',value: Math.round(Math.random()*1000)},
-//                                {name: '河北',value: Math.round(Math.random()*1000)},
-//                                {name: '河南',value: Math.round(Math.random()*1000)},
-//                                {name: '云南',value: Math.round(Math.random()*1000)},
-//                                {name: '辽宁',value: Math.round(Math.random()*1000)},
-//                                {name: '黑龙江',value: Math.round(Math.random()*1000)},
-//                                {name: '湖南',value: Math.round(Math.random()*1000)},
-//                                {name: '安徽',value: Math.round(Math.random()*1000)},
-//                                {name: '山东',value: Math.round(Math.random()*1000)},
-//                                {name: '新疆',value: Math.round(Math.random()*1000)},
-//                                {name: '江苏',value: Math.round(Math.random()*1000)},
-//                                {name: '浙江',value: Math.round(Math.random()*1000)},
-//                                {name: '江西',value: Math.round(Math.random()*1000)},
-//                                {name: '湖北',value: Math.round(Math.random()*1000)},
-//                                {name: '广西',value: Math.round(Math.random()*1000)},
-//                                {name: '甘肃',value: Math.round(Math.random()*1000)},
-//                                {name: '山西',value: Math.round(Math.random()*1000)},
-//                                {name: '内蒙古',value: Math.round(Math.random()*1000)},
-//                                {name: '陕西',value: Math.round(Math.random()*1000)},
-//                                {name: '吉林',value: Math.round(Math.random()*1000)},
-//                                {name: '福建',value: Math.round(Math.random()*1000)},
-//                                {name: '贵州',value: Math.round(Math.random()*1000)},
-//                                {name: '广东',value: Math.round(Math.random()*1000)},
-//                                {name: '青海',value: Math.round(Math.random()*1000)},
-//                                {name: '西藏',value: Math.round(Math.random()*1000)},
-//                                {name: '四川',value: Math.round(Math.random()*1000)},
-//                                {name: '宁夏',value: Math.round(Math.random()*1000)},
-//                                {name: '海南',value: Math.round(Math.random()*1000)},
-//                                {name: '台湾',value: Math.round(Math.random()*1000)},
-//                                {name: '香港',value: Math.round(Math.random()*1000)},
-//                                {name: '澳门',value: Math.round(Math.random()*1000)}
-//                            ]
-//                        },
-//                        {
-//                            name: '巧克力',
-//                            type: 'map',
-//                            mapType: 'china',
-//                            itemStyle:{
-//                                normal:{label:{show:true}},
-//                                emphasis:{label:{show:true}}
-//                            },
-//                            data:[
-//                                {name: '北京',value: Math.round(Math.random()*1000)},
-//                                {name: '天津',value: Math.round(Math.random()*1000)},
-//                                {name: '上海',value: Math.round(Math.random()*1000)},
-//                                {name: '重庆',value: Math.round(Math.random()*1000)},
-//                                {name: '河北',value: Math.round(Math.random()*1000)},
-//                                {name: '安徽',value: Math.round(Math.random()*1000)},
-//                                {name: '新疆',value: Math.round(Math.random()*1000)},
-//                                {name: '浙江',value: Math.round(Math.random()*1000)},
-//                                {name: '江西',value: Math.round(Math.random()*1000)},
-//                                {name: '山西',value: Math.round(Math.random()*1000)},
-//                                {name: '内蒙古',value: Math.round(Math.random()*1000)},
-//                                {name: '吉林',value: Math.round(Math.random()*1000)},
-//                                {name: '福建',value: Math.round(Math.random()*1000)},
-//                                {name: '广东',value: Math.round(Math.random()*1000)},
-//                                {name: '西藏',value: Math.round(Math.random()*1000)},
-//                                {name: '四川',value: Math.round(Math.random()*1000)},
-//                                {name: '宁夏',value: Math.round(Math.random()*1000)},
-//                                {name: '香港',value: Math.round(Math.random()*1000)},
-//                                {name: '澳门',value: Math.round(Math.random()*1000)}
-//                            ]
-//                        },
-//                        {
-//                            name: '水果',
-//                            type: 'map',
-//                            mapType: 'china',
-//                            itemStyle:{
-//                                normal:{label:{show:true}},
-//                                emphasis:{label:{show:true}}
-//                            },
-//                            data:[
-//                                {name: '北京',value: Math.round(Math.random()*1000)},
-//                                {name: '天津',value: Math.round(Math.random()*1000)},
-//                                {name: '上海',value: Math.round(Math.random()*1000)},
-//                                {name: '广东',value: Math.round(Math.random()*1000)},
-//                                {name: '台湾',value: Math.round(Math.random()*1000)},
-//                                {name: '香港',value: Math.round(Math.random()*1000)},
-//                                {name: '澳门',value: Math.round(Math.random()*1000)}
-//                            ]
-//                        }
-//                    ]
-//                });
-//            },
             drawCharts() {
                 this.drawColumnChart()
                 this.drawPieChart()
@@ -468,12 +365,15 @@
             },
         },
         mounted: function () {
-            this.drawCharts()
+        	this.getPosition()
            	this.getlist()
-        },
-        updated: function () {
+           	this.getUser()
             this.drawCharts()
-        }
+        },
+       	// 更新
+        // updated: function () {
+        //     this.drawCharts()
+        // }
     }
 </script>
 
@@ -598,10 +498,10 @@
 	}
 </style>
 <style>
-	.el-radio-button:first-child .el-radio-button__inner {border: none;}
-	.el-radio-button:first-child .el-radio-button__inner {border-radius: 10px;}
-	.el-radio-button:last-child .el-radio-button__inner {border-radius: 10px;}
-	.el-radio-button__orig-radio:checked+.el-radio-button__inner {background-color:#22ac38;}
+	/*.el-radio-button:first-child .el-radio-button__inner {border: none;}*/
+	/*.el-radio-button:first-child .el-radio-button__inner {border-radius: 10px;}*/
+	/*.el-radio-button:last-child .el-radio-button__inner {border-radius: 10px;}*/
+	/*.el-radio-button__orig-radio:checked+.el-radio-button__inner {background-color:#22ac38;}*/
 	.el-radio-button__inner {background: #f7f7f7;font-size: 18px;color: #6a7c8f;}
 	.el-radio-button__inner:hover {color: #22ac38;}
 	.wrapper_btn span {

@@ -13,7 +13,7 @@
 				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getlist">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -102,31 +102,14 @@
 				value:'',
 				value1:'',
 				value2:'',
-				selectSubjectStatus: [
-				{
-					value:'0',
-					label:'全部'
-				},{
-					value:'1',
-					label:'待付款'
-				},{
-					value:'2',
-					label:'待发货'
-				},{
-					value:'3',
-					label:'已发货'
-				},{
-					value:'4',
-					label:'待评价'
-				},{
-					value:'5',
-					label:'退货'
-				}],
 				options: [{
 		          value: '0',
 		          label: '全部'
-		        }, {
+		        },{
 		          value: '1',
+		          label: '昵称'
+		        }, {
+		          value: '2',
 		          label: '订单编号'
 		        }],
 				filters: {
@@ -231,8 +214,17 @@
 				_this.orderEvaluate = []
 				const params = {
 					pageNum:this.page,
-					size:10
+					size:10,
+					userName:'',
+					nickName:'',
+					orderId:''
 				}
+				if(this.filters.type === '1'){
+					params.nickName = this.filters.name
+				}else if(this.filters.type === '2'){
+					params.orderId = this.filters.name
+				}
+				console.log(params)
 				$.ajax({
                     type:'POST',
                     dataType:'json',
