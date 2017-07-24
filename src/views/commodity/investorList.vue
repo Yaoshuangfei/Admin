@@ -88,57 +88,6 @@
 			</div>
 		</el-dialog>
 
-		<el-dialog title="提现" v-model="editFormVisible2" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="用户ID:">{{editForm.name}}</el-form-item>
-				<el-form-item label="手机号码:">{{editForm.name}}</el-form-item>
-				<el-form-item label="客户姓名:">{{editForm.name}}</el-form-item>
-				<el-form-item label="银行卡号:">{{editForm.name}}</el-form-item>
-				<el-col :span='24'>
-					<el-col :span='2' :offset="1">工商银行</el-col>
-					<el-col :span='5'>浙江省杭州市拱墅区湖墅支行</el-col>
-				</el-col>
-				<el-col :span='24'>
-					<el-col :span='5'><h2>账户余额（元）：</h2></el-col>
-					<el-col :span='10' style='color: red;'><h2>500</h2></el-col>
-				</el-col>
-				<el-form-item label="提现金额:">
-					<el-input v-model="value22" auto-complete="off" placeholder="提现最多500元"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<!-- <el-button @click.native="editFormVisible = false">取消</el-button> -->
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
-			</div>
-		</el-dialog>
-
-		<el-dialog title="重置密码" v-model="editFormVisible3" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
-				<!-- <el-form-item label="用户ID:">{{editForm.name}}</el-form-item>
-				<el-form-item label="手机号码:">{{editForm.name}}</el-form-item>
-				<el-form-item label="客户姓名:">{{editForm.name}}</el-form-item>
-				<el-form-item label="银行:">
-					<el-select v-model="value" placeholder="请选择银行">
-					    <el-option
-					      v-for="item in options"
-					      :label="item.label"
-					      :value="item.value">
-					    </el-option>
-				  </el-select>
-				</el-form-item> -->
-				<el-form-item label="银行支行:">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="银行卡号:">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<!-- <el-button @click.native="editFormVisible = false">取消</el-button> -->
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
-			</div>
-		</el-dialog>
-
 		<!--新增界面-->
 		<el-dialog title="新增商品分类" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form label-width="80px">

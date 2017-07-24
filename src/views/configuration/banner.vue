@@ -317,7 +317,6 @@
                     url:baseUrl+"/api/indexAdvert/add/admin",
                     data:JSON.stringify(params),
                     contentType:'application/json;charset=utf-8',
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
                     success:function(data){
                     	console.log(data)
                     	if(data.code === 1){
