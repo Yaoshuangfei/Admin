@@ -47,13 +47,13 @@
 			</el-table-column>
 			<el-table-column prop="status" :formatter='formatterType' label="状态">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="手续费1/%">
+			<el-table-column prop="poundage" label="手续费1/%">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="手续费总额">
+			<el-table-column prop="serviceFeeSum" label="手续费总额">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
+					<el-button type="text" size="small" @click="seeBtn(scope.row)">查看</el-button>
 					<el-button type="text" v-if='scope.row.status === 0' size="small" @click="passBtn(scope.row)">通过</el-button>
 					<el-button type="text" v-if='scope.row.status === 0 ' size="small" @click="notpassBtn(scope.row)">不通过</el-button>
 					<el-button type="text" v-if='scope.row.status === 3' size="small" @click="enableBtn(scope.row)">启用</el-button>
@@ -72,34 +72,34 @@
 
 		<!--编辑界面-->
 		<el-dialog title="店铺详情" v-model="editFormVisible" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
+			<el-form :model="orderDetails" label-width="100px">
 				<el-form-item label="店铺名称">
-					<div>{{orderDetails.orderNumber }}</div>
+					<div>{{orderDetails.name }}</div>
 					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
 				</el-form-item>
 				<el-form-item label="用户名">
-					<div>{{orderDetails.userName }}</div>
+					<div>{{orderDetails.nickName}}</div>
 				</el-form-item>
 				<el-form-item label="手机号">
-					<div>{{orderDetails.amountPaid }}</div>
+					<div>{{orderDetails.mobile }}</div>
 				</el-form-item>
 				<el-form-item label="店铺销量">
-					<div>{{orderDetails.orderTotal }}</div>
+					<div>{{orderDetails.orderSum }}</div>
 				</el-form-item>
 				<el-form-item label="店铺营业额">
-					<div>{{orderDetails.orderStatus }}</div>
+					<div>{{orderDetails.turnoverSum }}</div>
 				</el-form-item>
 				<el-form-item label="账户余额">
-					<div>{{orderDetails.paymentMethod }}</div>
+					<el-input style="width:100px" v-model="orderDetails.availableIncome"></el-input>
 				</el-form-item>
 				<el-form-item label="已提现金额">
-					<div>{{orderDetails.creationTime}}</div>
+					<div>{{orderDetails.withdrawalsSum}}</div>
 				</el-form-item>
 				<el-form-item label="违规记录">
-					<div>{{orderDetails.deliveryTime}}</div>
+					<div>{{orderDetails.illegalSum}}</div>
 				</el-form-item>
 				<el-form-item label="手续费">
-					<div>{{orderDetails.commodityName}}</div>
+					<el-input style="width:100px" v-model="orderDetails.poundage"></el-input>%
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
@@ -183,6 +183,17 @@
 				addLoading: false,
 				//新增界面数据
 				orderDetails: {
+					name:'',
+					nickName:'',
+					mobile:'',
+					orderSum:'',
+					turnoverSum:'',
+					availableIncome:'',
+					withdrawalsSum:'',
+					illegalSum:'',
+					poundage:'',
+					logo:'',
+					id:''
 				},
 				orderInformation:[]
 			}
@@ -358,9 +369,20 @@
 				});
 			},
 			//显示编辑界面
-			seeBtn: function (index, row) {
+			seeBtn: function (row) {
 				this.editFormVisible = true;
-				this.orderDetails = Object.assign({}, row);
+				console.log(row)
+				this.orderDetails.name = row.name
+				this.orderDetails.nickName = row.coreUser.nickName
+				this.orderDetails.mobile = row.coreUser.mobile
+				this.orderDetails.orderSum = row.orderSum
+				this.orderDetails.turnoverSum = row.turnoverSum
+				this.orderDetails.availableIncome = row.coreUser.availableIncome
+				this.orderDetails.withdrawalsSum = row.withdrawalsSum
+				this.orderDetails.illegalSum = row.illegalSum
+				this.orderDetails.poundage = row.poundage
+				this.orderDetails.logo = row.logo
+				this.orderDetails.id = row.id
 			},
 			//显示新增界面
 			handleAdd: function () {
@@ -375,27 +397,27 @@
 			},
 			//编辑
 			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
+				const _this = this
+				const params = {
+					id:this.orderDetails.id,
+					poundage:this.orderDetails.poundage,
+					availableIncome:this.orderDetails.availableIncome
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/update/data",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	if(data.code === 1){
+                    		_this.editFormVisible = false
+                    		_this.getlist()
+                    	}
+                    }
+                });
 			},
 			//新增
 			addSubmit: function () {

@@ -95,6 +95,11 @@
 			</el-table-column>
 			<el-table-column prop="inviteTotal"  label="累计邀请人数">
 			</el-table-column>
+			<el-table-column label="操作">
+				<template scope="scope">
+					<el-button type="text" size="small" @click="inviterBtn(scope.row)">查看上级</el-button>
+				</template>
+			</el-table-column>
 		</el-table>
 		<!-- 下级   subordinatetable -->
 		<el-table v-show="subordinatetable" :data="downList"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
@@ -389,6 +394,7 @@
 				const params = {
 					inviterId:row.inviterId
 				}
+				console.log(row.inviterId)
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
@@ -397,22 +403,9 @@
 	                contentType:'application/json;charset=utf-8',
 	                success:function(data){
 	                  	console.log(data)
-	                  	_this.rechargeList.push(data.data) 
-	     //              	console.log(_this.rechargeList)
-	     //              	if(_this.rechargeList.gender === 1){
-	     //              		_this.rechargeList.gender = '男'
-	     //              	}else if(_this.rechargeList.gender === 2){
-	     //              		_this.rechargeList.gender = '女'
-	     //              	}else{
-	     //              		_this.rechargeList.gender = '未知'
-	     //              	}
-	     //              	if(_this.rechargeList.crade === 1){
-						// 	 _this.rechargeList.crade = '普通' 
-						// }else if(_this.rechargeList.crade === 2){
-						// 	 _this.rechargeList.crade = '创客'
-						// }else if(_this.rechargeList.crade === 3){
-						// 	 _this.rechargeList.crade = '创客商'
-						// }
+	                  	if(data.data !== null){
+	                  		_this.rechargeList.push(data.data) 
+	                  	}
 
 	                }
 	            });

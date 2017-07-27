@@ -78,7 +78,7 @@
 						<span>周报表</span>
 					</div>
 					<div style="float:right;margin-right: 2%;" class="statistics_title_right">
-						<el-radio-group v-model="radio3" @change='clickRadio'>
+						<el-radio-group v-model="radio3" @change='click'>
 				<el-radio-button  v-for="item in ruleAll" :label="item.id">{{item.name}}</el-radio-button>
 		  	</el-radio-group>
 					</div>
@@ -142,7 +142,7 @@
                 	name:'年报表',
                 	id:4
                 }],
-                radio3: '报表',
+                radio3: 0,
                 chartColumn: null,
                 chartBar: null,
                 chartLine: null,
@@ -162,10 +162,21 @@
                 publicWelfarePrice:'0',
                 HistoryPrice:'',
 
-                daibanList:[]
+                daibanList:[],
+
+                type:1,
+
+                listAll:[],//线图
+                sj:[],
+                cj:[],
+                sp:[],
+                pj:[],
+                parobj:[],//饼图
+                parName:[]
             }
         },
         methods: {
+        	// 获取头部信息
         	getlist(){
         		const _this = this
         		$.ajax({
@@ -175,7 +186,6 @@
                     data:{},
                     contentType:'application/json;charset=utf-8',
                     success:function(data){
-                        console.log(data)
                         const info = data.data
                         for(var i = 0;i<info.length;i++){
                         	if(info[i].type === 1){
@@ -189,8 +199,6 @@
                         		}else{
                         			_this.userNumPrice = info[i].avgPrice*100
                         		}
-                        		// _this.userNum = info[i].countAll
-                        		// _this.userNumPrice = info[i].avgPrice*100
                         	}else if(info[i].type === 2){
                         		if(info[i].countAll === null){
                         			_this.TotalTurnover = 0
@@ -202,8 +210,6 @@
                         		}else{
                         			_this.TotalTurnoverPrice = info[i].avgPrice*100
                         		}
-                        		// _this.TotalTurnover = info[i].countAll
-                        		// _this.TotalTurnoverPrice = info[i].avgPrice*100
                         	}else if(info[i].type === 3){
                         		if(info[i].countAll === null){
                         			_this.Merchant = 0
@@ -215,8 +221,6 @@
                         		}else{
                         			_this.MerchantPrice = info[i].avgPrice*100
                         		}
-                        		// _this.Merchant = info[i].countAll
-                        		// _this.MerchantPrice = info[i].avgPrice*100
                         	}else if(info[i].type === 4){
                         		if(info[i].countAll === null){
                         			_this.Recharge = 0
@@ -228,8 +232,6 @@
                         		}else{
                         			_this.RechargePrice = info[i].avgPrice*100
                         		}
-                        		// _this.Recharge = info[i].countAll
-                        		// _this.RechargePrice = info[i].avgPrice*100
                         	}else if(info[i].type === 5){
                         		if(info[i].countAll === null){
                         			_this.publicWelfare = 0
@@ -241,7 +243,6 @@
                         		}else{
                         			_this.publicWelfarePrice = info[i].avgPrice*100
                         		}
-                        		// _this.publicWelfarePrice = info[i].avgPrice*100
                         	}else if(info[i].type === 6){
                         		if(info[i].countAll === null){
                         			_this.History = 0
@@ -253,13 +254,13 @@
                         		}else{
                         			_this.HistoryPrice = info[i].avgPrice*100
                         		}
-                        		// _this.HistoryPrice = info[i].avgPrice*100
                         	}
                         }
 
                     }
                 });
         	},
+        	// 待办事项
         	getUser(){
         		const _this = this
         		$.ajax({
@@ -270,30 +271,106 @@
                     contentType:'application/json;charset=utf-8',
                     success:function(data){
                     	const info = data.data
-                    	console.log(data)
                     	_this.daibanList = info
-                    	// _this.total = info.total
                     }
                 });
         	},
+        	click(val) {
+        		this.type = val
+        		this.getPosition()
+			},
+        	// 图
         	getPosition(){
         		const _this = this
+        		_this.sj = []
+        		_this.cj = []
+        		_this.sp = []
+        		_this.pj = []
+        		_this.parobj = []//初始化饼图数据
+        		_this.parName = []
+        		_this.listAll = []//初始化线形图数据
+        		const params = {
+        			type:this.type,
+        			storeId:state.storeId
+        		}
+        		// console.log(params)
+        		
         		$.ajax({
-                    type:'GET',
-                    dataType:'json',
-                    url:baseUrl+"/api/orderMall/selectCountGroupByCounty",
-                    // data:JSON.stringify([5,6,13]),
-                    contentType:'application/json;charset=utf-8',
-                    success:function(data){
-                    	const info = data.data
-                    	console.log(data)
-                    	// _this.daibanList = info
-                    	// _this.total = info.total
-                    }
-                });
-        	},
-        	clickRadio(row){
-        		console.log(row)
+	              type:'POST',
+	              dataType:'json',
+	              url:baseUrl+"/api/orderMall/selectByPayTimeGroup",
+	              data:JSON.stringify(params),
+	              contentType:'application/json;charset=utf-8',
+	              success:function(data){
+	                const info = data.data
+	                // 线形图
+	                const linelist = info.analysisVOList
+	                // console.log(linelist)
+	                for(var i = 0;i<linelist.length;i++){
+	                	// 时间
+	                	_this.sj.push( _this.formatterTime(linelist[i].payTime))
+	                	_this.cj.push(linelist[i].moneyAll)
+	                	_this.sp.push(linelist[i].countAll)
+	                	_this.pj.push(linelist[i].avgPrice)
+	                }
+	                const obj = {}
+                	obj.name = '成交额总数'
+                	obj.type = 'line'
+                	obj.smooth = true
+                	obj.data = _this.cj
+            		_this.listAll.push(obj)
+
+            		const obj1 = {}
+                	obj1.name = '成交商品总数'
+                	obj1.type = 'line'
+                	obj1.smooth = true
+                	obj1.data = _this.sp
+            		_this.listAll.push(obj1)
+
+            		const obj2 = {}
+                	obj2.name = '成交额平均值'
+                	obj2.type = 'line'
+                	obj2.smooth = true
+                	obj2.data = _this.pj
+            		_this.listAll.push(obj2)
+            		
+
+
+
+					//饼图数据
+	                const ordlist= info.orderMalls
+	                console.log(ordlist)
+	                for(var i = 0;i<ordlist.length;i++){
+	                	const obj = {}
+	                	if(ordlist[i].orderType === 3){
+	                		obj.name = '业务充值'
+	                	}else if(ordlist[i].orderType === 4){
+	                		obj.name = '余额充值'
+	                	}else if(ordlist[i].orderType === 5){
+	                		obj.name = '商品购买'
+	                	}else if(ordlist[i].orderType === 6){
+	                		obj.name = '店铺身份购买'
+	                	}else if(ordlist[i].orderType === 7){
+	                		obj.name = '平台身份购买 '
+	                	}else if(ordlist[i].orderType === 8){
+	                		obj.name = '补货'
+	                	}else if(ordlist[i].orderType === 9){
+	                		obj.name = '金豆充值'
+	                	}else if(ordlist[i].orderType === 13){
+	                		obj.name = '便付劵充值'
+	                	}else{
+	                		obj.name = '业务充值'
+	                	}
+	                	obj.value = ordlist[i].totalMoney
+	                	_this.parName.push(obj.name)
+	                	_this.parobj.push(obj)
+	                }
+	                console.log(_this.parobj)
+	                console.log(_this.parName)
+	                _this.drawColumnChart()
+	                _this.drawPieChart()
+	              }
+	          });
         	},
             drawColumnChart() {
                 this.chartColumn = echarts.init(document.getElementById('chartColumn'));
@@ -303,26 +380,19 @@
                     xAxis: {
                         type : 'category',
                         boundaryGap : false,
-                        data: ["5.21", "5.22", "5.23", "5.24", "5.25", "5.26"]
+                        data: this.sj
                     },
                     yAxis: {
                         type : 'value'
 					},
-                    series: [{
-                        name: '销量',
-                        type: 'line',
-                        smooth:true,
-                        itemStyle: {normal: {areaStyle: {type: 'default'}}},
-                        data: [0, 100, 36, 10, 10, 20]
-                    }]
+                    series:this.listAll
                 });
             },
             drawPieChart() {
                 this.chartPie = echarts.init(document.getElementById('chartPie'));
                 this.chartPie.setOption({
                     title: {
-                        text: '收入分析图',
-                        subtext: '纯属虚构',
+                        text: '店铺收入支出分析图',
                         x: 'center'
                     },
                     tooltip: {
@@ -332,7 +402,7 @@
                     legend: {
                         orient: 'vertical',
                         left: 'left',
-                        data: ['商城', '邮件营销', '联盟广告', '视频广告', '搜索引擎']
+                         data:this.parName
                     },
                     series: [
                         {
@@ -340,13 +410,7 @@
                             type: 'pie',
                             radius: '55%',
                             center: ['50%', '60%'],
-                            data: [
-                                { value: 335, name: '商城' },
-                                { value: 310, name: '邮件营销' },
-                                { value: 234, name: '联盟广告' },
-                                { value: 135, name: '视频广告' },
-                                { value: 1548, name: '搜索引擎' }
-                            ],
+                            data:this.parobj,
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -358,17 +422,14 @@
                     ]
                 });
             },
-            drawCharts() {
-                this.drawColumnChart()
-                this.drawPieChart()
-                // this.drawMapChart()
-            },
+            formatterTime(row){
+                return  new Date(row).toLocaleString()
+            }
         },
         mounted: function () {
         	this.getPosition()
            	this.getlist()
            	this.getUser()
-            this.drawCharts()
         },
        	// 更新
         // updated: function () {

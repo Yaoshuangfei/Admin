@@ -268,10 +268,11 @@
 					id:this.notogoodId,
 					remarks:this.notogood
 				}
+				console.log(params)
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
-	                url:baseUrl+'/api/admin/userWithdrawal/finish',
+	                url:baseUrl+'/api/admin/userWithdrawal/checkfail',
 	                data:JSON.stringify(params),
 	                contentType:'application/json;charset=utf-8',
 	                success:function(data){

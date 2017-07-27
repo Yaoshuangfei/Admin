@@ -42,10 +42,10 @@
 			</el-table-column>
 		</el-table>
 		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="background:#fff;">
+		<!-- <el-col :span="24" class="toolbar" style="background:#fff;">
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
 			</el-pagination>
-		</el-col>
+		</el-col> -->
 		<!-- 充值类型添加 -->
 		<el-dialog title="添加充值类型" v-model="addFormVisible" :close-on-click-modal="false" >
 			<el-form :model="rechargeList" label-width="100px">
@@ -182,7 +182,7 @@
 					type:''
 				},
 				users: [],
-				total: 100,
+				total: 0,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列

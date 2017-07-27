@@ -238,7 +238,7 @@
 				this.sysUserName = user.name || '';
 				this.sysUserAvatar = user.avatar || '';
 			}
-			this.getMenuList()
+			// this.getMenuList()
 			console.log(this.$router.options.routes)
 		}
 	}

@@ -15,7 +15,7 @@
 			</el-table-column>
 			<el-table-column prop="name" label="分类名称">
 			</el-table-column>
-			<el-table-column prop="sort" label="顺序">
+			<el-table-column prop="sort" :formatter='formatterSotr' label="商品类型">
 			</el-table-column>
 			<el-table-column prop="status" :formatter='formatterType' label="状态">
 			</el-table-column>
@@ -94,6 +94,12 @@
 				<el-form-item label="分类名称">
 					<el-input v-model="addForm.name"></el-input>
 				</el-form-item>
+				<el-form-item label="商品类型">
+					<el-select v-model="addForm.sort" placeholder="请选择">
+						<el-option  v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+					<!-- <el-input v-model="addForm.sort"></el-input> -->
+				</el-form-item>
 				<el-form-item label="分类图标">
 					<input type="file" style="position:absolute;opacity:0;width:70px;height:30px;margin-right:10px"  @change="upload" id="fileInput">
 					<button type="button" class="el-button el-button--primary el-button--small">
@@ -141,11 +147,11 @@
 				tableAll:[],
 				value22:'',
 				options: [{
-		          value: '选项1',
-		          label: '建设银行'
+		          value: '0',
+		          label: '虚拟商品'
 		        }, {
-		          value: '选项2',
-		          label: '工商银行'
+		          value: '1',
+		          label: '实物'
 		        }],
 		        value: '',
 				filters: {
@@ -187,6 +193,7 @@
 				},
 				//新增界面数据
 				addForm: {
+					sort:''
 				},
 				table:[{
 					sex:'',
@@ -285,6 +292,7 @@
 					name:this.addForm.name,
 					icon:this.url,
 					status:'1',
+					sort:this.addForm.sort,
 					pid:'',
 					hierarchy:'1',
 					paramData:this.paramData,
@@ -301,12 +309,19 @@
                     contentType:'application/json;charset=utf-8',
                     success:function(data){
                     	console.log(data)
+                    	if(data.code === 1){
+                    		_this.addFormVisible = false
+                    		_this.getlist()
+                    	}
                     }
                 });
             },
             // 格式化状态
 			formatterType: function (row, column) {
 				return row.status == 1 ? '启用' : row.status == 0 ? '禁用' : '删除';
+			},
+			formatterSotr: function (row, column) {
+				return row.sort == 1 ? '虚拟' :  '实物' ;
 			},
 			// 格式化上级
 			formatterPid(row, column){
