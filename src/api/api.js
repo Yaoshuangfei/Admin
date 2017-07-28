@@ -16,10 +16,10 @@ export const editUser = params => { return axios.get(`${base}/user/edit`, { para
 
 export const addUser = params => { return axios.get(`${base}/user/add`, { params: params }); };
 
-export const  baseUrl = 'http://121.43.178.109:8109/ser';
+// export const  baseUrl = 'http://121.43.178.109:8109/ser';
 // export const  baseUrl = 'http://192.168.0.104:8080';
 // export const  baseUrl = '/apis';
-// export const  baseUrl = 'http://123.206.115.18:8083';
+export const  baseUrl = 'http://123.206.115.18:8083';
 
 
 

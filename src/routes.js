@@ -71,7 +71,7 @@ import operationLog from './views/VoIP/operationLog.vue'
 
 
 
-    console.log(state.loginID)
+    console.log(1111)
 
 let routes = [
     {

@@ -95,10 +95,9 @@
 					<el-input v-model="addForm.name"></el-input>
 				</el-form-item>
 				<el-form-item label="商品类型">
-					<el-select v-model="addForm.sort" placeholder="请选择">
+					<el-select v-model="addForm.type" placeholder="请选择">
 						<el-option  v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
-					<!-- <el-input v-model="addForm.sort"></el-input> -->
 				</el-form-item>
 				<el-form-item label="分类图标">
 					<input type="file" style="position:absolute;opacity:0;width:70px;height:30px;margin-right:10px"  @change="upload" id="fileInput">
@@ -147,11 +146,20 @@
 				tableAll:[],
 				value22:'',
 				options: [{
-		          value: '0',
-		          label: '虚拟商品'
+		          value: 0,
+		          label: '普通商品'
 		        }, {
-		          value: '1',
-		          label: '实物'
+		          value: 1,
+		          label: '话费充值'
+		        }, {
+		          value: 1,
+		          label: '流量充值'
+		        }, {
+		          value: 1,
+		          label: '加油卡'
+		        }, {
+		          value: 1,
+		          label: '视频充值'
 		        }],
 		        value: '',
 				filters: {
@@ -193,7 +201,7 @@
 				},
 				//新增界面数据
 				addForm: {
-					sort:''
+					type:''
 				},
 				table:[{
 					sex:'',
@@ -292,8 +300,8 @@
 					name:this.addForm.name,
 					icon:this.url,
 					status:'1',
-					sort:this.addForm.sort,
 					pid:'',
+					type:this.addForm.type,
 					hierarchy:'1',
 					paramData:this.paramData,
 					itemData:this.itemData
