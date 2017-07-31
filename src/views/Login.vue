@@ -53,20 +53,11 @@
       };
     },
     methods: {
-      // getuid() {
-      //   const _this = this
-      //   $.get("http://192.168.10.18:8080/shangfu-admin-web/verifyCode/loginCode  ",
-      //       function(data){
-      //           const info = eval('(' + data + ')');
-      //           console.log(info)
-      //           _this.uuid = info
-      //           _this.cli(info)
-      //         }
-      //    );
-      // },
-      //  cli(uid){
-      //   this.imgsrc='http://192.168.10.10:8080/shangfu-admin-web/verifyCode/getImage?uuid='+uid+'&random='+Math.random()
-      // },
+      keyLogin(ev){
+       if (ev.keyCode==13){
+           this.logi()
+       }
+      },
       logi() {
           const params = {
               userName: this.ruleForm2.username ,
@@ -89,44 +80,23 @@
                 }
             });
       },
-      handleReset2() {
-        this.$refs.ruleForm2.resetFields();
-      },
-      handleSubmit2(ev) {
-        var _this = this;
-        this.$refs.ruleForm2.validate((valid) => {
-          if (valid) {
-            //_this.$router.replace('/table');
-            this.logining = true;
-            //NProgress.start();
-            var loginParams = { username: this.ruleForm2.username, password: this.ruleForm2.password };
-            requestLogin(loginParams).then(data => {
-              this.logining = false;
-              //NProgress.done();
-              let { msg, code, user } = data;
-              if (code !== 200) {
-                this.$message({
-                  message: msg,
-                  type: 'error'
-                });
-              } else {
-                sessionStorage.setItem('user', JSON.stringify(user));
-                this.$router.push({ path: '/main' });
-              }
+      getcommissionLine(){
+        $.ajax({
+                type:'GET',
+                dataType:'json',
+                url:baseUrl+"/api/store/selectStore",
+                // data:JSON.stringify(params),
+                contentType:'application/json;charset=utf-8',
+                success:function(data){
+                  console.log(data)
+                }
             });
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
       }
     },
     mounted() {
-        // this.getuid()
-        // this.cli()
+      this.getcommissionLine()
     },
   }
-
 </script>
 
 <style lang="scss" scoped>
