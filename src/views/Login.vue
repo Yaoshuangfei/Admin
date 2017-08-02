@@ -2,10 +2,10 @@
   <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-position="left" label-width="0px" class="demo-ruleForm login-container">
     <h3 class="title">系统登录</h3>
     <el-form-item prop="account">
-      <el-input type="text" v-model="ruleForm2.username" auto-complete="off" placeholder="账号"></el-input>
+      <el-input type="text" v-model="ruleForm2.username" auto-complete="off" @keyup.enter.native="keyLogin" placeholder="账号"></el-input>
     </el-form-item>
     <el-form-item prop="checkPass">
-      <el-input type="password" v-model="ruleForm2.password" auto-complete="off" placeholder="密码"></el-input>
+      <el-input type="password" v-model="ruleForm2.password" auto-complete="off" @keyup.enter.native="keyLogin" placeholder="密码"></el-input>
     </el-form-item>
     <!-- <el-form-item >
       <el-col :span='8' prop="yanzm">
@@ -79,22 +79,10 @@
                   _this.$router.push({ path: '/main' });
                 }
             });
-      },
-      getcommissionLine(){
-        $.ajax({
-                type:'GET',
-                dataType:'json',
-                url:baseUrl+"/api/store/selectStore",
-                // data:JSON.stringify(params),
-                contentType:'application/json;charset=utf-8',
-                success:function(data){
-                  console.log(data)
-                }
-            });
       }
     },
     mounted() {
-      this.getcommissionLine()
+      
     },
   }
 </script>

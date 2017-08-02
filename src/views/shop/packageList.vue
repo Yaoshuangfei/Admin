@@ -72,7 +72,7 @@
 
 		<!--编辑界面-->
 		<el-dialog title="店铺详情" v-model="editFormVisible" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="100px">
+			<el-form :model="orderDetails" label-width="120px">
 				<el-form-item label="店铺名称">
 					<div>{{orderDetails.name }}</div>
 					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
@@ -99,9 +99,39 @@
 					<div>{{orderDetails.illegalSum}}</div>
 				</el-form-item>
 				<el-form-item label="手续费">
-					<el-input style="width:100px" v-model="orderDetails.poundage"></el-input>%
+					<div>{{orderDetails.withdrawalsSum}}</div>
 				</el-form-item>
-				<el-col :span='24'></el-col>
+				<el-col :span='24'><h3>身份认证信息</h3></el-col>
+				<el-form-item label="法人姓名">
+					<div>{{orderDetails.coreUspAuthentication.realName}}</div>
+				</el-form-item>
+				<el-form-item label="法人身份证号">
+					<div>{{orderDetails.coreUspAuthentication.legalCardCode}}</div>
+				</el-form-item>
+				<el-form-item label="手机号">
+					<div>{{orderDetails.coreUspAuthentication.storeMobile}}</div>
+				</el-form-item>
+				<el-form-item label="银行名称">
+					<div>{{orderDetails.coreUspAuthentication.bankName}}</div>
+				</el-form-item>
+				<el-form-item label="对公账户账号">
+					<div>{{orderDetails.coreUspAuthentication.bankCode}}</div>
+				</el-form-item>
+				<el-form-item label="运营地址">
+					<div>{{orderDetails.coreUspAuthentication.theAddress}}</div>
+				</el-form-item>
+				<el-form-item label="法人身份证">
+					<img style="width: 100px" v-if="orderDetails.coreUspAuthentication.cardImgF !== '' " :src="orderDetails.coreUspAuthentication.cardImgF">
+				</el-form-item>
+				<el-form-item label="法人手持身份证">
+					<img style="width: 100px" v-if="orderDetails.coreUspAuthentication.cardImgW  !== '' "  :src="orderDetails.coreUspAuthentication.cardImgW">
+				</el-form-item>
+				<el-form-item label="营业执照">
+					<img style="width: 100px" v-if="orderDetails.coreUspAuthentication.businessLicense  !== '' "  :src="orderDetails.coreUspAuthentication.businessLicense">
+				</el-form-item>
+				<el-form-item label="银行开户许可证">
+					<img style="width: 100px" v-if="orderDetails.coreUspAuthentication.bankImgW  !== '' "  :src="orderDetails.coreUspAuthentication.bankImgW">
+				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
 				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">确定</el-button>
@@ -193,7 +223,19 @@
 					illegalSum:'',
 					poundage:'',
 					logo:'',
-					id:''
+					id:'',
+					coreUspAuthentication:{
+						realName:'',
+						legalCardCode:'',
+						storeMobile:'',
+						bankName:'',
+						bankCode:'',
+						theAddress:'',
+						cardImgF:'',
+						cardImgW:'',
+						businessLicense:'',
+						bankImgW:'',
+					}
 				},
 				orderInformation:[]
 			}
@@ -383,6 +425,19 @@
 				this.orderDetails.poundage = row.poundage
 				this.orderDetails.logo = row.logo
 				this.orderDetails.id = row.id
+				if(row.coreUspAuthentication !== null){
+					this.orderDetails.coreUspAuthentication.realName = row.coreUspAuthentication.realName
+					this.orderDetails.coreUspAuthentication.legalCardCode = row.coreUspAuthentication.legalCardCode
+					this.orderDetails.coreUspAuthentication.storeMobile = row.coreUspAuthentication.storeMobile
+					this.orderDetails.coreUspAuthentication.bankName = row.coreUspAuthentication.bankName
+					this.orderDetails.coreUspAuthentication.bankCode = row.coreUspAuthentication.bankCode
+					this.orderDetails.coreUspAuthentication.theAddress = row.coreUspAuthentication.theAddress
+					this.orderDetails.coreUspAuthentication.cardImgF = row.coreUspAuthentication.cardImgF
+					this.orderDetails.coreUspAuthentication.cardImgW = row.coreUspAuthentication.cardImgW
+					this.orderDetails.coreUspAuthentication.businessLicense = row.coreUspAuthentication.businessLicense
+					this.orderDetails.coreUspAuthentication.bankImgW = row.coreUspAuthentication.bankImgW
+				}
+
 			},
 			//显示新增界面
 			handleAdd: function () {

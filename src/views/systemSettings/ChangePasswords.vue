@@ -3,6 +3,12 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff;text-align: right;">
 			<el-form :inline="true" :model="filters">
+                <el-form-item>
+                    <el-button type="primary" v-on:click="editPassword">修改密码</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" v-on:click="forgetPassword">忘记密码</el-button>
+                </el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="AddUsers">添加</el-button>
 				</el-form-item>
@@ -59,11 +65,11 @@
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
 				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button> -->
-				<el-button type="primary" @click.native="adduserVisible = false">下一步</el-button>
+				<el-button type="primary" @click.native="adduserVisible = false">取消</el-button>
 			</div>
 		</el-dialog>
 		<!--编辑界面-->
-		<el-dialog title="修改后台登录密码" v-model="editFormVisible" :close-on-click-modal="false" >
+		<!-- <el-dialog title="修改后台登录密码" v-model="editFormVisible" :close-on-click-modal="false" >
 			<el-form :model="orderDetails" label-width="100px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="管理员账户">
 					<el-input v-model="input" placeholder="请输入内容"></el-input>
@@ -82,7 +88,47 @@
 				 <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
 				<el-button type="primary" @click.native="editFormVisible = false">关闭</el-button>
 			</div>
-		</el-dialog>
+		</el-dialog> -->
+        <!--修改密码-->
+        <el-dialog title="修改后台登录密码" v-model="adminPassodEdit" :close-on-click-modal="false" >
+            <el-form :model="jiumima" label-width="100px" :rules="passwdForm" ref="jiumima">
+                <el-form-item label="旧密码">
+                    <el-input type="password" v-model="jiumima.jiuPassword" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码" prop="password">
+                    <el-input type="password" v-model="jiumima.password" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="确认新密码"  prop="checkPass">
+                    <el-input type="password" v-model="jiumima.checkPass" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer" style="text-align: center;">
+                 <el-button type="primary" @click.native="passwdUpEdit" :loading="editLoading">保存</el-button>
+                <el-button type="primary" @click.native="adminPassodEdit = false">关闭</el-button>
+            </div>
+        </el-dialog>
+        <!--编辑界面-->
+        <el-dialog title="忘记密码" v-model="forget" :close-on-click-modal="false" >
+            <el-form :model="yanzma" label-width="100px" :rules="passwdForm1" ref="yanzma">
+                <el-form-item label="管理员账户">
+                    <el-input v-model="yanzma.mobileEmail"></el-input>
+                </el-form-item>
+                <el-form-item label="验证码">
+                    <el-input style="width:100px;" type="text" v-model="yanzma.vecode"></el-input>
+                    <el-button type="primary" @click.native="upvecodeBtn" >发送验证码</el-button>
+                </el-form-item>
+                <el-form-item label="新密码" type="password" prop="password">
+                    <el-input type="password" v-model="yanzma.password"></el-input>
+                </el-form-item>
+                <el-form-item label="确认新密码" type="password" prop="checkPass">
+                    <el-input type="password" v-model="yanzma.checkPass"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer" style="text-align: center;">
+                 <el-button type="primary" @click.native="yanzSubmit" :loading="editLoading">保存</el-button>
+                <el-button type="primary" @click.native="forget = false">关闭</el-button>
+            </div>
+        </el-dialog>
 	</section>
 </template>
 
@@ -93,8 +139,74 @@
 
     export default {
         data() {
+                var validatePass = (rule, value, callback) => {
+                    if (value === '') {
+                      callback(new Error('请输入密码'));
+                    } else {
+                      if (this.jiumima.password !== '') {
+                        this.$refs.jiumima.validateField('checkPass');
+                      }
+                      callback();
+                    }
+                  };
+                var validatePass2 = (rule, value, callback) => {
+                    if (value === '') {
+                      callback(new Error('请再次输入密码'));
+                    } else if (value !== this.jiumima.password) {
+                      callback(new Error('两次输入密码不一致!'));
+                    } else {
+                      callback();
+                    }
+                  };
+                  var validatePass3 = (rule, value, callback) => {
+                    if (value === '') {
+                      callback(new Error('请输入密码'));
+                    } else {
+                      if (this.yanzma.password !== '') {
+                        this.$refs.yanzma.validateField('checkPass');
+                      }
+                      callback();
+                    }
+                  };
+                var validatePass1 = (rule, value, callback) => {
+                    if (value === '') {
+                      callback(new Error('请再次输入密码'));
+                    } else if (value !== this.yanzma.password) {
+                      callback(new Error('两次输入密码不一致!'));
+                    } else {
+                      callback();
+                    }
+                  };
             return {
-                radio: '0',
+                jiumima:{
+                    jiuPassword:'',
+                    password:'',
+                    checkPass:''
+                },
+                yanzma:{
+                    mobileEmail:'',
+                    vecode:'',
+                    password:'',
+                    checkPass:''
+                },
+                passwdForm:{
+                    password: [
+                        { validator: validatePass, trigger: 'blur' }
+                      ],
+                  checkPass: [
+                    { validator: validatePass2, trigger: 'blur' }
+                  ]
+                },
+                passwdForm1:{
+                    password: [
+                        { validator: validatePass3, trigger: 'blur' }
+                      ],
+                  checkPass: [
+                    { validator: validatePass1, trigger: 'blur' }
+                  ]
+                },
+                adminPassodEdit: false,
+                forget:false,
                 checked: true,
                 value:'',
                 value1:'',
@@ -183,9 +295,82 @@
             }
         },
         methods: {
-            //性别显示转换
-            formatSex: function (row, column) {
-                return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+            //修改密码
+            editPassword(){
+                this.adminPassodEdit = true
+            },
+            passwdUpEdit(){
+                const _this = this
+                const params = {
+                    password:this.jiumima.jiuPassword,
+                    newPassword:this.jiumima.password
+                }
+                console.log(params)
+                $.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/admin/coreAdmin/updatePassword",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        if(data.code === 1){
+                            _this.adminPassodEdit = false
+                            _this.$router.push({ path: '/login' })
+                            // alert(data.msg)
+                        }else{
+                            alert(data.msg)
+                            // _this.$message.error();
+                        }
+                    }
+                })
+            },
+            //忘记密码
+            forgetPassword(){
+                this.forget = true
+            },
+            // 发送验证码
+            upvecodeBtn(){
+                const params = {
+                    mobileEmail:this.yanzma.mobileEmail
+                }
+                console.log(params)
+                $.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/coreUser/sendMsmOrEmail/7",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        alert(data.msg)
+                    }
+                })
+            },
+            yanzSubmit(){
+                const _this = this
+                const params = {
+                    mobileEmail:this.yanzma.mobileEmail,
+                    password:this.yanzma.password,
+                    vecode:this.yanzma.vecode
+                }
+                console.log(params)
+                $.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/admin/coreAdmin/updatePwByVecode",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        if(data.code === 1){
+                            _this.forget = false
+                            _this.$router.push({ path: '/login' })
+                        }else{
+                            alert(data.msg)
+                        }
+                    }
+                })
             },
             getlist(){
                 const _this = this

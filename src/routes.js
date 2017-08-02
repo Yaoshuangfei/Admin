@@ -56,6 +56,8 @@ import addpage from './views/page/addpage.vue'
 // 充值管理 Recharge 
 import rechargeRecord from './views/Recharge/rechargeRecord.vue'
 import rechargeSpecification from './views/Recharge/rechargeSpecification.vue'
+import commodityRelease from './views/Recharge/commodityRelease.vue'
+
 // 网络电话管理 VoIP
 import department from './views/VoIP/department.vue'
 import menu from './views/VoIP/menu.vue'
@@ -242,8 +244,8 @@ let routes = [
             // { path: '/role', component: role, name: '组织管理' },
             // { path: '/account', component: account, name: '账号管理' },
             { path: '/CellAdmin', component: CellAdmin, name: '手机充值管理' },
-            // { path: '/rechargeRecord', component: rechargeRecord, name: '充值记录' },
-            { path: '/rechargeSpecification', component: rechargeSpecification, name: '充值规格管理' }
+            { path: '/rechargeSpecification', component: rechargeSpecification, name: '充值规格管理' },
+            { path: '/commodityRelease', component: commodityRelease, name: '充值商品' }
         ]
     },
     {
