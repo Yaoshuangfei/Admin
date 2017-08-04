@@ -34,7 +34,9 @@
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+		<el-table :data="orderInformation" @selection-change="selsChange" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column type="selection">
+			</el-table-column>
 			<el-table-column type="index" label="序号">
 			</el-table-column>
 			<el-table-column prop="userName" label="昵称">
@@ -47,7 +49,7 @@
 			</el-table-column>
 			<el-table-column prop="productPrice" label="充值金额">
 			</el-table-column>
-			<el-table-column prop="productName" label="原价">
+			<el-table-column prop="costPrice" label="原价">
 			</el-table-column>
 			<el-table-column prop="createTime" :formatter='formatterTime' label="充值时间">
 			</el-table-column>
@@ -55,6 +57,7 @@
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
+					<el-button type="text" size="small" @click="shenheBtn(scope.row)">审核</el-button>
 					<el-button type="text" size="small" @click="upBtn(scope.row)">充值</el-button>
 					<el-button type="text" size="small" @click="notpassBtn(scope.row)">不通过</el-button>
 				</template>
@@ -63,7 +66,7 @@
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="background:#fff;">
-			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
+			<el-button type="danger" @click="batchRemove" :disabled="this.delID.length===0">批量审核</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
@@ -117,6 +120,7 @@
 	export default {
 		data() {
 			return {
+				delID:[],
 				radio: '0',
 				startTime:'',
 				endTime:'',
@@ -192,6 +196,44 @@
 			}
 		},
 		methods: {
+			// 批量删除
+			selsChange: function (sels) {
+				this.delID = [];
+				for(var i=0;i<sels.length;i++){
+					this.delID.push(sels[i].id);
+				}
+				console.log(this.delID)
+			},
+			// 批量删除
+			batchRemove(){
+				const _this = this
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/check/businessCard',
+	                data:JSON.stringify(this.delID),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                  	_this.getlist()
+	                }
+	            })
+			},
+			//单个删除
+			shenheBtn(row){
+				const _this = this
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/admin/userCashFlow/check/businessCard',
+	                data:JSON.stringify([row.id]),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                  	_this.getlist()
+	                }
+	            })
+			},
 			//充值
 			upBtn(row) {
 				const _this = this
@@ -247,7 +289,7 @@
 					attrName:'',
 					mobile:'',
 					userName:'',
-					orderStatus:'2',
+					orderStatus:'',
 					tags:this.filters.tags
 				}
 				console.log(params)
@@ -350,9 +392,6 @@
 					addr: ''
 				};
 			},
-			selsChange: function (sels) {
-				this.sels = sels;
-			},
 			formatterTime(row, column){
 				let curTime = row.createTime;
                 curTime = new Date(curTime).toLocaleString()
@@ -377,6 +416,8 @@
 					status = '充值中'
 				}else if(row.orderStatus === 8){
 					status = '已完成'
+				}else if(row.orderStatus === 11){
+					status = '审核中'
 				}
 				return status
 			}

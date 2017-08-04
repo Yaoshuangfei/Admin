@@ -12,7 +12,7 @@
 							<li>
 								<p>
 									<span class="main_login_name">昵称</span>
-									<span class="main_login_write">注销</span>
+									<!-- <span class="main_login_write">注销</span> -->
 								</p>
 								<p style="font-size: 18px;">123456789</p>
 							</li>
@@ -385,6 +385,10 @@
 				flex:0 0 60px;
 				width: 60px;
 				overflow-y: auto;
+			}
+			::-webkit-scrollbar {
+				-webkit-appearance: none;       /*可去除系统默认的样式*/
+				width: 7px;                           /*滚动条宽度*/
 			}
 			.menu-expanded{
 				flex:0 0 230px;

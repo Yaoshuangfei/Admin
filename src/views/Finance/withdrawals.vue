@@ -37,6 +37,8 @@
 		<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
 			<el-table-column prop="userName" label="用户名">
 			</el-table-column>
+			<el-table-column prop="realName" label="姓名">
+			</el-table-column>
 			<el-table-column prop="mobile" label="手机号">
 			</el-table-column>
 			<el-table-column prop="amount" label="金额">
@@ -50,6 +52,8 @@
 			<el-table-column prop="status" :formatter='formatter' label="状态">
 			</el-table-column>
 			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
+			</el-table-column>
+			<el-table-column prop="updateTime" :formatter='formatterTime1' label="更新时间">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
@@ -70,7 +74,7 @@
 			</el-pagination>
 		</el-col>
 
-		<!--编辑界面-->
+		<!--不通过-->
 		<el-dialog title="不通过" v-model="editFormVisible" :close-on-click-modal="false" >
 			<el-form  label-width="100px">
 				<el-form-item label="不通过理由">
@@ -81,6 +85,19 @@
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
 				<el-button type="primary" @click.native="clearSubmit" :loading="editLoading">保存</el-button>
 				<el-button type="primary" @click.native="editFormVisible = false">关闭</el-button>
+			</div>
+		</el-dialog>
+		<!--通过-->
+		<el-dialog title="通过" v-model="okVisible" :close-on-click-modal="false" >
+			<el-form  label-width="100px">
+				<el-form-item label="备注">
+					<el-input v-model="togood" type="text"></el-input>
+				</el-form-item>
+				<el-col :span='24'></el-col>
+			</el-form>
+			<div slot="footer" class="dialog-footer" style="text-align: center;">
+				<el-button type="primary" @click.native="okSubmit" :loading="editLoading">保存</el-button>
+				<el-button type="primary" @click.native="okVisible = false">关闭</el-button>
 			</div>
 		</el-dialog>
 	</section>
@@ -94,6 +111,9 @@
 	export default {
 		data() {
 			return {
+				okVisible:false,
+				togood:'',
+				okId:'',
 				notogood:'',
 				notogoodId:'',
 				table:[],
@@ -106,9 +126,6 @@
 				value2:'',
 				selectSubjectStatus: [
 				{
-					value:'0',
-					label:'全部'
-				},{
 					value:'1',
 					label:'申请中'
 				},{
@@ -119,9 +136,6 @@
 					label:'提现失败'
 				}],
 				options: [{
-		          value: '0',
-		          label: '全部'
-		        }, {
 		          value: '1',
 		          label: '手机号码'
 		        }, {
@@ -240,10 +254,16 @@
 	            })
 			},
 			// 打款
+
 			uploadBtn(row){
+				this.okVisible = true
+				console.log(row)
+				this.okId = row.id
+			},
+			okSubmit(){
 				const _this = this
 				const params = {
-					id:row.id
+					id:this.okId
 				}
 				$.ajax({
 	                type:'POST',
@@ -253,7 +273,13 @@
 	                contentType:'application/json;charset=utf-8',
 	                success:function(data){
 	                  	console.log(data)
-	                  	_this.getlist()
+	                  	if(data.code === 1){
+	                  		_this.okVisible = false
+	                  		_this.getlist()
+	                  	}else {
+	                  		alert(data.msg)
+	                  	}
+	                  	
 	                }
 	            })
 			},
@@ -409,6 +435,14 @@
 			},
 			formatterTime(row, column){
 				let curTime = row.createTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+			},
+			formatterTime1(row, column){
+				let curTime = row.updateTime;
+				if(curTime === null){
+					return curTime
+				}
                 curTime = new Date(curTime).toLocaleString()
                 return curTime
 			},

@@ -164,7 +164,7 @@
 
                 daibanList:[],
 
-                type:1,
+                type:0,
 
                 listAll:[],//线图
                 sj:[],
@@ -304,20 +304,39 @@
 	              success:function(data){
 	                const info = data.data
 	                // 线形图
+                    if(info === null){
+                        return
+                    }
+                    console.log(info)
 	                const linelist = info.analysisVOList
-	                // console.log(linelist)
 	                for(var i = 0;i<linelist.length;i++){
 	                	// 时间
-	                	_this.sj.push( _this.formatterTime(linelist[i].payTime))
+	                	var date=new Date(linelist[i].payTime);
+	                	if(_this.type === 0){
+	                		 _this.sj.push(date.getHours()+'时')
+	                	}else if(_this.type === 1 || _this.type === 3){
+	                		 _this.sj.push((date.getMonth()+1)+"月"+date.getDate()+'日')
+	                	}else if(_this.type === 2 ){
+
+                            _this.sj.push(date.getDate()+'日')
+                        }else{
+	                		_this.sj.push(date.getFullYear()+"-"+(date.getMonth()+1))
+	                	}
 	                	_this.cj.push(linelist[i].moneyAll)
 	                	_this.sp.push(linelist[i].countAll)
 	                	_this.pj.push(linelist[i].avgPrice)
 	                }
+	                console.log(_this.sj)
 	                const obj = {}
                 	obj.name = '成交额总数'
                 	obj.type = 'line'
                 	obj.smooth = true
                 	obj.data = _this.cj
+                	obj.itemStyle = {
+                		normal : {
+                			label:{show:true}
+                		}
+                	}
             		_this.listAll.push(obj)
 
             		const obj1 = {}
@@ -325,6 +344,11 @@
                 	obj1.type = 'line'
                 	obj1.smooth = true
                 	obj1.data = _this.sp
+                	obj1.itemStyle = {
+                		normal : {
+                			label:{show:true}
+                		}
+                	}
             		_this.listAll.push(obj1)
 
             		const obj2 = {}
@@ -332,8 +356,14 @@
                 	obj2.type = 'line'
                 	obj2.smooth = true
                 	obj2.data = _this.pj
+                	obj2.itemStyle = {
+                		normal : {
+                			label:{show:true}
+                		}
+                	}
             		_this.listAll.push(obj2)
             		
+            		console.log(_this.listAll)
 
 
 
@@ -372,11 +402,15 @@
 	              }
 	          });
         	},
+        	// 折线图
             drawColumnChart() {
                 this.chartColumn = echarts.init(document.getElementById('chartColumn'));
                 this.chartColumn.setOption({
                     title: { text: '周营业额' },
                     tooltip: {},
+                    legend: {
+        				data:['成交额总数','成交商品总数','成交额平均值']
+    				},
                     xAxis: {
                         type : 'category',
                         boundaryGap : false,
@@ -388,6 +422,7 @@
                     series:this.listAll
                 });
             },
+            // 饼图
             drawPieChart() {
                 this.chartPie = echarts.init(document.getElementById('chartPie'));
                 this.chartPie.setOption({
