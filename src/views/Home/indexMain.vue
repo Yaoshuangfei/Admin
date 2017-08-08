@@ -198,7 +198,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.userNumPrice = 0
                         		}else{
-                        			_this.userNumPrice = info[i].avgPrice*100
+                        			_this.userNumPrice = (info[i].avgPrice*100).toFixed(6)
                         		}
                         	}else if(info[i].type === 2){
                         		if(info[i].countAll === null){
@@ -209,7 +209,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.TotalTurnoverPrice = 0
                         		}else{
-                        			_this.TotalTurnoverPrice = info[i].avgPrice*100
+                        			_this.TotalTurnoverPrice = (info[i].avgPrice*100).toFixed(6)
                         		}
                         	}else if(info[i].type === 3){
                         		if(info[i].countAll === null){
@@ -220,7 +220,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.MerchantPrice = 0
                         		}else{
-                        			_this.MerchantPrice = info[i].avgPrice*100
+                        			_this.MerchantPrice = (info[i].avgPrice*100).toFixed(6)
                         		}
                         	}else if(info[i].type === 4){
                         		if(info[i].countAll === null){
@@ -231,7 +231,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.RechargePrice = 0
                         		}else{
-                        			_this.RechargePrice = info[i].avgPrice*100
+                        			_this.RechargePrice = (info[i].avgPrice*100).toFixed(6)
                         		}
                         	}else if(info[i].type === 5){
                         		if(info[i].countAll === null){
@@ -242,7 +242,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.publicWelfarePrice = 0
                         		}else{
-                        			_this.publicWelfarePrice = info[i].avgPrice*100
+                        			_this.publicWelfarePrice = (info[i].avgPrice*100).toFixed(6)
                         		}
                         	}else if(info[i].type === 6){
                         		if(info[i].countAll === null){
@@ -253,7 +253,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.HistoryPrice = 0
                         		}else{
-                        			_this.HistoryPrice = info[i].avgPrice*100
+                        			_this.HistoryPrice = (info[i].avgPrice*100).toFixed(6)
                         		}
                         	}
                         }
