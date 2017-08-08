@@ -45,7 +45,11 @@
 			</el-table-column>
 			<el-table-column prop="withdrawalsSum" label="已提现金额">
 			</el-table-column>
+			<el-table-column prop="frozenIncome" label="冻结金额">
+			</el-table-column>
 			<el-table-column prop="status" :formatter='formatterType' label="状态">
+			</el-table-column>
+			<el-table-column prop="updateTime" :formatter='formatterTime' label="更新时间">
 			</el-table-column>
 			<el-table-column prop="poundage" label="手续费1/%">
 			</el-table-column>
@@ -99,7 +103,14 @@
 					<div>{{orderDetails.illegalSum}}</div>
 				</el-form-item>
 				<el-form-item label="手续费">
-					<div>{{orderDetails.withdrawalsSum}}</div>
+					<el-input style="width:100px" v-model="orderDetails.poundage"></el-input>
+					<!-- <div>{{orderDetails.withdrawalsSum}}</div> -->
+				</el-form-item>
+				<el-form-item label="分佣线">
+					<el-select v-model="filters.commissionLine" clearable>
+				      <el-option v-for="item in optionsfy" :label="item.label" :value="item.value">
+				      </el-option>
+				    </el-select>
 				</el-form-item>
 				<el-col :span='24'><h3>身份认证信息</h3></el-col>
 				<el-form-item label="法人姓名">
@@ -168,6 +179,18 @@
 					value:0,
 					label:'待审核'
 				}],
+				optionsfy:[
+					{
+		          value: 1,
+		          label: '与花说分佣线'
+		        }, {
+		          value: 2,
+		          label: '花想容分佣线'
+		        }, {
+		          value: 3,
+		          label: '磁疗贴分佣线'
+		        }
+				],
 				options: [{
 		          value: '0',
 		          label: '全部'
@@ -184,7 +207,8 @@
 				filters: {
 					name: '',
 					status:'',
-					type:''
+					type:'',
+					commissionLine:''
 				},
 				users: [],
 				total: 100,
@@ -254,6 +278,11 @@
 				}
 				return type
 			},
+			formatterTime(row,column){
+                let curTime = row.updateTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+            },
 			getlist(){
 				const _this = this
 				_this.orderInformation = []
@@ -287,6 +316,11 @@
                     	const info = data.data
                     	_this.orderInformation = info.list
                     	_this.total = info.total
+                    	for(var i = 0;i<_this.orderInformation.length;i++){
+                    		if(_this.orderInformation[i].status === null){
+                    			_this.orderInformation[i].status = 0
+                    		}	
+                    	}
                     }
                 });
 			},
@@ -414,6 +448,7 @@
 			seeBtn: function (row) {
 				this.editFormVisible = true;
 				console.log(row)
+				this.filters.commissionLine = row.commissionLine
 				this.orderDetails.name = row.name
 				this.orderDetails.nickName = row.coreUser.nickName
 				this.orderDetails.mobile = row.coreUser.mobile
@@ -456,7 +491,8 @@
 				const params = {
 					id:this.orderDetails.id,
 					poundage:this.orderDetails.poundage,
-					availableIncome:this.orderDetails.availableIncome
+					availableIncome:this.orderDetails.availableIncome,
+					commissionLine:this.filters.commissionLine
 				}
 				console.log(params)
 				$.ajax({

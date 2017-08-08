@@ -75,7 +75,7 @@
 				<div class="grid-content bg-purple">
 					<div style="float:left" class="statistics_title_left">
 						<span>财务报表</span>
-						<span>周报表</span>
+						<span>{{baobiaoName}}</span>
 					</div>
 					<div style="float:right;margin-right: 2%;" class="statistics_title_right">
 						<el-radio-group v-model="radio3" @change='click'>
@@ -126,6 +126,7 @@
     export default {
         data() {
             return {
+                baobiaoName:'日营业额',
             	 ruleAll:[{
                 	name:'日报表',
                 	id:0
@@ -277,6 +278,17 @@
         	},
         	click(val) {
         		this.type = val
+                if(val === 0){
+                    this.baobiaoName = '日营业额'
+                }else if(val === 1){
+                    this.baobiaoName = '周营业额'
+                }else if(val === 2){
+                    this.baobiaoName = '月营业额'
+                }else if(val === 3){
+                    this.baobiaoName = '季营业额'
+                }else if(val === 4){
+                    this.baobiaoName = '年营业额'
+                }
         		this.getPosition()
 			},
         	// 图
@@ -406,7 +418,7 @@
             drawColumnChart() {
                 this.chartColumn = echarts.init(document.getElementById('chartColumn'));
                 this.chartColumn.setOption({
-                    title: { text: '周营业额' },
+                    title: { text: this.baobiaoName },
                     tooltip: {},
                     legend: {
         				data:['成交额总数','成交商品总数','成交额平均值']

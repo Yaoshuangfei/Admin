@@ -57,7 +57,7 @@
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
-					<el-button type="text" size="small" @click="shenheBtn(scope.row)">审核</el-button>
+					<el-button type="text" size="small" v-if="scope.row.orderStatus !== 11" @click="shenheBtn(scope.row)">审核</el-button>
 					<el-button type="text" size="small" @click="upBtn(scope.row)">充值</el-button>
 					<el-button type="text" size="small" @click="notpassBtn(scope.row)">不通过</el-button>
 				</template>
@@ -236,10 +236,12 @@
 			},
 			//充值
 			upBtn(row) {
+				console.log(row)
 				const _this = this
 				const params = {
 					id:row.id
 				}
+				console.log(params)
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
