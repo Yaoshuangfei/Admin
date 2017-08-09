@@ -17,8 +17,8 @@ export const editUser = params => { return axios.get(`${base}/user/edit`, { para
 export const addUser = params => { return axios.get(`${base}/user/add`, { params: params }); };
 
 
-export const  baseUrl = 'http://121.43.178.109:8109/ser';// 测试服务器
-// export const  baseUrl = 'http://123.206.115.18:8083';// 正式服务器
+// export const  baseUrl = 'http://121.43.178.109:8109/ser';// 测试服务器
+export const  baseUrl = 'http://123.206.115.18:8083';// 正式服务器
 // export const  baseUrl = 'http://192.168.0.103:8080';
 
 

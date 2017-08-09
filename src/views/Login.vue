@@ -77,6 +77,22 @@
                   document.cookie="token="+data.data.token;
                   sessionStorage.setItem('user', JSON.stringify(_this.ruleForm2.username));
                   _this.$router.push({ path: '/main' });
+
+
+                //   if(data.code === 1){
+                //           _this.$message({
+                //   message: '提交成功',
+                //   type: 'success'
+                // });
+                //         }else{
+                //           _this.$message({
+                //   message: data.msg,
+                //   type: 'error'
+                // });
+                //         }
+
+
+
                 }
             });
       }

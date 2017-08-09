@@ -41,52 +41,6 @@
 			</el-pagination>
 		</el-col>
 
-		<!--编辑界面-->
-		<el-dialog title="银行卡管理" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="100px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="用户ID:">{{editForm.name}}</el-form-item>
-				<el-form-item label="手机号码:">{{editForm.name}}</el-form-item>
-				<el-form-item label="客户姓名:">{{editForm.name}}</el-form-item>
-				<el-form-item label="银行:">
-					<el-select v-model="value" placeholder="请选择银行">
-					    <el-option
-					      v-for="item in options"
-					      :label="item.label"
-					      :value="item.value">
-					    </el-option>
-				  </el-select>
-				</el-form-item>
-				<el-form-item label="银行支行:">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="银行卡号:">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<!-- <el-button @click.native="editFormVisible = false">取消</el-button> -->
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
-			</div>
-		</el-dialog>
-
-		<el-dialog title="客户详情" v-model="editFormVisible1" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="180px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="用户ID:">{{editForm.name}}</el-form-item>
-				<el-form-item label="手机号码:">{{editForm.name}}</el-form-item>
-				<el-form-item label="客户姓名:">{{editForm.name}}</el-form-item>
-				<el-form-item label="省份证号:">{{editForm.name}}</el-form-item>
-				<el-form-item label="会员等级:">{{editForm.name}}</el-form-item>
-				<el-form-item label="账户余额:">{{editForm.name}}</el-form-item>
-				<el-form-item label="代收金额:">{{editForm.name}}</el-form-item>
-				<el-form-item label="待收利息:">{{editForm.name}}</el-form-item>
-				<el-form-item label="邀请人:">{{editForm.name}}</el-form-item>
-				<el-form-item label="客户来源:">{{editForm.name}}</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer" style="text-align: left;margin-left: 40%;">
-				<!-- <el-button @click.native="editFormVisible = false">取消</el-button> -->
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
-			</div>
-		</el-dialog>
 
 		<!--新增界面-->
 		<el-dialog title="新增商品分类" v-model="addFormVisible" :close-on-click-modal="false">
@@ -128,6 +82,86 @@
 				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
 			</div>
 		</el-dialog>
+		<!--修改界面-->
+		<el-dialog title="修改商品分类" v-model="editFormVisible" :close-on-click-modal="false">
+			<el-form label-width="80px">
+				<el-form-item label="分类名称">
+					<el-input v-model="editForm.name"></el-input>
+				</el-form-item>
+				<el-form-item label="商品类型">
+					<el-select v-model="editForm.type" placeholder="请选择">
+						<el-option  v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="分类图标">
+					<input type="file" style="position:absolute;opacity:0;width:70px;height:30px;margin-right:10px"  @change="upload1" id="fileInput">
+					<button type="button" class="el-button el-button--primary el-button--small">
+						<span>点击上传</span>
+					</button>
+					<!-- <button type="button" class="el-button el-button--primary el-button--small" id="btnClear" @click="clear1">清空上传</button> -->
+					<!-- <span style="display: block;font-size: 12px">{{ imageChange }}</span> -->
+					<!--<button type="button" class="el-button el-button&#45;&#45;primary el-button&#45;&#45;small" id="btnClear" @click="clear">清空上传</button>-->
+					<!--<span style="display: block;font-size: 12px">{{ imageChange }}</span>-->
+					<el-col :span='24'>
+						<img style="width: 66px" :src="editForm.icon">
+					</el-col>
+				</el-form-item>
+				<!-- <el-form-item label="上级分类">
+					<el-input v-model="editForm.pid"></el-input>
+				</el-form-item> -->
+				<el-form-item label="参数名称">
+					<el-input style="margin-bottom: 10px" v-for="item in paramDataEdit" v-model="item.name"></el-input>
+					<el-button type='text' size="small" @click="newEditP">增加</el-button>
+				</el-form-item>
+				<el-form-item label="规格名称">
+					<el-col :span="24" v-for="item in itemDataEdit" style="margin-bottom: 10px;">
+						<el-input style="width: 80px" v-model="item.name"></el-input><el-input style="width: 150px" v-model="item.values"></el-input>
+					</el-col>
+					<el-button type='text' size="small" @click="newEditI">增加</el-button>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click.native="editFormVisible = false">取消</el-button>
+				<el-button type="primary" @click.native="editSubmit" :loading="addLoading">提交</el-button>
+			</div>
+		</el-dialog>
+		<!--查看界面-->
+		<el-dialog title="查看商品分类" v-model="seeFormVisible" :close-on-click-modal="false">
+			<el-form label-width="80px">
+				<el-form-item label="分类名称">
+					<el-input v-model="seeForm.name"></el-input>
+				</el-form-item>
+				<el-form-item label="商品类型">
+					<el-select v-model="seeForm.type" placeholder="请选择">
+						<el-option  v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="分类图标">
+					<!-- <input type="file" style="position:absolute;opacity:0;width:70px;height:30px;margin-right:10px"  @change="upload1" id="fileInput">
+					<button type="button" class="el-button el-button--primary el-button--small">
+						<span>点击上传</span>
+					</button> -->
+					<el-col :span='24'>
+						<img style="width: 66px" :src="seeForm.icon">
+					</el-col>
+				</el-form-item>
+				<el-form-item label="参数名称">
+					<el-col v-for="item in paramDataSee" :span="6">{{item.name}}</el-col>
+					<!-- <el-input style="margin-bottom: 10px" v-for="item in paramDataSee" v-model="item.name"></el-input> -->
+					<!-- <el-button type='text' size="small" @click="newEditP">增加</el-button> -->
+				</el-form-item>
+				<el-form-item label="规格名称">
+					<el-col :span="24" v-for="item in itemDataSee" style="margin-bottom: 10px;">
+						<el-col :span="5">{{item.name}}</el-col><el-col :span="15">{{item.values}}</el-col>
+						<!-- <el-input style="width: 80px" v-model="item.name"></el-input><el-input style="width: 150px" v-model="item.values"></el-input> -->
+					</el-col>
+					<!-- <el-button type='text' size="small" @click="newEditI">增加</el-button> -->
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click.native="seeFormVisible = false">取消</el-button>
+			</div>
+		</el-dialog>
 	</section>
 </template>
 
@@ -143,8 +177,11 @@
 					{name:'',required:'0',value:''}],
 				itemData:[
 					{name:'',values:''}],
+				paramDataEdit:[],
+				itemDataEdit:[],
+				paramDataSee: [],
+				itemDataSee: [],
 				tableAll:[],
-				value22:'',
 				options: [{
 		          value: 0,
 		          label: '普通商品'
@@ -169,12 +206,8 @@
 				total: 0,
 				page: 1,
 				listLoading: false,
-				sels: [],//列表选中列
-
+				seeFormVisible: false,
 				editFormVisible: false,//编辑界面是否显示
-				editFormVisible1: false,//编辑界面是否显示
-				editFormVisible2: false,//编辑界面是否显示
-				editFormVisible3: false,//编辑界面是否显示
 				editLoading: false,
 				editFormRules: {
 					name: [
@@ -182,16 +215,8 @@
 					]
 				},
 				//编辑界面数据
-				editForm: {
-					id: 0,
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: '',
-					sex:''
-				},
-
+				editForm: {},
+				seeForm: {},
 				addFormVisible: false,//新增界面是否显示
 				addLoading: false,
 				addFormRules: {
@@ -203,26 +228,10 @@
 				addForm: {
 					type:''
 				},
-				table:[{
-					sex:'',
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 100000",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				}],
+				table:[],
 				url:'',
                 formData: new FormData(),
+                formData1: new FormData(),
                 fileImg: ''
 			}
 		},
@@ -275,6 +284,38 @@
                         }, error => _this.$emit('complete', 500, error.message))
                 // });
             },
+            upload1 (event) {
+                this.formData1 = new FormData()
+                let file = event.target.files[0]
+                const self = this
+                if (file) {
+                    console.log('存在file', file)
+                    this.fileImg = file.name
+                    // console.log(this.formData)
+                    this.formData1.append('file', file);
+                    this.submitUpload1()
+                    console.log(this.formData1);
+                } else {
+                    this.fileImg = ''
+                    console.log('不存在file', file)
+                    this.formData1 = new FormData()
+                }
+            },
+            //添加
+            submitUpload1(){
+                // this.$confirm('确认修改吗？', '提示', {}).then(() => {
+                    const _this= this;
+                    _this.$http.post(baseUrl+'/api/attachment/upload', _this.formData1, {
+                        progress(event) {
+                        }
+                    })
+                        .then(response => {
+                            const info = JSON.parse(response.bodyText);
+                            // const info = response.body
+							_this.editForm.icon = info.data[0].baseUri+info.data[0].uri;
+                        }, error => _this.$emit('complete', 500, error.message))
+                // });
+            },
             newparamData(){
             	const obj = {
             		name:'',
@@ -302,7 +343,6 @@
 					status:'1',
 					pid:'',
 					type:this.addForm.type,
-					hierarchy:'1',
 					paramData:this.paramData,
 					itemData:this.itemData
 				}
@@ -387,117 +427,74 @@
                     data:JSON.stringify(params),
                     contentType:'application/json;charset=utf-8',
                     success:function(data){
-                    	console.log(data)
-                    	_this.getlist()
+                    	if(data.code === 1){
+                    		_this.getlist()
+                    	}else {
+                    		alert(data.msg)
+                    	}
+                    	
                     }
                 });
 			},
 			seeBtn(row){
+				this.seeFormVisible = true
+				this.seeForm = row
+				this.itemDataSee =  eval('(' + row.itemData + ')')
+				this.paramDataSee = eval('(' + row.paramData + ')')
 				console.log(row)
 			},
 			editBtn(row){
 				console.log(row)
+				this.editFormVisible = true
+				this.editForm = row
+				this.paramDataEdit = eval('(' + row.paramData + ')')
+				this.itemDataEdit = eval('(' + row.itemData + ')')
+				console.log(this.paramDataEdit)
+				console.log(this.itemDataEdit)
 			},
-			//获取用户列表
-			getUsers() {
-				let para = {
-					page: this.page,
-					name: this.filters.name
-				};
-				this.listLoading = true;
-				//NProgress.start();
-				getUserListPage(para).then((res) => {
-					this.total = res.data.total;
-					this.users = res.data.users;
-					this.listLoading = false;
-					//NProgress.done();
-				});
+			newEditP(){
+				const obj = {
+            		name:'',
+            		required:'',
+            		value:''
+            	}
+            	this.paramDataEdit.push(obj)
 			},
-			//删除
-			handleDel: function (index, row) {
-				this.$confirm('确认删除该记录吗?', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { id: row.id };
-					removeUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
+			newEditI(){
+				const obj = {
+            		name:'',
+            		value:''
+            	}
+            	this.itemDataEdit.push(obj)
 			},
-			//显示编辑界面
-			handleEdit: function (index, row) {
-				this.editFormVisible = true;
-				this.editForm = Object.assign({}, row);
-			},
-			handleEdit1: function (index, row) {
-				this.editFormVisible1 = true;
-				this.editForm = Object.assign({}, row);
-			},
-			handleEdit2: function (index, row) {
-				this.editFormVisible2 = true;
-				this.editForm = Object.assign({}, row);
-			},
-			handleEdit3: function (index, row) {
-				this.editFormVisible3 = true;
-				this.editForm = Object.assign({}, row);
-			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			
-			//批量删除
-			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
-				this.$confirm('确认删除选中记录吗？', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
-			}
+			editSubmit(){
+            	const _this = this
+				_this.table = []
+				const params = {
+					name:this.editForm.name,
+					icon:this.editForm.icon,
+					id:this.editForm.id,
+					paramData:this.paramDataEdit,
+					itemData:this.itemDataEdit
+				}
+				params.paramData = JSON.stringify(params.paramData)
+				params.itemData = JSON.stringify(params.itemData)
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goodsClass/update",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	if(data.code === 1){
+                    		_this.editFormVisible = false
+                    		_this.getlist()
+                    	}
+                    }
+                });
+            }
 		},
 		mounted() {
 			this.getlist();
