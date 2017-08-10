@@ -72,7 +72,7 @@
 				</el-form-item>
 				<el-form-item label="规格名称">
 					<el-col :span="24" v-for="item in itemData" style="margin-bottom: 10px;">
-						<el-input style="width: 80px" v-model="item.name"></el-input><el-input style="width: 150px" v-model="item.value"></el-input>
+						<el-input style="width: 80px" v-model="item.name"></el-input><el-input style="width: 150px" v-model="item.values"></el-input>
 					</el-col>
 					<el-button type='text' size="small" @click="newitemData">增加</el-button>
 				</el-form-item>
@@ -327,7 +327,7 @@
             newitemData(){
             	const obj = {
             		name:'',
-            		value:''
+            		values:''
             	}
             	this.itemData.push(obj)
             },

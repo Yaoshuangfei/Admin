@@ -304,7 +304,7 @@
 				}else if(this.filters.type === '0'){
 					params.name = ''
 				}
-				console.log(params)
+				// console.log(params)
 				$.ajax({
                     type:'POST',
                     dataType:'json',
@@ -317,9 +317,10 @@
                     	_this.orderInformation = info.list
                     	_this.total = info.total
                     	for(var i = 0;i<_this.orderInformation.length;i++){
-                    		if(_this.orderInformation[i].status === null){
-                    			_this.orderInformation[i].status = 0
-                    		}	
+                    		// if(_this.orderInformation[i].status === null){
+                    		// 	_this.orderInformation[i].status = 0
+                    		// }	
+                    		console.log(_this.orderInformation[i].status)
                     	}
                     }
                 });
