@@ -45,7 +45,7 @@
 			</el-table-column>
 			<el-table-column prop="withdrawalsSum" label="已提现金额">
 			</el-table-column>
-			<el-table-column prop="frozenIncome" label="冻结金额">
+			<el-table-column prop="coreUser.frozenIncome" label="冻结金额">
 			</el-table-column>
 			<el-table-column prop="status" :formatter='formatterType' label="状态">
 			</el-table-column>
@@ -321,6 +321,7 @@
                     		// 	_this.orderInformation[i].status = 0
                     		// }	
                     		console.log(_this.orderInformation[i].status)
+                    		
                     	}
                     }
                 });

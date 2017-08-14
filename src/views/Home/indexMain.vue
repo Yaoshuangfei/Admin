@@ -391,7 +391,7 @@
 	                	}else if(ordlist[i].orderType === 5){
 	                		obj.name = '商品购买'
 	                	}else if(ordlist[i].orderType === 6){
-	                		obj.name = '店铺身份购买'
+	                		obj.name = ordlist[i].storeName+ '身份购买'
 	                	}else if(ordlist[i].orderType === 7){
 	                		obj.name = '平台身份购买 '
 	                	}else if(ordlist[i].orderType === 8){
@@ -408,6 +408,7 @@
 	                	_this.parobj.push(obj)
 	                }
 	                console.log(_this.parobj)
+
 	                console.log(_this.parName)
 	                _this.drawColumnChart()
 	                _this.drawPieChart()

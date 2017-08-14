@@ -206,7 +206,7 @@
 				}
 				const params = {
 					pageNum:this.page,
-					pageSize:10,
+					pageSize:20,
 					startTime:_this.startTime,
 					endTime:_this.endTime,
 					payType:_this.payType,
