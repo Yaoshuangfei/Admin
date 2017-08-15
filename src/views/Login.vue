@@ -72,6 +72,9 @@
                 contentType:'application/json;charset=utf-8',
                 success:function(data){
                   console.log(data)
+                  if(data.code !== 1){
+                    alert(data.msg)
+                  }
                   state.storeId = data.data.storeId
                   state.id = data.data.id
                   document.cookie="token="+data.data.token;

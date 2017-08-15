@@ -107,8 +107,26 @@
 					<!-- <div>{{orderDetails.withdrawalsSum}}</div> -->
 				</el-form-item>
 				<el-form-item label="分佣线">
-					<el-select v-model="filters.commissionLine" clearable>
+					<el-select v-model="filters.commissionLine" @change="fychnageval" clearable>
 				      <el-option v-for="item in optionsfy" :label="item.label" :value="item.value">
+				      </el-option>
+				    </el-select>
+				</el-form-item>
+				<el-form-item label="大区" v-if="filters.commissionLine === 5">
+					<el-select v-model="filters.smallName" clearable>
+				      <el-option v-for="item in optionsSmall" :label="item.label" :value="item.value">
+				      </el-option>
+				    </el-select>
+				</el-form-item>
+				<el-form-item label="小区" v-if="filters.commissionLine === 5">
+					<el-select v-model="filters.maxName" clearable>
+				      <el-option v-for="item in optionsMax" :label="item.label" :value="item.value">
+				      </el-option>
+				    </el-select>
+				</el-form-item>
+				<el-form-item label="是否购买平台身份">
+					<el-select v-model="filters.shoppingValue" clearable @change="shoppFun">
+				      <el-option v-for="item in optionsShopp" :label="item.label" :value="item.value">
 				      </el-option>
 				    </el-select>
 				</el-form-item>
@@ -161,7 +179,28 @@
 		data() {
 			return {
 				radio: '0',
+				optionsMax:[
+					{
+						value:1,
+						label:'送'
+					},
+					{
+						value:0,
+						label:'不送'
+					}
+				],
+				optionsSmall:[
+					{
+						value:1,
+						label:'送'
+					},
+					{
+						value:0,
+						label:'不送'
+					}
+				],
 				checked: true,
+				shoppingValue:'',
 				value:'',
 				value1:'',
 				value2:'',
@@ -179,6 +218,16 @@
 					value:0,
 					label:'待审核'
 				}],
+				optionsShopp:[
+					{
+						value:1,
+						label:'是'
+					},
+					{
+						value:0,
+						label:'否'
+					}
+				],
 				optionsfy:[
 					{
 		          value: 1,
@@ -189,6 +238,12 @@
 		        }, {
 		          value: 3,
 		          label: '磁疗贴分佣线'
+		        }, {
+		          value: 4,
+		          label: '蜂蜜分佣线'
+		        }, {
+		          value: 5,
+		          label: '语花说分佣线'
 		        }
 				],
 				options: [{
@@ -199,6 +254,7 @@
 		          label: '店铺名'
 		        }, {
 		          value: '2',
+
 		          label: '用户名'
 		        }, {
 		          value: '3',
@@ -208,7 +264,10 @@
 					name: '',
 					status:'',
 					type:'',
-					commissionLine:''
+					commissionLine:'',
+					shoppingValue:'',
+					maxName:'',
+					smallName:''
 				},
 				users: [],
 				total: 100,
@@ -265,6 +324,12 @@
 			}
 		},
 		methods: {
+			shoppFun(){
+				console.log(this.filters.shoppingValue)
+			},
+			fychnageval(){
+				console.log(this.filters.commissionLine)
+			},
 			formatterType(row,column){
 				let type = ''
 				if(row.status === 0){
@@ -285,6 +350,7 @@
             },
 			getlist(){
 				const _this = this
+				// this.shoppingValue = ''
 				_this.orderInformation = []
 				const params = {
 					pageNum:this.page,
@@ -320,7 +386,7 @@
                     		// if(_this.orderInformation[i].status === null){
                     		// 	_this.orderInformation[i].status = 0
                     		// }	
-                    		console.log(_this.orderInformation[i].status)
+                    		// console.log(_this.orderInformation[i].status)
                     		
                     	}
                     }
@@ -473,6 +539,17 @@
 					this.orderDetails.coreUspAuthentication.cardImgW = row.coreUspAuthentication.cardImgW
 					this.orderDetails.coreUspAuthentication.businessLicense = row.coreUspAuthentication.businessLicense
 					this.orderDetails.coreUspAuthentication.bankImgW = row.coreUspAuthentication.bankImgW
+				}else{
+					this.orderDetails.coreUspAuthentication.realName = ''
+					this.orderDetails.coreUspAuthentication.legalCardCode = ''
+					this.orderDetails.coreUspAuthentication.storeMobile = ''
+					this.orderDetails.coreUspAuthentication.bankName = ''
+					this.orderDetails.coreUspAuthentication.bankCode = ''
+					this.orderDetails.coreUspAuthentication.theAddress = ''
+					this.orderDetails.coreUspAuthentication.cardImgF = ''
+					this.orderDetails.coreUspAuthentication.cardImgW = ''
+					this.orderDetails.coreUspAuthentication.businessLicense = ''
+					this.orderDetails.coreUspAuthentication.bankImgW = ''
 				}
 
 			},
@@ -494,7 +571,11 @@
 					id:this.orderDetails.id,
 					poundage:this.orderDetails.poundage,
 					availableIncome:this.orderDetails.availableIncome,
-					commissionLine:this.filters.commissionLine
+					commissionLine:this.filters.commissionLine,
+				}
+				if(this.filters.commissionLine === 5){
+					params.bigSendPartner = this.filters.maxName
+					params.smallSendMaker = this.filters.smallName
 				}
 				console.log(params)
 				$.ajax({
