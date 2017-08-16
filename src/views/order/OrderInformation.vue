@@ -155,7 +155,7 @@
 				}],
 				options: [{
 		          value: '0',
-		          label: '全部'
+		          label: '订单商品编号'
 		        }, {
 		          value: '1',
 		          label: '订单编号'
@@ -264,6 +264,8 @@
 					params.orderId = this.filters.name
 				}else if(this.filters.type === '2'){
 					params.expno = this.filters.name
+				}else if(this.filters.type === '0'){
+					params.orderGoodsId = this.filters.name
 				}
 				console.log(params)
 				$.ajax({

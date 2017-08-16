@@ -268,7 +268,9 @@
 				const _this = this
 				const params = {
 					id:this.okId
+					// remarks:this.togood
 				}
+				console.log(params)
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',
