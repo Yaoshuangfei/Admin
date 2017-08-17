@@ -207,6 +207,12 @@
                 fileImg: ''
 			}
 		},
+		computed: {
+            // 实时更新上传图片的名字，仅读取，值只须为函数
+            imageChange: function () {
+                return this.fileImg
+            }
+        },
 		methods: {
 			formatterTime(row,column){
                 let curTime = row.createTime;
