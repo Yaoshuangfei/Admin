@@ -280,7 +280,7 @@
                 }
             },
 			uploadBannerone(){
-				// this.$confirm('确认修改吗？', '提示', {}).then(() => {
+				 this.$confirm('确认修改吗？', '提示', {}).then(() => {
                     const _this= this;
                     _this.$http.post(baseUrl+'/api/attachment/upload', _this.formData1, {
                         progress(event) {
@@ -293,7 +293,7 @@
 							// _this.getUrl()
 							_this.orderDetails.picture = _this.editurl
                         }, error => _this.$emit('complete', 500, error.message))
-                // });
+                 });
 			},
 			getUrl(){
 				const _this = this
