@@ -1,7 +1,6 @@
 <template>
 	<section>
-		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff;text-align: right;">
+		<!-- <el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff;text-align: right;">
 			<el-form :inline="true" :model="filters">
                 <el-form-item>
                     <el-button type="primary" v-on:click="editPassword">修改密码</el-button>
@@ -13,10 +12,48 @@
 					<el-button type="primary" v-on:click="AddUsers">添加</el-button>
 				</el-form-item>
 			</el-form>
-		</el-col>
+		</el-col> -->
+        <el-col v-if="forget === false" :span="6" style="margin-left: 80px;margin-top: 60px;">
+            <el-form :model="jiumima" label-width="100px" :rules="passwdForm" ref="jiumima">
+                <el-form-item label="旧密码">
+                    <el-input type="password" v-model="jiumima.jiuPassword" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码" prop="password">
+                    <el-input type="password" v-model="jiumima.password" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="确认新密码"  prop="checkPass">
+                    <el-input type="password" v-model="jiumima.checkPass" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div style="text-align: center">
+                <el-button style="width: 300px;margin-left: 90px;margin-top: 20px" type="primary" @click.native="passwdUpEdit" :loading="editLoading">确认修改</el-button>
+            </div>
+            <el-button style="margin-left: 350px" type="text" v-on:click="forgetPassword">忘记密码</el-button>
+        </el-col>
 
+        <el-col v-if="forget" :span="6" style="margin-left: 80px;margin-top: 60px;">
+            <el-form :model="yanzma" label-width="100px" :rules="passwdForm1" ref="yanzma">
+                <el-form-item label="管理员账户">
+                    <el-input v-model="yanzma.mobileEmail"></el-input>
+                </el-form-item>
+                <el-form-item label="验证码">
+                    <el-input style="width:100px;" type="text" v-model="yanzma.vecode"></el-input>
+                    <el-button type="primary" @click.native="upvecodeBtn" >发送验证码</el-button>
+                </el-form-item>
+                <el-form-item label="新密码" type="password" prop="password">
+                    <el-input type="password" v-model="yanzma.password"></el-input>
+                </el-form-item>
+                <el-form-item label="确认新密码" type="password" prop="checkPass">
+                    <el-input type="password" v-model="yanzma.checkPass"></el-input>
+                </el-form-item>
+            </el-form>
+            <div style="text-align: center;">
+                 <el-button style="width: 300px;margin-left: 90px;margin-top: 20px" type="primary" @click.native="yanzSubmit" :loading="editLoading">确认修改</el-button>
+            </div>
+            <el-button style="margin-left: 350px" type="text" v-on:click="editPassword">旧密码修改</el-button>
+        </el-col>
 		<!--列表-->
-		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+		<!-- <el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
 			<el-table-column prop="orderNumber" label="序号">
 			</el-table-column>
 			<el-table-column prop="userName" label="用户名">
@@ -27,13 +64,11 @@
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
-					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button> -->
-					<!-- <el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
 					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
-		</el-table>
+		</el-table> -->
 
 		<!--工具条-->
 		<!--<el-col :span="24" class="toolbar" style="background:#fff;">-->
@@ -43,7 +78,7 @@
 		<!--</el-col>-->
 
 		<!--添加用户-->
-		<el-dialog title="添加用户" v-model="adduserVisible" :close-on-click-modal="false" >
+		<!-- <el-dialog title="添加用户" v-model="adduserVisible" :close-on-click-modal="false" >
 			<el-form :model="orderDetails" label-width="70px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="用户名">
 					<el-input v-model="input" placeholder="请输入内容"></el-input>
@@ -64,10 +99,9 @@
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button> -->
 				<el-button type="primary" @click.native="adduserVisible = false">取消</el-button>
 			</div>
-		</el-dialog>
+		</el-dialog> -->
 		<!--编辑界面-->
 		<!-- <el-dialog title="修改后台登录密码" v-model="editFormVisible" :close-on-click-modal="false" >
 			<el-form :model="orderDetails" label-width="100px" :rules="editFormRules" ref="editForm">
@@ -108,7 +142,7 @@
             </div>
         </el-dialog>
         <!--编辑界面-->
-        <el-dialog title="忘记密码" v-model="forget" :close-on-click-modal="false" >
+        <el-dialog  title="忘记密码" v-model="adminPassodEdit" :close-on-click-modal="false" >
             <el-form :model="yanzma" label-width="100px" :rules="passwdForm1" ref="yanzma">
                 <el-form-item label="管理员账户">
                     <el-input v-model="yanzma.mobileEmail"></el-input>
@@ -297,7 +331,7 @@
         methods: {
             //修改密码
             editPassword(){
-                this.adminPassodEdit = true
+                this.forget = false
             },
             passwdUpEdit(){
                 const _this = this

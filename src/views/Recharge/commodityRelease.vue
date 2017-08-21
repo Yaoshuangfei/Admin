@@ -551,6 +551,7 @@
                                 console.log(data);
                                 alert('修改成功!');
                                 _this.addFormVisible = false;
+                                _this.getlist()
                             }
 
                         }
@@ -577,6 +578,7 @@
                                 console.log(data);
                                 alert('修改成功!');
                                 _this.addFormVisible = false;
+                                _this.getlist()
                             }
 
                         }
@@ -644,6 +646,7 @@
                                 console.log(data);
                                 alert('修改成功!');
                                 _this.addFormVisible = false;
+                                _this.getlist()
                             }
 
                         }

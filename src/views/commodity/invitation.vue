@@ -4,41 +4,39 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="推荐人姓名"></el-input>
+					<el-input v-model="filters.name" placeholder="商品名称"></el-input>
 				</el-form-item>
-				<el-form-item>
-					<el-input v-model="filters.name" placeholder="推荐人手机号"></el-input>
-				</el-form-item>
-				<span class="demonstration">创建开始时间：</span>
-		        <el-date-picker v-model="value1" type="datetime" placeholder="选择日期时间">
-		        </el-date-picker>
-		        <span class="demonstration">创建结束时间：</span>
-		        <el-date-picker v-model="value2" type="datetime" placeholder="选择日期时间">
-		        </el-date-picker>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
-				</el-form-item>
-				<!-- <el-form-item>
-					<el-button type="primary" @click="handleAdd">新增</el-button>
-				</el-form-item> -->
 			</el-form>
 		</el-col>
 
 		<!--列表-->
 		<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="number" label="推荐人手机号">
+			<el-table-column type="index" label="序号">
 			</el-table-column>
-			<el-table-column prop="name" label="真实姓名">
+			<el-table-column prop="name" label="店铺名">
 			</el-table-column>
-			<el-table-column prop="user_name" label="注册人">
+			<el-table-column prop="user_name" label="用户名">
 			</el-table-column>
-			<el-table-column prop="loan" label="真实姓名">
+			<el-table-column prop="loan" label="手机号">
 			</el-table-column>
-			<el-table-column prop="loan_number" label="注册时间">
+			<el-table-column prop="loan_number" label="商品名称">
 			</el-table-column>
-			<el-table-column prop="min_company" label="是否VIP会员">
+			<el-table-column prop="min_company" label="分类">
 			</el-table-column>
-			<el-table-column prop="interest_rate" label="应得提成收入(已支付)">
+			<el-table-column prop="interest_rate" label="售价">
+			</el-table-column>
+			<el-table-column prop="interest_rate" label="销售数量">
+			</el-table-column>
+			<el-table-column prop="interest_rate" label="状态">
+			</el-table-column>
+			<el-table-column prop="interest_rate" label="快递费用">
+			</el-table-column>
+			<el-table-column label="操作">
+				<template scope="scope">
+					<el-button type="text" size="small">查看</el-button>
+					<el-button type="text" size="small">删除</el-button>
+					<el-button type="text" size="small">违规</el-button>
+				</template>
 			</el-table-column>
 		</el-table>
 
@@ -159,294 +157,6 @@
 					addr: ''
 				},
 				table:[{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				},{
 					id:"001",
 					number:"18709829122",
 					name:"胡红",

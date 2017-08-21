@@ -99,9 +99,9 @@ let routes = [
             { path: '/Jurisdiction', component: Jurisdiction, name: '权限管理' },
             { path: '/ChangePasswords', component: ChangePasswords, name: '更改密码' },
             { path: '/SystemPush', component: SystemPush, name: '系统推送' },
-            { path: '/releaseLook', component: releaseLook, name: '系统权限查看', hidden:true },
-            { path: '/releaseAdd', component: releaseAdd, name: '系统权限添加', hidden:true },
-            { path: '/releaseReg', component: releaseReg, name: '系统权限添加1', hidden:true }
+            { path: '/releaseLook/:id', component: releaseLook, name: '系统推送查看', hidden:true },
+            { path: '/releaseAdd', component: releaseAdd, name: '系统推送添加', hidden:true },
+            { path: '/releaseReg/:id', component: releaseReg, name: '修改推送', hidden:true }
         ]
     },
     {

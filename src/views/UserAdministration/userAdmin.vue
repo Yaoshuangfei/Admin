@@ -43,7 +43,7 @@
 			</el-table-column>
 			<el-table-column prop="crade" :formatter='formatType'  label="会员身份">
 			</el-table-column>
-			<el-table-column prop="identityCard" label="省份证">
+			<el-table-column prop="identityCard" label="身份证">
 			</el-table-column>
 			<el-table-column prop="email" label="邮箱">
 			</el-table-column>
@@ -131,9 +131,9 @@
 			</el-table-column>
 			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
 			</el-table-column>
-			<el-table-column prop="updateTime" :formatter='formatterTime' label="更新时间">
+			<el-table-column prop="updateTime" :formatter='formatterTime1' label="更新时间">
 			</el-table-column>
-			<el-table-column prop="thawingTime" :formatter='formatterTime' label="解冻时间">
+			<el-table-column prop="thawingTime" :formatter='formatterTime2' label="解冻时间">
 			</el-table-column>
 			<el-table-column prop="remarks" label="备注信息">
 			</el-table-column>
@@ -161,20 +161,22 @@
 			</el-table-column>
 		</el-table>
 		<!-- 用户流水   accountFlowtable -->
-		<el-table v-show="accountFlowtable" :data="table"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="nickName" label="编号">
+		<el-table v-show="accountFlowtable" :data="grlsTable"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+			<el-table-column prop="orderMallId" label="编号">
 			</el-table-column>
-			<el-table-column prop="realName" label="手机号码">
+			<el-table-column prop="mobile" label="手机号码">
 			</el-table-column>
-			<el-table-column prop="mobile" label="用户昵称">
+			<el-table-column prop="userName" label="用户昵称">
 			</el-table-column>
-			<el-table-column prop="identityCard" label="金额">
+			<el-table-column prop="quota" label="金额">
 			</el-table-column>
-			<el-table-column prop="email" label="支付">
+			<el-table-column prop="payType" :formatter='payTypeStr' label="支付方式">
 			</el-table-column>
-			<el-table-column prop="availableIncome" label="备注">
+			<el-table-column prop="pmType" :formatter='pmTypeStr' label="类型">
 			</el-table-column>
-			<el-table-column prop="totalIncome"  label="创建时间">
+			<el-table-column prop="remark" label="备注">
+			</el-table-column>
+			<el-table-column prop="createTime" :formatter='formatterTime3' label="创建时间">
 			</el-table-column>
 		</el-table>
 		<!--工具条-->
@@ -188,6 +190,10 @@
 		</el-col>
 		<el-col :span="24" v-show="evaluatetable" class="toolbar" style="background:#fff;">
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange2" :page-size="10" :total="total2" style="float:right;">
+			</el-pagination>
+		</el-col>
+		<el-col v-if="accountFlowtable" :span="24" class="toolbar" style="background:#fff;">
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange3" :page-size="10" :total="total3" style="float:right;">
 			</el-pagination>
 		</el-col>
 		
@@ -235,6 +241,7 @@
 		data() {
 			return {
 				downList:[],
+				grlsTable:[],
 				userType:'',
 				type:'',
 				value:'',
@@ -261,7 +268,7 @@
 		          label: '手机号'
 		        },{
 		          value: 4,
-		          label: '省份证'
+		          label: '身份证'
 		        },{
 		          value: 5,
 		          label: '邮箱'
@@ -323,10 +330,59 @@
 				}
 				return type
 			},
+			payTypeStr(row, column){
+				let type =''
+				if(row.payType === 0){
+					 type = '微信支付' 
+				}else if(row.payType === 1){
+					 type = '支付宝支付'
+				}else if(row.payType === 2){
+					 type = '银联支付'
+				}else if(row.payType === 3){
+					 type = '余额支付'
+				}else if(row.payType === 4){
+					 type = '余额金豆混合支付'
+				}else if(row.payType === 5){
+					 type = '金豆支付'
+				}
+				return type
+			},
+			pmTypeStr(row, column){
+				let type =''
+				if(row.pmType === 0){
+					 type = '支出' 
+				}else if(row.pmType === 1){
+					 type = '收益'
+				}
+				return type
+			},
 			formatterTime(row,column){
                 let curTime = row.createTime;
-                curTime = new Date(curTime).toLocaleString()
-                return curTime
+                if(curTime !== null){
+	                curTime = new Date(curTime).toLocaleString()
+	                return curTime
+                }
+            },
+            formatterTime1(row,column){
+                let curTime = row.updateTime;
+                if(curTime !== null){
+	                curTime = new Date(curTime).toLocaleString()
+	                return curTime
+                }
+            },
+            formatterTime2(row,column){
+                let curTime = row.thawingTime;
+                if(curTime !== null){
+	                curTime = new Date(curTime).toLocaleString()
+	                return curTime
+                }
+            },
+            formatterTime3(row,column){
+                let curTime = row.createTime;
+                if(curTime !== null){
+	                curTime = new Date(curTime).toLocaleString()
+	                return curTime
+                }
             },
             formatterStatus(row,column){
             	return row.status == 1 ? '冻结中' : row.status == 2 ? '已解冻 ' : '退款作废';
@@ -516,6 +572,8 @@
 	                  	console.log(data)
 	                  	_this.centertable = false
 	                  	_this.accountFlowtable = true
+	                  	_this.total3 = data.data.total
+	                  	_this.grlsTable = data.data.list
 	                }
 	            });
 			},
@@ -531,6 +589,10 @@
 			handleCurrentChange2(val) {
 				this.page2 = val;
 				this.showEvaluat();
+			},
+			handleCurrentChange3(val) {
+				this.page3 = val;
+				this.showAccouont();
 			}
 		},
 		mounted() {

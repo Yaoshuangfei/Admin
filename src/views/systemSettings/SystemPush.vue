@@ -13,32 +13,26 @@
 
 		<!--列表-->
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="orderNumber" label="序号" width="100">
+			<el-table-column type="index" label="序号" >
 			</el-table-column>
-			<el-table-column prop="courierNumber" label="图片" width="180">
+			<el-table-column prop="noticeImage" label="图片">
 				<template scope="scope">
-					<img src="" alt="">
+					<img width="50px" :src="scope.row.noticeImage" alt="">
 				</template>
 			</el-table-column>
-			<el-table-column prop="userName" label="描述" >
-				<template scope="scope">
-				</template>
+			<el-table-column prop="noticeTitle" label="标题" >
 			</el-table-column>
-			<el-table-column prop="creationTime" label="创建时间" width="150">
+			<el-table-column prop="noticeCreateTime" :formatter='formatterTime' label="创建时间" >
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
-					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button> -->
-					<!-- <el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
-					<!--<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>-->
-					<!--<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>-->
-					<el-button type="text" size="small" @click="releaseText(scope.$index , scope.row)">发布</el-button>
-						<router-link :to="{ path: '/releaseLook'}"   style="margin: 0 10px;">
-							<el-button  type="text" size="small">查看</el-button>
-						</router-link>
-					<router-link :to="{ path: '/releaseReg'}"   style="margin: 0 10px;">
-						<el-button  type="text" size="small">修改</el-button>
+					<!-- <el-button type="text" size="small" @click="releaseText(scope.$index , scope.row)">发布</el-button> -->
+					<router-link :to="{ name: '系统推送查看' ,params: { id: scope.row.noticeId }}"   style="margin: 0 10px;">
+						<el-button  type="text" size="small">查看</el-button>
 					</router-link>
+					<!-- <router-link :to="{ name: '修改推送' ,params: { id: scope.row.noticeId }}" style="margin: 0 10px;">
+						<el-button  type="text" size="small">修改</el-button>
+					</router-link> -->
 					<el-button type="text" size="small" @click="handleDel(scope.$index , scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -171,16 +165,7 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[{
-					orderNumber :'1',
-					amountPaid :'300',
-					orderTotal :'900',
-					orderStatus :'待付款',
-					paymentMethod :'微信支付',
-					creationTime:'2017-09-08 17:09',
-					deliveryTime:'2017-09-08 17:09',
-					commodityName:'雨花说'
-				}]
+				orderInformation:[]
 			}
 		},
 		methods: {
@@ -190,31 +175,23 @@
 			},
 			getlist(){
 				const _this = this
-				_this.table = []
-				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
-				}
-				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
-	                }
-	              }
-	         	)
+				const params={
+                    pageNum:this.page,
+                    size:10
+                }
+                $.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/notice/selectListSys",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        const info = data.data
+                        _this.total = info.total
+                        _this.orderInformation = info.list
+                    }
+                });
 			},
 			handleCurrentChange(val) {
 				this.page = val;
@@ -238,21 +215,34 @@
 			},
 			//删除
 			handleDel: function (index, row) {
+				const _this = this
+				const params = [row.noticeId]
+				console.log(params)
 				this.$confirm('确认删除该记录吗?', '提示', {
 					type: 'warning'
 				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { id: row.id };
-					removeUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
+					$.ajax({
+		                type:'POST',
+		                dataType:'json',
+		                url:baseUrl+"/api/notice/delete",
+		                data:JSON.stringify(params),
+		                contentType:'application/json;charset=utf-8',
+		                success:function(data){
+		                    console.log(data)
+		                    if(data.code === 1){
+			                    _this.$message({
+									message: '删除成功',
+									type: 'success'
+								});
+		                    	_this.getlist()	
+		                    }else{
+		                    	_this.$message({
+									message: code.msg,
+									type: 'error'
+								});
+		                    }
+		                }
+		            });
 				}).catch(() => {
 
 				});
@@ -321,34 +311,14 @@
 					}
 				});
 			},
-			selsChange: function (sels) {
-				this.sels = sels;
-			},
-			//批量删除
-			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
-				this.$confirm('确认删除选中记录吗？', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
-			}
+			formatterTime(row,column){
+                let curTime = row.noticeCreateTime;
+                curTime = new Date(curTime).toLocaleString()
+                return curTime
+            }
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 

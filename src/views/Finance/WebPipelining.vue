@@ -290,7 +290,7 @@
             },
             //格式化支付类型
             formatterType(row,column){
-                let curType = row.pay_type;
+                let curType = row.payType;
                 if(curType === 0){
                 	curType = '微信支付'
                 }else if(curType === 1){

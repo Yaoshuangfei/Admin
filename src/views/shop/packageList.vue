@@ -52,6 +52,9 @@
 			<el-table-column prop="updateTime" :formatter='formatterTime' label="更新时间">
 			</el-table-column>
 			<el-table-column prop="poundage" label="手续费1/%">
+				<template scope="scope">
+					<div style="cursor: pointer;" @click="sxfEdit(scope.row)">{{scope.row.poundage}}</div>
+				</template>
 			</el-table-column>
 			<el-table-column prop="serviceFeeSum" label="手续费总额">
 			</el-table-column>
@@ -73,7 +76,18 @@
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
-
+		<!-- 修改手续费 -->
+		<el-dialog title="修改手续费" v-model="sxfVisible" :close-on-click-modal="false">
+			<el-form label-width="120px">
+				<el-form-item label="手续费1%">
+					<el-input v-model="sxfObj.sxf" type="text" auto-complete="off"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer" style="text-align: center;">
+				<el-button type="primary" @click.native="editUpOk" :loading="editLoading">确定</el-button>
+				<el-button type="primary" @click.native="sxfVisible = false">关闭</el-button>
+			</div>
+		</el-dialog>
 		<!--编辑界面-->
 		<el-dialog title="店铺详情" v-model="editFormVisible" :close-on-click-modal="false" >
 			<el-form :model="orderDetails" label-width="120px">
@@ -270,7 +284,7 @@
 					smallName:''
 				},
 				users: [],
-				total: 100,
+				total: 0,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
@@ -320,10 +334,48 @@
 						bankImgW:'',
 					}
 				},
-				orderInformation:[]
+				orderInformation:[],
+				sxfObj:{
+					id:'',
+					sxf:'',
+					commissionLine:''
+				},
+				sxfVisible:false
 			}
 		},
 		methods: {
+			sxfEdit(row){
+				this.sxfVisible = true
+				this.sxfObj.id = row.id
+				this.sxfObj.sxf = row.poundage
+				this.sxfObj.commissionLine = row.commissionLine
+				console.log(row)
+			},
+			editUpOk(){
+				const _this = this
+				const params = {
+					id:this.sxfObj.id,
+					poundage:this.sxfObj.sxf,
+					commissionLine:this.sxfObj.commissionLine
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/update/data",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	if(data.code === 1){
+                    		_this.sxfVisible = false
+                    		_this.getlist()
+                    	}else{
+                    		alert(data.msg)
+                    	}
+                    }
+                });
+			},
 			shoppFun(){
 				console.log(this.filters.shoppingValue)
 			},
