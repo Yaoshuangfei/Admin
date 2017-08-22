@@ -14,15 +14,16 @@
 				      </el-option>
 				    </el-select>
 				</el-form-item>
-				<el-form-item label="搜索类型">
-				    <el-select v-model="type" clearable>
+				<el-form-item label="搜索条件">
+					<el-input v-model="value" placeholder="订单编号、用户名、手机号"></el-input>
+				    <!-- <el-select v-model="type" clearable>
 				      <el-option v-for="item in options" :label="item.label" :value="item.value">
 				      </el-option>
-				    </el-select>
+				    </el-select> -->
 				</el-form-item>
-				<el-form-item>
+				<!-- <el-form-item>
 				    <el-input v-model="value"></el-input>
-				</el-form-item>
+				</el-form-item> -->
 				<el-form-item>
 					<el-button type="primary" v-on:click="getlist">查询</el-button>
 				</el-form-item>
@@ -210,18 +211,16 @@
 					startTime:_this.startTime,
 					endTime:_this.endTime,
 					payType:_this.payType,
-					tradeNo:'',
-					userName:'',
-					mobile:'',
+					conditions:this.value,
 					sort:'4'
 				}
-				if(_this.type === '1'){
-					params.tradeNo = this.value
-				}else if(_this.type === '2'){
-					params.userName = this.value
-				}else if(_this.type === '3'){
-					params.mobile = this.value
-				}
+				// if(_this.type === '1'){
+				// 	params.tradeNo = this.value
+				// }else if(_this.type === '2'){
+				// 	params.userName = this.value
+				// }else if(_this.type === '3'){
+				// 	params.mobile = this.value
+				// }
 				console.log(params)
 				_this.cxparams = params
 				$.ajax({
