@@ -78,9 +78,9 @@
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
+					<el-button type="text" @click="seeEditBtn(scope.row)" size="small">查看修改</el-button>
 					<el-button type="text" size="small" @click="inviterBtn(scope.row)">查看上级</el-button>
 					<el-button type="text" size="small" @click="downinviterBtn(scope.row)">查看下级</el-button>
-					<el-button type="text" size="small" @click="commissionBtn(scope.row)">佣金记录</el-button>
 					<el-button type="text" size="small" @click="evaluateBtn(scope.row)">商品评价</el-button>
 					<el-button type="text" size="small" @click="accountFlowBtn(scope.row)">用户流水</el-button>
 				</template>
@@ -207,7 +207,7 @@
 			</el-pagination>
 		</el-col>
 		
-		<el-dialog title="查看上级" :close-on-click-modal="false" >
+		<el-dialog v-model="seeEditDis" title="查看修改" :close-on-click-modal="false" >
 			<el-form label-width="100px">
 				<el-form-item label="昵称">
 					{{rechargeList.nickName}}
@@ -236,7 +236,8 @@
 				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<el-button type="primary" @click.native="seeFormVisible = false">关闭</el-button>
+				<el-button type="primary">修改</el-button>
+				<el-button type="primary" @click.native="seeEditDis = false">关闭</el-button>
 			</div>
 		</el-dialog>
 	</section>
@@ -256,6 +257,7 @@
 				userType:'',
 				type:'',
 				value:'',
+				seeEditDis:false,
 				rechargeList:[],
 				centertable:true,//主体table
 				seeFormVisible: false,//上级
@@ -353,6 +355,10 @@
 			},
 			formatterType: function (row, column) {
 				return row.gender == 1 ? '是' : row.gender == 0 ? '否' : '未知';
+			},
+			seeEditBtn(row){
+				console.log(row)
+				this.seeEditDis = true
 			},
 			ungo(){
 				this.centertable = true

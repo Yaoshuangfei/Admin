@@ -8,7 +8,9 @@
 					</router-link>
 					<div class="main_login">
 						<ul>
-							<li><span></span></li>
+							<li>
+								<img style="width:50px" src="http://resources.51att.cn/ATTACHMENT/ATTACHMENT/1bccc3cf-8d44-4482-84e1-82d84d56e25c.png">
+							</li>
 							<li>
 								<p>
 									<span class="main_login_name">昵称</span>
@@ -67,8 +69,8 @@
 										你好:
 										{{sysUserName}}</span>
 											<el-dropdown-menu slot="dropdown">
-												<el-dropdown-item>我的消息</el-dropdown-item>
-												<el-dropdown-item>设置</el-dropdown-item>
+												<el-dropdown-item>修改密码</el-dropdown-item>
+												<el-dropdown-item>忘记密码</el-dropdown-item>
 												<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
 											</el-dropdown-menu>
 										</el-dropdown>
@@ -128,7 +130,6 @@
 	export default {
 		data() {
 			return {
-				sysName:'蜜蜂聚财',
 				collapsed:false,
 				sysUserName: '',
 				sysUserAvatar: '',
