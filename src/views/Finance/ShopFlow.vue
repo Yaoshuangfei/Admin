@@ -29,6 +29,9 @@
 				<el-form-item>
 					<el-button type="primary" v-on:click="getlist">查询</el-button>
 					<el-button type="primary">导出</el-button>
+					<router-link :to="{ name: '店铺流水记录'}"   style="margin: 0 10px;">
+						<el-button  type="primary">返回上级</el-button>
+					</router-link>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -194,6 +197,45 @@
 			}
 		},
 		methods: {
+			// 获取店铺列表
+			getgoodsList(){
+				const _this = this
+				_this.orderInformation = []
+				const params = {
+					pageNum:this.page,
+					size:10,
+					name:'',
+					nickName:'',
+					mobile:'',
+					status:this.filters.status,
+					id:''
+				}
+				if(this.filters.type === '1'){
+					params.name = this.filters.name
+				}else if(this.filters.type === '2'){
+					params.nickName = this.filters.name
+				}else if(this.filters.type === '3'){
+					params.mobile = this.filters.name
+				}else if(this.filters.type === '0'){
+					params.name = ''
+				}
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/find/page",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	const info = data.data
+                    	_this.orderInformation = info.list
+                    	_this.total = info.total
+                    	for(var i = 0;i<_this.orderInformation.length;i++){
+                    		
+                    	}
+                    }
+                });
+			},
 			getlist(){
 				const _this = this
 				if(this.startTime !== ''){
@@ -204,6 +246,7 @@
 				}
 				const params = {
 					type:'',
+					storeId:this.$route.params.id,
 					pageNum:this.page,
 					pageSize:10,
 					startTime:_this.startTime,

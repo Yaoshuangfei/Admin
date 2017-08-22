@@ -23,8 +23,17 @@
 				</el-form-item>
 			</el-form>
 		</el-col>
-		<el-col v-show="notgo">
-			<el-button type="primary" v-on:click="ungo">返回</el-button>
+		<el-col :span="24" v-show="notgo" style="margin-bottom: 10px;">
+			<el-col :span="4">
+				<el-button type="primary" v-on:click="ungo">返回</el-button>
+			</el-col>
+			<el-col :span="12" v-show="accountFlowtable">
+				<el-select v-model="typeFlow" clearable>
+				      <el-option v-for="item in optionFlow" :label="item.label" :value="item.value">
+				      </el-option>
+				    </el-select>
+				<el-button type="primary" v-on:click="showAccouont">查询</el-button>
+			</el-col>
 		</el-col>
 		<!--列表-->
 		<el-table v-show="centertable" :data="table"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
@@ -32,7 +41,8 @@
 			</el-table-column>
 			<el-table-column prop="headImg" label="头像">
 				<template scope="scope">
-					<img class="img" :src="scope.row.headImg" alt="">
+					<img class="img" v-if="scope.row.headImg === null" src="http://resources.51att.cn/ATTACHMENT/ATTACHMENT/1bccc3cf-8d44-4482-84e1-82d84d56e25c.png" alt="">
+					<img v-else class="img" :src="scope.row.headImg" alt="">
 				</template>
 			</el-table-column>
 			<el-table-column prop="realName" label="真实姓名">
@@ -242,6 +252,7 @@
 			return {
 				downList:[],
 				grlsTable:[],
+				typeFlow:'',
 				userType:'',
 				type:'',
 				value:'',
@@ -254,6 +265,39 @@
 				evaluatetable:false,//评价
 				accountFlowtable:false,//流水
 				notgo:false,
+				optionFlow:[
+					{
+						value: 1,
+		          		label: '提现'
+					},{
+						value: 2,
+		          		label: '分佣'
+					},{
+						value: 3,
+		          		label: '业务充值'
+					},{
+						value: 4,
+		          		label: '余额充值'
+					},{
+						value: 5,
+		          		label: '商品购买'
+					},{
+						value: 6,
+		          		label: '店铺身份购买'
+					},{
+						value: 7,
+		          		label: '平台身份购买'
+					},{
+						value: 8,
+		          		label: '补货'
+					},{
+						value: 9,
+		          		label: '金豆充值'
+					},{
+						value: 10,
+		          		label: '金豆支出'
+					}
+				],
 				option:[{
 		          value: 0,
 		          label: '全部'
@@ -318,6 +362,7 @@
 				this.accountFlowtable = false//流水
 				this.seeFormVisible = false//上级
 				this.subordinatetable = false//下级
+				this.typeFlow = ''
 			},
 			formatType(row, column){
 				let type =''
@@ -560,8 +605,13 @@
 				const params = {
 					userId:this.lsid,
 					pageNum:this.page3,
-					size:10
+					size:10,
+					type:null
 				}
+				if(this.typeFlow !== ''){
+					params.type = this.typeFlow
+				}
+				console.log(params)
 				$.ajax({
 	                type:'POST',
 	                dataType:'json',

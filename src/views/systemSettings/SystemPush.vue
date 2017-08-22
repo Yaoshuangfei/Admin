@@ -230,16 +230,17 @@
 		                success:function(data){
 		                    console.log(data)
 		                    if(data.code === 1){
-			                    _this.$message({
-									message: '删除成功',
-									type: 'success'
-								});
+			     //                _this.$message({
+								// 	message: '删除成功',
+								// 	type: 'success'
+								// });
 		                    	_this.getlist()	
 		                    }else{
-		                    	_this.$message({
-									message: code.msg,
-									type: 'error'
-								});
+		                    	alert( code.msg)
+		      //               	_this.$message({
+								// 	message: code.msg,
+								// 	type: 'error'
+								// });
 		                    }
 		                }
 		            });

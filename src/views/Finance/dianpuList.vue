@@ -27,8 +27,23 @@
 			</el-form>
 		</el-col>
 
-		<!--列表-->
-		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+		<!--列表 v-for="item in orderInformation" -->
+		<el-col :span="24">
+			<el-col :span="3" v-for="item in orderInformation"  style="height:250px;border:1px solid #eee;margin-left: 60px;background: #fff;border-radius: 10px;margin-bottom: 20px;">
+				<el-col :span="24" style="text-align: center;line-height: 35px;color:#aaa">
+					<el-col :span="24">{{item.name}}</el-col>
+					<el-col :span="24">用户名:{{item.coreUser.nickName}}</el-col>
+					<el-col :span="24">手机号:{{item.coreUser.mobile}}</el-col>
+					<el-col :span="24">销量:{{item.orderSum}}</el-col>
+					<el-col :span="24">交易额:{{item.turnoverSum}}</el-col>
+					<el-col :span="24">账户余额:{{item.coreUser.availableIncome}}</el-col>
+					<router-link :to="{ name: '店铺个人流水记录' ,params: { id: item.id }}"   style="margin: 0 10px;">
+						<el-button  type="text" size="small">查看店铺流水</el-button>
+					</router-link>
+				</el-col>
+			</el-col>
+		</el-col>
+		<!-- <el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
 			<el-table-column type="index" label="序号">
 			</el-table-column>
 			<el-table-column prop="name" label="店铺名">
@@ -65,15 +80,14 @@
 					<el-button type="text" v-if='scope.row.status === 0 ' size="small" @click="notpassBtn(scope.row)">不通过</el-button>
 					<el-button type="text" v-if='scope.row.status === 3' size="small" @click="enableBtn(scope.row)">启用</el-button>
 					<el-button type="text" v-if='scope.row.status === 1' size="small" @click="closeBtn(scope.row)">禁用</el-button>
-					<!-- <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button> -->
 				</template>
 			</el-table-column>
-		</el-table>
+		</el-table> -->
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="background:#fff;">
 			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="18" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 		<!-- 修改手续费 -->
@@ -86,101 +100,6 @@
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
 				<el-button type="primary" @click.native="editUpOk" :loading="editLoading">确定</el-button>
 				<el-button type="primary" @click.native="sxfVisible = false">关闭</el-button>
-			</div>
-		</el-dialog>
-		<!--编辑界面-->
-		<el-dialog title="店铺详情" v-model="editFormVisible" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="120px">
-				<el-form-item label="店铺名称">
-					<div>{{orderDetails.name }}</div>
-					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
-				</el-form-item>
-				<el-form-item label="用户名">
-					<div>{{orderDetails.nickName}}</div>
-				</el-form-item>
-				<el-form-item label="手机号">
-					<div>{{orderDetails.mobile }}</div>
-				</el-form-item>
-				<el-col v-if="orderDetails.status === 1">
-					<el-form-item label="店铺销量">
-						<div>{{orderDetails.orderSum }}</div>
-					</el-form-item>
-					<el-form-item label="店铺营业额">
-						<div>{{orderDetails.turnoverSum }}</div>
-					</el-form-item>
-					<el-form-item label="账户余额">
-						<el-input style="width:100px" v-model="orderDetails.availableIncome"></el-input>
-					</el-form-item>
-					<el-form-item label="已提现金额">
-						<div>{{orderDetails.withdrawalsSum}}</div>
-					</el-form-item>
-					<el-form-item label="违规记录">
-						<div>{{orderDetails.illegalSum}}</div>
-					</el-form-item>
-					<el-form-item label="手续费">
-						<el-input style="width:100px" v-model="orderDetails.poundage"></el-input>
-						<!-- <div>{{orderDetails.withdrawalsSum}}</div> -->
-					</el-form-item>
-					<el-form-item label="分佣线">
-						<el-select v-model="filters.commissionLine" @change="fychnageval" clearable>
-					      <el-option v-for="item in optionsfy" :label="item.label" :value="item.value">
-					      </el-option>
-					    </el-select>
-					</el-form-item>
-					<el-form-item label="大区" v-if="filters.commissionLine === 5">
-						<el-select v-model="filters.smallName" clearable>
-					      <el-option v-for="item in optionsSmall" :label="item.label" :value="item.value">
-					      </el-option>
-					    </el-select>
-					</el-form-item>
-					<el-form-item label="小区" v-if="filters.commissionLine === 5">
-						<el-select v-model="filters.maxName" clearable>
-					      <el-option v-for="item in optionsMax" :label="item.label" :value="item.value">
-					      </el-option>
-					    </el-select>
-					</el-form-item>
-					<el-form-item label="是否购买平台身份">
-						<el-select v-model="filters.shoppingValue" clearable @change="shoppFun">
-					      <el-option v-for="item in optionsShopp" :label="item.label" :value="item.value">
-					      </el-option>
-					    </el-select>
-					</el-form-item>
-				</el-col>
-				<el-col :span='24'><h3>身份认证信息</h3></el-col>
-				<el-form-item label="法人姓名">
-					<div>{{orderDetails.coreUspAuthentication.realName}}</div>
-				</el-form-item>
-				<el-form-item label="法人身份证号">
-					<div>{{orderDetails.coreUspAuthentication.legalCardCode}}</div>
-				</el-form-item>
-				<el-form-item label="手机号">
-					<div>{{orderDetails.coreUspAuthentication.storeMobile}}</div>
-				</el-form-item>
-				<el-form-item label="银行名称">
-					<div>{{orderDetails.coreUspAuthentication.bankName}}</div>
-				</el-form-item>
-				<el-form-item label="对公账户账号">
-					<div>{{orderDetails.coreUspAuthentication.bankCode}}</div>
-				</el-form-item>
-				<el-form-item label="运营地址">
-					<div>{{orderDetails.coreUspAuthentication.theAddress}}</div>
-				</el-form-item>
-				<el-form-item label="法人身份证">
-					<img style="width: 100px" v-if="orderDetails.coreUspAuthentication.cardImgF !== '' " :src="orderDetails.coreUspAuthentication.cardImgF">
-				</el-form-item>
-				<el-form-item label="法人手持身份证">
-					<img style="width: 100px" v-if="orderDetails.coreUspAuthentication.cardImgW  !== '' "  :src="orderDetails.coreUspAuthentication.cardImgW">
-				</el-form-item>
-				<el-form-item label="营业执照">
-					<img style="width: 100px" v-if="orderDetails.coreUspAuthentication.businessLicense  !== '' "  :src="orderDetails.coreUspAuthentication.businessLicense">
-				</el-form-item>
-				<el-form-item label="银行开户许可证">
-					<img style="width: 100px" v-if="orderDetails.coreUspAuthentication.bankImgW  !== '' "  :src="orderDetails.coreUspAuthentication.bankImgW">
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">确定</el-button>
-				<el-button type="primary" @click.native="editFormVisible = false">关闭</el-button>
 			</div>
 		</el-dialog>
 	</section>
@@ -285,7 +204,6 @@
 					maxName:'',
 					smallName:''
 				},
-				users: [],
 				total: 0,
 				page: 1,
 				listLoading: false,
@@ -408,7 +326,7 @@
 				_this.orderInformation = []
 				const params = {
 					pageNum:this.page,
-					size:20,
+					size:18,
 					name:'',
 					nickName:'',
 					mobile:'',
@@ -582,7 +500,6 @@
 				this.orderDetails.poundage = row.poundage
 				this.orderDetails.logo = row.logo
 				this.orderDetails.id = row.id
-				this.orderDetails.status = row.status
 				if(row.coreUspAuthentication !== null){
 					this.orderDetails.coreUspAuthentication.realName = row.coreUspAuthentication.realName
 					this.orderDetails.coreUspAuthentication.legalCardCode = row.coreUspAuthentication.legalCardCode

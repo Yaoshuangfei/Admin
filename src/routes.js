@@ -44,6 +44,7 @@ import Imazamox from './views/Finance/Imazamox.vue'
 import SweepCodeToPayWater from './views/Finance/SweepCodeToPayWater.vue'
 import PublicWelfareFundRaising from './views/Finance/PublicWelfareFundRaising.vue'
 import MerchantCommission from './views/Finance/MerchantCommission.vue'
+import dianpuList from './views/Finance/dianpuList.vue'
 
 
 // 用户管理 UserAdministration 
@@ -66,8 +67,6 @@ import account from './views/VoIP/account.vue'
 import editPassword from './views/VoIP/editPassword.vue'
 import operationLog from './views/VoIP/operationLog.vue'
 
-/*统计管理 Statistics*/
-// import statistics from './views/Statistics/statistics.vue'
 
 
 
@@ -158,7 +157,8 @@ let routes = [
             { path: '/WebPipelining', component: WebPipelining, name: '网站流水报表' },
             { path: '/withdrawals', component: withdrawals, name: '提现管理' },
             { path: '/PersonalFlow', component: PersonalFlow, name: '个人流水记录' },
-            { path: '/ShopFlow', component: ShopFlow, name: '店铺流水记录' },
+            {path: '/dianpuList', component: dianpuList, name: '店铺流水记录' },
+            { path: '/ShopFlow/:id', component: ShopFlow, name: '店铺个人流水记录', hidden:true },
             { path: '/Donation', component: Donation, name: '转赠记录' },
             { path: '/Imazamox', component: Imazamox, name: '金豆记录' },
             { path: '/SweepCodeToPayWater', component: SweepCodeToPayWater, name: '扫码付流水记录' },
@@ -166,27 +166,12 @@ let routes = [
             { path: '/MerchantCommission', component: MerchantCommission, name: '商户手续费记录' }
         ]
     },
-    // {
-    //     path: '/',
-    //     component: Home, withdrawals
-    //     name: '',
-    //     iconCls: 'fa fa-address-card',
-    //     leaf: true,//只有一个节点
-    //     children: [
-    //         { path: '/statistics', component: statistics, name: '统计管理' }
-    //     ]
-    // },
     {
         path: '/',
         component: Home,
         name: '用户管理',
         iconCls: 'el-icon-message',
         children: [
-            // { path: '/department', component: department, name: '员工管理' },
-            // { path: '/menu', component: menu, name: '菜单管理' },
-            // { path: '/role', component: role, name: '组织管理' },
-            // { path: '/account', component: account, name: '账号管理' },
-            // { path: '/editPassword', component: editPassword, name: '修改密码' },
             { path: '/userAdmin', component: userAdmin, name: '用户信息管理' }
         ]
     },
@@ -196,12 +181,6 @@ let routes = [
         name: '扫码付管理',
         iconCls: 'el-icon-message',
         children: [
-            // { path: '/department', component: department, name: '员工管理' },
-            // { path: '/menu', component: menu, name: '菜单管理' },
-            // { path: '/role', component: role, name: '组织管理' },
-            // { path: '/account', component: account, name: '账号管理' },
-            // { path: '/editPassword', component: editPassword, name: '修改密码' },
-            // { path: '/operationLog', component: operationLog, name: '操作日志' }
         ]
     },
     {
@@ -212,10 +191,6 @@ let routes = [
         children: [
             { path: '/page', component: page, name: '千人千面' },
             { path: '/addpage/:id', component: addpage, name: '添加千人千面', hidden: true  }
-            // { path: '/role', component: role, name: '组织管理' },
-            // { path: '/account', component: account, name: '账号管理' },
-            // { path: '/editPassword', component: editPassword, name: '修改密码' },
-            // { path: '/operationLog', component: operationLog, name: '操作日志' }
         ]
     },
     {
@@ -238,10 +213,6 @@ let routes = [
         name: '充值管理',
         iconCls: 'el-icon-message',
         children: [
-            // { path: '/department', component: department, name: '员工管理' },
-            // { path: '/menu', component: menu, name: '菜单管理' },
-            // { path: '/role', component: role, name: '组织管理' },
-            // { path: '/account', component: account, name: '账号管理' },
             { path: '/CellAdmin', component: CellAdmin, name: '手机充值管理' },
             { path: '/CellularPhoneReplenishing', component: CellularPhoneReplenishing, name: '手机充值记录' },
             { path: '/rechargeSpecification', component: rechargeSpecification, name: '充值规格管理' },
@@ -254,12 +225,7 @@ let routes = [
         name: '网络电话管理',
         iconCls: 'el-icon-message',
         children: [
-            // { path: '/department', component: department, name: '员工管理' },
-            // { path: '/menu', component: menu, name: '菜单管理' },
-            // { path: '/role', component: role, name: '组织管理' },
-            // // { path: '/account', component: account, name: '账号管理' },
-            // { path: '/editPassword', component: editPassword, name: '修改密码' },
-            // { path: '/operationLog', component: operationLog, name: '操作日志' }
+            // { path: '/department', component: department, name: '员工管理' }
         ]
     },
     {

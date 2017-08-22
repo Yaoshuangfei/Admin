@@ -67,7 +67,7 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="background:#fff;">
 			<el-button type="danger" @click="batchRemove" :disabled="this.delID.length===0">批量审核</el-button>
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="total" style="float:right;">
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 
@@ -285,7 +285,7 @@
 				}
 				const params = {
 					pageNum:this.page,
-					pageSize:10,
+					pageSize:20,
 					startTime:_this.startTime,
 					endTime:_this.endTime,
 					attrName:'',

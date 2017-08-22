@@ -9,36 +9,44 @@
 			</el-form>
 		</el-col>
 
+		<el-col :span="4">
+			<el-tree :data="MenuData" check-strictly  @node-click="handleNodeClick" :expand-on-click-node="false" node-key="id" ref="tree" highlight-current  style="border: none">
+			</el-tree>
+		</el-col>
 		<!--列表-->
-		<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column type="index" label="序号">
-			</el-table-column>
-			<el-table-column prop="name" label="店铺名">
-			</el-table-column>
-			<el-table-column prop="user_name" label="用户名">
-			</el-table-column>
-			<el-table-column prop="loan" label="手机号">
-			</el-table-column>
-			<el-table-column prop="loan_number" label="商品名称">
-			</el-table-column>
-			<el-table-column prop="min_company" label="分类">
-			</el-table-column>
-			<el-table-column prop="interest_rate" label="售价">
-			</el-table-column>
-			<el-table-column prop="interest_rate" label="销售数量">
-			</el-table-column>
-			<el-table-column prop="interest_rate" label="状态">
-			</el-table-column>
-			<el-table-column prop="interest_rate" label="快递费用">
-			</el-table-column>
-			<el-table-column label="操作">
-				<template scope="scope">
-					<el-button type="text" size="small">查看</el-button>
-					<el-button type="text" size="small">删除</el-button>
-					<el-button type="text" size="small">违规</el-button>
-				</template>
-			</el-table-column>
-		</el-table>
+		<el-col :span="20">
+			<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+				<el-table-column type="index" label="序号">
+				</el-table-column>
+				<el-table-column prop="name" label="店铺名">
+				</el-table-column>
+				<el-table-column prop="user_name" label="用户名">
+				</el-table-column>
+				<el-table-column prop="loan" label="手机号">
+				</el-table-column>
+				<el-table-column prop="loan_number" label="商品名称">
+				</el-table-column>
+				<el-table-column prop="min_company" label="分类">
+				</el-table-column>
+				<el-table-column prop="interest_rate" label="售价">
+				</el-table-column>
+				<el-table-column prop="interest_rate" label="销售数量">
+				</el-table-column>
+				<el-table-column prop="interest_rate" label="状态">
+				</el-table-column>
+				<el-table-column prop="interest_rate" label="快递费用">
+				</el-table-column>
+				<el-table-column label="操作">
+					<template scope="scope">
+						<el-button type="text" size="small">查看</el-button>
+						<el-button type="text" size="small">删除</el-button>
+						<el-button type="text" size="small">违规</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+		</el-col>
+		
+		
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
@@ -113,6 +121,38 @@
 	export default {
 		data() {
 			return {
+				MenuData:[{
+		          	id: 1,
+		          	label: '个人美妆',
+		          	children: [
+		            {
+		              id: 9,
+		              label: '护肤'
+		            }, {
+		              id: 10,
+		              label: '清洁'
+		          }]
+		        }, {
+		          id: 2,
+		          label: '食品',
+		          children: [{
+		            id: 5,
+		            label: '小吃'
+		          }, {
+		            id: 6,
+		            label: '美食'
+		          }]
+		        }, {
+		          id: 3,
+		          label: '数码',
+		          children: [{
+		            id: 7,
+		            label: '手机'
+		          }, {
+		            id: 8,
+		            label: '电视'
+		          }]
+		        }],
 				value2:'',
 				value1:'',
 				filters: {
@@ -156,30 +196,24 @@
 					birth: '',
 					addr: ''
 				},
-				table:[{
-					id:"001",
-					number:"18709829122",
-					name:"胡红",
-					user_name:"4分",
-					loan:" 抵押标 【东阳】大众抵押标，感谢支持！（续）",
-					loan_number:"450000元",
-					min_company:"-",
-					interest_rate:"10%",
-					data_qx:"1个月",
-					time:"2017-04-01 12:12:00",
-					toubiao:"0元",
-					fs_time:"",
-					yhkje:"0元",
-					syhkje:"545111元",
-					state:"等待初审"
-				}]
+				table:[]
 			}
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
-			},
+			handleNodeClick(data) {
+				// const _this = this
+				// _this.table = []
+				console.log(data)
+				// this.pID = data.pId
+				// this.fatherRoleID = data.id
+				// this.editOrganize.name = data.label
+				// this.editOrganize.pId = data.pId
+				// this.editOrganize.id = data.id
+				// console.log(this.fatherRoleID)
+				// this.curId = data.id;
+				// console.log(this.curId)
+				// this.role_list()
+	        },
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getUsers();
