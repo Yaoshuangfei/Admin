@@ -127,13 +127,13 @@
 					      </el-option>
 					    </el-select>
 					</el-form-item>
-					<el-form-item label="大区" v-if="filters.commissionLine === 5 && orderDetails.status === 1">
+					<el-form-item label="大区送创客商" v-if="filters.commissionLine === 5 && orderDetails.status === 1">
 						<el-select v-model="filters.smallName" clearable>
 					      <el-option v-for="item in optionsSmall" :label="item.label" :value="item.value">
 					      </el-option>
 					    </el-select>
 					</el-form-item>
-					<el-form-item label="小区" v-if="filters.commissionLine === 5 && orderDetails.status === 1">
+					<el-form-item label="小区送创客" v-if="filters.commissionLine === 5 && orderDetails.status === 1">
 						<el-select v-model="filters.maxName" clearable>
 					      <el-option v-for="item in optionsMax" :label="item.label" :value="item.value">
 					      </el-option>

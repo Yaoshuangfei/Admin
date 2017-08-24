@@ -10,14 +10,15 @@
 				    </el-select>
 				</el-form-item>
 				<el-form-item label="条件">
-				    <el-select v-model="type" clearable>
+					<el-input v-model="value" placeholder="姓名、昵称、手机、邮箱、身份证"></el-input>
+				    <!-- <el-select v-model="type" clearable>
 				      <el-option v-for="item in option" :label="item.label" :value="item.value">
 				      </el-option>
-				    </el-select>
+				    </el-select> -->
 				</el-form-item>
-				<el-form-item>
+				<!-- <el-form-item>
 				    <el-input v-model="value"></el-input>
-				</el-form-item>
+				</el-form-item> -->
 				<el-form-item>
 					<el-button type="primary" v-on:click="getlistinit">查询</el-button>
 				</el-form-item>
@@ -27,12 +28,20 @@
 			<el-col :span="4">
 				<el-button type="primary" v-on:click="ungo">返回</el-button>
 			</el-col>
-			<el-col :span="12" v-show="accountFlowtable">
+			<el-col :span="6" v-show="accountFlowtable">
 				<el-select v-model="typeFlow" clearable>
 				      <el-option v-for="item in optionFlow" :label="item.label" :value="item.value">
 				      </el-option>
 				    </el-select>
 				<el-button type="primary" v-on:click="showAccouont">查询</el-button>
+			</el-col>
+			<el-col :span="8" v-show="accountFlowtable" style="margin-top: 10px;">
+				<el-col :span="3">昵称：</el-col>
+				<el-col :span="4">{{userName}}</el-col>
+				<el-col :span="3">手机号：</el-col>
+				<el-col :span="5" style="margin-top:2px;">{{Phone}}</el-col>
+				<el-col :span="4">总提现金额：</el-col>
+				<el-col :span="4" style="margin-top:2px;">{{allMoney}}</el-col>
 			</el-col>
 		</el-col>
 		<!--列表-->
@@ -177,15 +186,11 @@
 		<el-table v-show="accountFlowtable" :data="grlsTable"  highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
 			<el-table-column prop="orderMallId" label="编号">
 			</el-table-column>
-			<el-table-column prop="mobile" label="手机号码">
-			</el-table-column>
-			<el-table-column prop="userName" label="用户昵称">
-			</el-table-column>
 			<el-table-column prop="quota" label="金额">
 			</el-table-column>
 			<el-table-column prop="payType" :formatter='payTypeStr' label="支付方式">
 			</el-table-column>
-			<el-table-column prop="pmType" :formatter='pmTypeStr' label="类型">
+			<el-table-column prop="type" :formatter='pmTypeStr' label="类型">
 			</el-table-column>
 			<el-table-column prop="remark" label="备注">
 			</el-table-column>
@@ -268,6 +273,9 @@
 	export default {
 		data() {
 			return {
+				Phone:'',
+				allMoney:'',
+				userName:'',
 				reasons:'',
 				crade:'',
 				Compared_availableIncome:'',
@@ -474,10 +482,28 @@
 			},
 			pmTypeStr(row, column){
 				let type =''
-				if(row.pmType === 0){
-					 type = '支出' 
-				}else if(row.pmType === 1){
-					 type = '收益'
+				if(row.type === 1){
+					 type = '提现' 
+				}else if(row.type === 2){
+					 type = '分佣'
+				}else if(row.type === 3){
+					 type = '业务充值'
+				}else if(row.type === 4){
+					 type = '余额充值'
+				}else if(row.type === 5){
+					 type = '商品购买'
+				}else if(row.type === 6){
+					 type = '店铺身份购买'
+				}else if(row.type === 7){
+					 type = '平台身份购买 '
+				}else if(row.type === 8){
+					 type = '补货'
+				}else if(row.type === 9){
+					 type = '金豆充值'
+				}else if(row.type === 10){
+					 type = '金豆支出'
+				}else if(row.type === 11){
+					 type = '店铺收入'
 				}
 				return type
 			},
@@ -527,22 +553,7 @@
 					pageNum:this.page,
 					size:10,
 					crade:_this.userType,
-					nickName:'',
-					realName:'',
-					mobile:'',
-					email:'',
-					identityCard:''
-				}
-				if(_this.type === 1){
-					params.nickName = _this.value
-				}else if(_this.type === 2){
-					params.realName = _this.value
-				}else if(_this.type === 3){
-					params.mobile = _this.value
-				}else if(_this.type === 4){
-					params.identityCard = _this.value
-				}else if(_this.type === 5){
-					params.email = _this.value
+					conditions:_this.value
 				}
 				console.log(params)
 				$.ajax({
@@ -676,8 +687,13 @@
 			},
 			//个人流水记录
 			accountFlowBtn(row) {
+				console.log(row)
 				this.lsid = row.id
 				this.notgo = true
+				this.userName = row.nickName
+				this.Phone = row.mobile
+				this.allMoney = row.withdrawals
+
 				this.showAccouont()
 			},
 			showAccouont() {

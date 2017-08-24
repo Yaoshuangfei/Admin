@@ -172,6 +172,7 @@
                 cj:[],
                 sp:[],
                 pj:[],
+                tx: [],
                 parobj:[],//饼图
                 parName:[]
             }
@@ -298,6 +299,7 @@
         		_this.cj = []
         		_this.sp = []
         		_this.pj = []
+                _this.tx = []
         		_this.parobj = []//初始化饼图数据
         		_this.parName = []
         		_this.listAll = []//初始化线形图数据
@@ -337,8 +339,12 @@
 	                	_this.cj.push(linelist[i].moneyAll)
 	                	_this.sp.push(linelist[i].countAll)
 	                	_this.pj.push(linelist[i].avgPrice)
+                        _this.tx.push(linelist[i].amount)
 	                }
 	                console.log(_this.sj)
+
+                    
+
 	                const obj = {}
                 	obj.name = '成交额总数'
                 	obj.type = 'line'
@@ -375,6 +381,18 @@
                 	}
             		_this.listAll.push(obj2)
             		
+                    const obj3 = {}
+                    obj3.name = '提现总金额'
+                    obj3.type = 'line'
+                    obj3.smooth = true
+                    obj3.data = _this.tx
+                    obj3.itemStyle = {
+                        normal : {
+                            label:{show:true}
+                        }
+                    }
+                    _this.listAll.push(obj3)
+
             		console.log(_this.listAll)
 
 
@@ -422,7 +440,7 @@
                     title: { text: this.baobiaoName },
                     tooltip: {},
                     legend: {
-        				data:['成交额总数','成交商品总数','成交额平均值']
+        				data:['提现总金额','成交额总数','成交商品总数','成交额平均值']
     				},
                     xAxis: {
                         type : 'category',
