@@ -77,10 +77,13 @@
                 type:'POST',
                 dataType:'json',
                 url:url,
+                data:JSON.stringify(params),
                 contentType:'application/json;charset=utf-8',
                 success:function(data){
                     console.log(data)
                     if(data.code !== 1){
+                        alert(data.msg)
+                    }else{
                         alert(data.msg)
                     }
                 }

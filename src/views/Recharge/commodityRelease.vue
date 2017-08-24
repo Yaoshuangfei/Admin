@@ -494,7 +494,7 @@
                   				obj.name = info[i].name
                   				obj.goodsName = info[i].goodsList[x].name
                   				obj.icon = info[i].goodsList[x].carouselPicture
-                  				obj.price = info[i].goodsList[x].price
+                  				obj.price = info[i].goodsList[x].goodsSpecs[0].specPrice
                   				obj.createTime = info[i].goodsList[x].createTime
                   				obj.updateTime = info[i].goodsList[x].updateTime
                   				obj.saleStatus = info[i].goodsList[x].saleStatus
@@ -549,7 +549,7 @@
                                 alert(data.msg);
                             }else{
                                 console.log(data);
-                                alert('修改成功!');
+                                alert('发布成功!');
                                 _this.addFormVisible = false;
                                 _this.getlist()
                             }
@@ -576,7 +576,7 @@
                                 alert(data.msg);
                             }else{
                                 console.log(data);
-                                alert('修改成功!');
+                                alert('发布成功!');
                                 _this.addFormVisible = false;
                                 _this.getlist()
                             }
@@ -611,7 +611,7 @@
                                 alert(data.msg);
                             }else{
                                 console.log(data);
-                                alert('修改成功!');
+                                alert('发布成功!');
                                 _this.addFormVisible = false;
                                 _this.getlist()
                             }
@@ -644,7 +644,7 @@
                                 alert(data.msg);
                             }else{
                                 console.log(data);
-                                alert('修改成功!');
+                                alert('发布成功!');
                                 _this.addFormVisible = false;
                                 _this.getlist()
                             }

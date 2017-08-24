@@ -58,6 +58,9 @@
 			<el-table-column prop="email" label="邮箱">
 			</el-table-column>
 			<el-table-column prop="availableIncome" label="账户余额">
+				<template scope="scope">
+					<el-col style="cursor: pointer;">{{scope.row.availableIncome}}</el-col>
+				</template>
 			</el-table-column>
 			<el-table-column prop="totalIncome"  label="扫码付收益">
 				<template scope="scope">
@@ -74,8 +77,8 @@
 			</el-table-column>
 			<el-table-column prop="bfTicket" label="便付券">
 			</el-table-column>
-			<el-table-column prop="quota" label="修改记录">
-			</el-table-column>
+			<!-- <el-table-column prop="quota" label="修改记录">
+			</el-table-column> -->
 			<el-table-column label="操作">
 				<template scope="scope">
 					<el-button type="text" @click="seeEditBtn(scope.row)" size="small">查看修改</el-button>
@@ -209,34 +212,48 @@
 		
 		<el-dialog v-model="seeEditDis" title="查看修改" :close-on-click-modal="false" >
 			<el-form label-width="100px">
-				<el-form-item label="昵称">
-					{{rechargeList.nickName}}
-				</el-form-item>
 				<el-form-item label="头像">
-					 <img class="img" :src="rechargeList.headImg">
+					<img v-if="seeEditDisFrom.headImg !== null" class="img" :src="seeEditDisFrom.headImg">
+					<img v-else class="img" src="http://resources.51att.cn/ATTACHMENT/ATTACHMENT/1bccc3cf-8d44-4482-84e1-82d84d56e25c.png">
 				</el-form-item>
-				<el-form-item label="真实姓名">
-					{{rechargeList.realName}}
+				<el-form-item label="昵称">
+					{{seeEditDisFrom.nickName}}
+				</el-form-item>
+				<el-form-item label="用户名">
+					{{seeEditDisFrom.userName}}
 				</el-form-item>
 				<el-form-item label="手机号">
-					{{rechargeList.inviteCode}}
-				</el-form-item>
-				<el-form-item label="性别">
-					{{rechargeList.gender}}
-				</el-form-item>
-				<el-form-item label="会员身份">
-					{{rechargeList.identityCard}}
-				</el-form-item>
-				<el-form-item label="身份证">
-					{{rechargeList.identityCard}}
+					{{seeEditDisFrom.inviteCode}}
 				</el-form-item>
 				<el-form-item label="邮箱">
-					{{rechargeList.email}}
+					{{seeEditDisFrom.email}}
+				</el-form-item>
+				<el-form-item label="账户余额">
+					<el-input style="width: 100px" v-model="seeEditDisFrom.availableIncome"></el-input>
+				</el-form-item>
+				<el-form-item label="冻结金额">
+					{{seeEditDisFrom.frozenIncome}}
+				</el-form-item>
+				<el-form-item label="已提现金额">
+					{{seeEditDisFrom.withdrawals}}
+				</el-form-item>
+				<el-form-item label="已提现金额">
+					<el-select v-model="seeEditDisFrom.crade" placeholder="请选择">
+						<el-option
+					      v-for="item in cradeList"
+					      :key="item.value"
+					      :label="item.label"
+					      :value="item.value">
+					    </el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="修改原因">
+					<el-input type="textarea" :rows="2" v-model="reasons"></el-input>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<el-button type="primary">修改</el-button>
+				<el-button type="primary" @click="userMonEdit">修改</el-button>
 				<el-button type="primary" @click.native="seeEditDis = false">关闭</el-button>
 			</div>
 		</el-dialog>
@@ -251,6 +268,24 @@
 	export default {
 		data() {
 			return {
+				reasons:'',
+				crade:'',
+				Compared_availableIncome:'',
+				Compared_crade:'',
+				cradeList:[
+					{
+						value:1,
+						label:'普通'
+					},
+					{
+						value:2,
+						label:'创客'
+					},
+					{
+						value:3,
+						label:'创客商'
+					}
+				],
 				downList:[],
 				grlsTable:[],
 				typeFlow:'',
@@ -258,6 +293,7 @@
 				type:'',
 				value:'',
 				seeEditDis:false,
+				seeEditDisFrom:{},
 				rechargeList:[],
 				centertable:true,//主体table
 				seeFormVisible: false,//上级
@@ -356,9 +392,47 @@
 			formatterType: function (row, column) {
 				return row.gender == 1 ? '是' : row.gender == 0 ? '否' : '未知';
 			},
+			// 修改账户余额
+			userMonEdit(){
+				const _this = this
+				const params = {
+					id:this.seeEditDisFrom.id,
+					reasons:this.reasons,
+					crade:null,
+					availableIncome:null
+				}
+				if(this.Compared_availableIncome !== this.seeEditDisFrom.availableIncome){
+					params.availableIncome = this.seeEditDisFrom.availableIncome
+				}
+				if(this.Compared_crade !== this.seeEditDisFrom.crade){
+					params.crade = this.seeEditDisFrom.crade
+				}
+				console.log(params)
+				if(this.Compared_availableIncome === this.seeEditDisFrom.availableIncome && this.Compared_crade === this.seeEditDisFrom.crade){
+					return
+				}
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+"/api/admin/userInfo/update/userInfo",
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	console.log(data)
+	                  	if(data.code === 1){
+	                  		alert(data.msg)
+	                  	}else{
+	                  		alert(data.msg)
+	                  	}
+	                }
+	            });
+			},
 			seeEditBtn(row){
 				console.log(row)
 				this.seeEditDis = true
+				this.seeEditDisFrom = row
+				this.Compared_availableIncome = row.availableIncome
+				this.Compared_crade = row.crade
 			},
 			ungo(){
 				this.centertable = true

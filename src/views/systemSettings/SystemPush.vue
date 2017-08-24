@@ -195,7 +195,7 @@
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
+				this.getlist();
 			},
 //			查看系统推送
 			//获取用户列表

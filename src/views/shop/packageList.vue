@@ -101,51 +101,51 @@
 				<el-form-item label="手机号">
 					<div>{{orderDetails.mobile }}</div>
 				</el-form-item>
-				<el-col v-if="orderDetails.status === 1">
-					<el-form-item label="店铺销量">
+				<!-- <el-col v-if="orderDetails.status === 1"> -->
+					<el-form-item label="店铺销量" v-if="orderDetails.status === 1">
 						<div>{{orderDetails.orderSum }}</div>
 					</el-form-item>
-					<el-form-item label="店铺营业额">
+					<el-form-item label="店铺营业额" v-if="orderDetails.status === 1">
 						<div>{{orderDetails.turnoverSum }}</div>
 					</el-form-item>
-					<el-form-item label="账户余额">
+					<el-form-item label="账户余额" v-if="orderDetails.status === 1">
 						<el-input style="width:100px" v-model="orderDetails.availableIncome"></el-input>
 					</el-form-item>
-					<el-form-item label="已提现金额">
+					<el-form-item label="已提现金额" v-if="orderDetails.status === 1">
 						<div>{{orderDetails.withdrawalsSum}}</div>
 					</el-form-item>
-					<el-form-item label="违规记录">
+					<el-form-item label="违规记录" v-if="orderDetails.status === 1">
 						<div>{{orderDetails.illegalSum}}</div>
 					</el-form-item>
-					<el-form-item label="手续费">
+					<el-form-item label="手续费" v-if="orderDetails.status === 1">
 						<el-input style="width:100px" v-model="orderDetails.poundage"></el-input>
 						<!-- <div>{{orderDetails.withdrawalsSum}}</div> -->
 					</el-form-item>
-					<el-form-item label="分佣线">
+					<el-form-item label="分佣线" v-if="orderDetails.status === 1">
 						<el-select v-model="filters.commissionLine" @change="fychnageval" clearable>
 					      <el-option v-for="item in optionsfy" :label="item.label" :value="item.value">
 					      </el-option>
 					    </el-select>
 					</el-form-item>
-					<el-form-item label="大区" v-if="filters.commissionLine === 5">
+					<el-form-item label="大区" v-if="filters.commissionLine === 5 && orderDetails.status === 1">
 						<el-select v-model="filters.smallName" clearable>
 					      <el-option v-for="item in optionsSmall" :label="item.label" :value="item.value">
 					      </el-option>
 					    </el-select>
 					</el-form-item>
-					<el-form-item label="小区" v-if="filters.commissionLine === 5">
+					<el-form-item label="小区" v-if="filters.commissionLine === 5 && orderDetails.status === 1">
 						<el-select v-model="filters.maxName" clearable>
 					      <el-option v-for="item in optionsMax" :label="item.label" :value="item.value">
 					      </el-option>
 					    </el-select>
 					</el-form-item>
-					<el-form-item label="是否购买平台身份">
+					<el-form-item label="是否购买平台身份" v-if="orderDetails.status === 1">
 						<el-select v-model="filters.shoppingValue" clearable @change="shoppFun">
 					      <el-option v-for="item in optionsShopp" :label="item.label" :value="item.value">
 					      </el-option>
 					    </el-select>
 					</el-form-item>
-				</el-col>
+				<!-- </el-col> -->
 				<el-col :span='24'><h3>身份认证信息</h3></el-col>
 				<el-form-item label="法人姓名">
 					<div>{{orderDetails.coreUspAuthentication.realName}}</div>
@@ -398,9 +398,11 @@
 				return type
 			},
 			formatterTime(row,column){
-                let curTime = row.updateTime;
-                curTime = new Date(curTime).toLocaleString()
-                return curTime
+				if(row.updateTime !== null){
+	                let curTime = row.updateTime
+	                curTime = new Date(curTime).toLocaleString()
+	                return curTime
+				}
             },
 			getlist(){
 				const _this = this

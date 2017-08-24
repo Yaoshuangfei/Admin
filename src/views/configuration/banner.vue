@@ -17,6 +17,8 @@
 					<img class="img" :src="scope.row.picture" alt="">
 				</template>
 			</el-table-column>
+			<el-table-column prop="poType" :formatter='typePO'  label="位置">
+			</el-table-column>
 			<el-table-column prop="link"  label="链接">
 			</el-table-column>
 			<el-table-column prop="status" :formatter='formatterType' label="状态">
@@ -221,6 +223,9 @@
             },
             formatterType(row,column){
             	return row.status == 0 ? '禁用' : '启用 ' ;
+            },
+            typePO(row,column){
+            	return row.poType == 1 ? '首页' : '店铺内 ' ;
             },
 			//清空上传
             clear(){

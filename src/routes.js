@@ -10,6 +10,7 @@ import ChangePasswords from './views/systemSettings/ChangePasswords.vue'
 import releaseLook from './views/systemSettings/releaseLook.vue'
 import releaseAdd from './views/systemSettings/releaseAdd.vue'
 import releaseReg from './views/systemSettings/releaseReg.vue'
+import OperationRecord from './views/systemSettings/OperationRecord.vue'
 
 /*配置管理 configuration*/
 import banner from './views/configuration/banner.vue'
@@ -92,12 +93,13 @@ let routes = [
         path: '/Subject',
         component: Home,
         name: ' 系统设置',
-        iconCls: 'el-icon-message',//图标样式class
+        iconCls: 'el-icon-message',//图标样式class 
         children: [
             { path: '/main', component: Main, name: '主页', hidden: true },
             { path: '/Jurisdiction', component: Jurisdiction, name: '权限管理' },
             { path: '/ChangePasswords', component: ChangePasswords, name: '更改密码' },
             { path: '/SystemPush', component: SystemPush, name: '系统推送' },
+            { path: '/OperationRecord', component: OperationRecord, name: '系统操作记录' },
             { path: '/releaseLook/:id', component: releaseLook, name: '系统推送查看', hidden:true },
             { path: '/releaseAdd', component: releaseAdd, name: '系统推送添加', hidden:true },
             { path: '/releaseReg/:id', component: releaseReg, name: '修改推送', hidden:true }
