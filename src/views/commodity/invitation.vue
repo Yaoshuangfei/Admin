@@ -18,334 +18,243 @@
 			<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
 				<el-table-column type="index" label="序号">
 				</el-table-column>
-				<el-table-column prop="name" label="店铺名">
+				<el-table-column prop="storeName" label="店铺名">
 				</el-table-column>
-				<el-table-column prop="user_name" label="用户名">
+				<el-table-column prop="seller.nickName" label="用户名">
 				</el-table-column>
-				<el-table-column prop="loan" label="手机号">
+				<el-table-column prop="seller.mobile" label="手机号">
 				</el-table-column>
-				<el-table-column prop="loan_number" label="商品名称">
+				<el-table-column prop="name" label="商品名称">
 				</el-table-column>
-				<el-table-column prop="min_company" label="分类">
+				<el-table-column prop="catName" label="分类">
 				</el-table-column>
-				<el-table-column prop="interest_rate" label="售价">
+				<el-table-column prop="price" label="售价">
 				</el-table-column>
-				<el-table-column prop="interest_rate" label="销售数量">
+				<el-table-column prop="totalSalesNum" label="销售数量">
 				</el-table-column>
-				<el-table-column prop="interest_rate" label="状态">
-				</el-table-column>
-				<el-table-column prop="interest_rate" label="快递费用">
+				<el-table-column prop="saleStatus" :formatter='statusFun' label="状态">
 				</el-table-column>
 				<el-table-column label="操作">
 					<template scope="scope">
-						<el-button type="text" size="small">查看</el-button>
-						<el-button type="text" size="small">删除</el-button>
-						<el-button type="text" size="small">违规</el-button>
+						<!-- <el-button type="text" size="small">查看</el-button> -->
+						<el-button type="text" size="small" @click="deleteBtn(scope.row)">下架</el-button>
+						<el-button type="text" size="small" @click="violationBtn(scope.row)">违规</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
 		</el-col>
-		
-		
-
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<!-- <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button> -->
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="editForm.name" auto-complete="off"></el-input>
+		<el-dialog title="违规处理" v-model="violation" :close-on-click-modal="false">
+			<el-form :model="editForm" label-width="120px" label-position="left">
+				<el-form-item label="商品名称">
+					<div>{{editForm.name}}</div>
 				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="editForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
+				<el-form-item label="用户名">
+					<div>{{editForm.seller.nickName}}</div>
 				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
+				<el-form-item label="商品上架时间">
+					<div>{{new Date(editForm.shelfTime).toLocaleString()}}</div>
 				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="editForm.addr"></el-input>
+				<el-form-item label="违规原因">
+					<el-input type="textarea" v-model="editForm.content"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="editFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
-			</div>
-		</el-dialog>
-
-		<!--新增界面-->
-		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="姓名" prop="name">
-					<el-input v-model="addForm.name" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="addForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="addForm.addr"></el-input>
-				</el-form-item>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="addFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
+				<el-button @click.native="violation = false">取消</el-button>
+				<el-button type="primary" @click.native="violationSubmit">确认</el-button>
 			</div>
 		</el-dialog>
 	</section>
 </template>
 
 <script>
+	import { state } from '../../vuex/state'
 	import util from '../../common/js/util'
-	//import NProgress from 'nprogress'
-	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
+	import {baseUrl  } from '../../api/api';
 
 	export default {
 		data() {
 			return {
-				MenuData:[{
-		          	id: 1,
-		          	label: '个人美妆',
-		          	children: [
-		            {
-		              id: 9,
-		              label: '护肤'
-		            }, {
-		              id: 10,
-		              label: '清洁'
-		          }]
-		        }, {
-		          id: 2,
-		          label: '食品',
-		          children: [{
-		            id: 5,
-		            label: '小吃'
-		          }, {
-		            id: 6,
-		            label: '美食'
-		          }]
-		        }, {
-		          id: 3,
-		          label: '数码',
-		          children: [{
-		            id: 7,
-		            label: '手机'
-		          }, {
-		            id: 8,
-		            label: '电视'
-		          }]
-		        }],
-				value2:'',
-				value1:'',
+				violation:false,//显示违规页面
+				MenuData:[],//菜单树数据
 				filters: {
 					name: ''
 				},
-				users: [],
 				total: 0,
 				page: 1,
 				listLoading: false,
-				sels: [],//列表选中列
-
-				editFormVisible: false,//编辑界面是否显示
-				editLoading: false,
-				editFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
-				//编辑界面数据
+				//编辑违规数据
 				editForm: {
-					id: 0,
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
+					name:'',
+					seller:{
+						nickName:''
+					},
+					shelfTime:''
 				},
-
-				addFormVisible: false,//新增界面是否显示
-				addLoading: false,
-				addFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
-				//新增界面数据
-				addForm: {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				},
-				table:[]
+				table:[],//商品数据
+				soltParams:{}//保留分页查询数据
 			}
 		},
 		methods: {
+			//查看违规
+			violationBtn(row){
+				console.log(row)
+				this.violation = true
+				this.editForm = row
+			},
+			//提交违规操作
+			violationSubmit(){
+				const _this = this
+				const params = {
+					storeId: this.editForm.storeId,
+					goodsId: this.editForm.id,
+					content: this.editForm.content
+				}
+
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goodsViolationsRecord/add",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	_this.getGoodsList()
+                    	_this.this.violation = false
+                    }
+                })
+			},
+			// 下架
+			deleteBtn(row){
+				const _this = this
+				console.log(row)
+				const params = {
+					id: row.id,
+					saleStatus: 2
+				}
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goods/updateStatus",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	_this.getGoodsList()
+                    }
+                })
+			},
+			// 获取标签id及查询商品
 			handleNodeClick(data) {
-				// const _this = this
-				// _this.table = []
 				console.log(data)
-				// this.pID = data.pId
-				// this.fatherRoleID = data.id
-				// this.editOrganize.name = data.label
-				// this.editOrganize.pId = data.pId
-				// this.editOrganize.id = data.id
-				// console.log(this.fatherRoleID)
-				// this.curId = data.id;
-				// console.log(this.curId)
-				// this.role_list()
+				const _this = this
+				const params = {
+					pageNum:this.page,
+					size:10,
+					catId:data.id
+				}
+				this.soltParams = params
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goods/selectListOfSeller",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	const info = data.data.list
+                    	console.log(data)
+                    	_this.table = info
+                    	_this.total = data.data.total
+                    }
+                })
 	        },
-			handleCurrentChange(val) {
+	        // 分页查询
+	        handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
+				this.getGoodsList();
 			},
-			//获取用户列表
-			getUsers() {
-				let para = {
-					page: this.page,
-					name: this.filters.name
-				};
-				this.listLoading = true;
-				//NProgress.start();
-				getUserListPage(para).then((res) => {
-					this.total = res.data.total;
-					this.users = res.data.users;
-					this.listLoading = false;
-					//NProgress.done();
-				});
+			// 分页查询执行函数
+	        getGoodsList(){
+				const _this = this
+				const params = this.soltParams
+				params.pageNum = this.page
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goods/selectListOfSeller",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	const info = data.data.list
+                    	console.log(data)
+                    	_this.table = info
+                    	_this.total = data.data.total
+                    }
+                })
+	        },
+			//获取标签列表
+			getLeftLIst() {
+				const _this = this
+				_this.MenuData = []
+				const params = {
+					pageNum:1,
+					size:100,
+					name:''
+				}
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goodsClass/selectListPC",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	const info = data.data.list
+                    	const arry = []
+                    	for (var i = 0; i < info.length; i++) {
+                    		if(info[i].hierarchy === 1){
+	                    		const obj = {}
+	                			obj.id = info[i].id
+	                			obj.label = info[i].name
+	                    		_this.initChildren(info[i].id,info,obj)
+                    			arry.push(obj)
+                    		}
+                    	}
+                    	_this.MenuData = arry
+                    }
+                })
 			},
-			//删除
-			handleDel: function (index, row) {
-				this.$confirm('确认删除该记录吗?', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { id: row.id };
-					removeUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
+			// 递归
+			initChildren(id,row,obj){
+				for (var x = 0; x < row.length; x++) {
+        			if(id === row[x].pid){
+        				obj.children = []
+        				const objchi = {}
+        				objchi.id = row[x].id
+        				objchi.label = row[x].name
+        				this.initChildren(row[x].id,row,objchi)
+        				obj.children.push(objchi)
+        			}
+        		}
 			},
-			//显示编辑界面
-			handleEdit: function (index, row) {
-				this.editFormVisible = true;
-				this.editForm = Object.assign({}, row);
-			},
-			//显示新增界面
-			handleAdd: function () {
-				this.addFormVisible = true;
-				this.addForm = {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				};
-			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			//新增
-			addSubmit: function () {
-				this.$refs.addForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.addLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.addForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							addUser(para).then((res) => {
-								this.addLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['addForm'].resetFields();
-								this.addFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			selsChange: function (sels) {
-				this.sels = sels;
-			},
-			//批量删除
-			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
-				this.$confirm('确认删除选中记录吗？', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
-						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
-					});
-				}).catch(() => {
-
-				});
+			// 初始化状态
+			statusFun (row, column) {
+				if(row.saleStatus === 1){
+					return '销售中'
+				}else if(row.saleStatus === 2){
+					return '已下架'
+				}else if(row.saleStatus === 3){
+					return '已删除'
+				}
 			}
 		},
 		mounted() {
-			this.getUsers();
+			this.getLeftLIst();
 		}
 	}
 
