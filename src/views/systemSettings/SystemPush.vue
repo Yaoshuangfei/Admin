@@ -138,7 +138,7 @@
 					type:''
 				},
 				users: [],
-				total: 100,
+				total: 0,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列

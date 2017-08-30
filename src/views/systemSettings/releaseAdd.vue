@@ -101,7 +101,6 @@
                             const info = JSON.parse(response.bodyText);
                             // const info = response.body
                             _this.url = info.data[0].baseUri+info.data[0].uri;
-                            _this.UploadImg();
                         }, error => _this.$emit('complete', 500, error.message))
             },
             initEditor(data) {

@@ -247,6 +247,8 @@
 					status = '售后处理'
 				}else if(row.orderStatus === 10){
 					status = '已删除'
+				}else if(row.orderStatus === 11){
+					status = '业务审核中'
 				}
 				return status
 			},

@@ -11,6 +11,7 @@ import releaseLook from './views/systemSettings/releaseLook.vue'
 import releaseAdd from './views/systemSettings/releaseAdd.vue'
 import releaseReg from './views/systemSettings/releaseReg.vue'
 import OperationRecord from './views/systemSettings/OperationRecord.vue'
+import addUser from './views/systemSettings/addUser.vue'
 
 /*配置管理 configuration*/
 import banner from './views/configuration/banner.vue'
@@ -102,7 +103,8 @@ let routes = [
             { path: '/OperationRecord', component: OperationRecord, name: '系统操作记录' },
             { path: '/releaseLook/:id', component: releaseLook, name: '系统推送查看', hidden:true },
             { path: '/releaseAdd', component: releaseAdd, name: '系统推送添加', hidden:true },
-            { path: '/releaseReg/:id', component: releaseReg, name: '修改推送', hidden:true }
+            { path: '/releaseReg/:id', component: releaseReg, name: '修改推送', hidden:true },
+            { path: '/addUser', component: addUser, name: '添加子管理员' }
         ]
     },
     {

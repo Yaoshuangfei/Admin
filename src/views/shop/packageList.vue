@@ -61,8 +61,8 @@
 			<el-table-column label="操作">
 				<template scope="scope">
 					<el-button type="text" size="small" @click="seeBtn(scope.row)">查看</el-button>
-					<el-button type="text" v-if='scope.row.status === 0' size="small" @click="passBtn(scope.row)">通过</el-button>
-					<el-button type="text" v-if='scope.row.status === 0 ' size="small" @click="notpassBtn(scope.row)">不通过</el-button>
+					<el-button type="text" v-if='scope.row.status === 0 || scope.row.status === 4 ' size="small" @click="passBtn(scope.row)">通过</el-button>
+					<el-button type="text" v-if='scope.row.status === 0 || scope.row.status === 4 ' size="small" @click="notpassBtn(scope.row)">不通过</el-button>
 					<el-button type="text" v-if='scope.row.status === 3' size="small" @click="enableBtn(scope.row)">启用</el-button>
 					<el-button type="text" v-if='scope.row.status === 1' size="small" @click="closeBtn(scope.row)">禁用</el-button>
 					<!-- <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button> -->
@@ -394,6 +394,8 @@
 					type = '审核未通过'
 				}else if(row.status === 3){
 					type = '禁用'
+				}else if(row.status === 4){
+					type = '提交审核'
 				}
 				return type
 			},
