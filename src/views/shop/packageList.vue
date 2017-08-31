@@ -127,24 +127,24 @@
 					      </el-option>
 					    </el-select>
 					</el-form-item>
-					<el-form-item label="大区送创客商" v-if="filters.commissionLine === 5 && orderDetails.status === 1">
+					<el-form-item label="B端购买身份送创客商" v-if="filters.commissionLine === 5 || filters.commissionLine === 3 && orderDetails.status === 1">
 						<el-select v-model="filters.smallName" clearable>
 					      <el-option v-for="item in optionsSmall" :label="item.label" :value="item.value">
 					      </el-option>
 					    </el-select>
 					</el-form-item>
-					<el-form-item label="小区送创客" v-if="filters.commissionLine === 5 && orderDetails.status === 1">
+					<el-form-item label="C端购买身份送创客" v-if="filters.commissionLine === 5 || filters.commissionLine === 3 && orderDetails.status === 1">
 						<el-select v-model="filters.maxName" clearable>
 					      <el-option v-for="item in optionsMax" :label="item.label" :value="item.value">
 					      </el-option>
 					    </el-select>
 					</el-form-item>
-					<el-form-item label="是否购买平台身份" v-if="orderDetails.status === 1">
+					<!-- <el-form-item label="是否购买平台身份" v-if="orderDetails.status === 1">
 						<el-select v-model="filters.shoppingValue" clearable @change="shoppFun">
 					      <el-option v-for="item in optionsShopp" :label="item.label" :value="item.value">
 					      </el-option>
 					    </el-select>
-					</el-form-item>
+					</el-form-item> -->
 				<!-- </el-col> -->
 				<el-col :span='24'><h3>身份认证信息</h3></el-col>
 				<el-form-item label="法人姓名">
@@ -574,6 +574,8 @@
 			seeBtn: function (row) {
 				this.editFormVisible = true;
 				console.log(row)
+				this.filters.smallName = row.smallSendMaker
+				this.filters.maxName = row.bigSendPartner
 				this.filters.commissionLine = row.commissionLine
 				this.orderDetails.name = row.name
 				this.orderDetails.nickName = row.coreUser.nickName
