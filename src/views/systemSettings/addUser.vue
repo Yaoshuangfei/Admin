@@ -102,7 +102,21 @@
         },
         methods: {
             deldetBtn(row){
-
+                const _this = this
+                const params = {
+                    id:row.id
+                }
+                $.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/admin/coreAdmin/deleteChildAdmin",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        _this.getlist()
+                    }
+                })
             },
             yanzSubmit(){
                 const _this = this
@@ -121,6 +135,7 @@
                         console.log(data)
                         if(data.code === 1){
                             _this.adduserVisible = false
+                            _this.getlist()
                         }
                     }
                 })
