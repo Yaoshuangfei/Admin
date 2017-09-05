@@ -49,7 +49,7 @@
 			</el-pagination>
 		</el-col>
 
-		<!--编辑界面-->
+		<!--违规界面-->
 		<el-dialog title="违规处理" v-model="violation" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="120px" label-position="left">
 				<el-form-item label="商品名称">
@@ -126,7 +126,7 @@
                     success:function(data){
                     	console.log(data)
                     	_this.getGoodsList()
-                    	_this.this.violation = false
+                    	_this.violation = false
                     }
                 })
 			},

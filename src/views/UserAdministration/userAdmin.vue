@@ -429,6 +429,7 @@
 	                  	console.log(data)
 	                  	if(data.code === 1){
 	                  		alert(data.msg)
+	                  		_this.userMonEdit = false
 	                  	}else{
 	                  		alert(data.msg)
 	                  	}
@@ -720,6 +721,13 @@
 	                  	_this.accountFlowtable = true
 	                  	_this.total3 = data.data.total
 	                  	_this.grlsTable = data.data.list
+	                  	for (var i = 0; i < _this.grlsTable.length; i++) {
+	                  		if(_this.grlsTable[i].pmType === 0){
+	                  			_this.grlsTable[i].quota = '-'+_this.grlsTable[i].quota
+	                  		}else{
+	                  			_this.grlsTable[i].quota = '+'+_this.grlsTable[i].quota
+	                  		}
+	                  	}
 	                }
 	            });
 			},

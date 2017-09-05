@@ -34,6 +34,13 @@
 					</router-link>
 				</el-form-item>
 			</el-form>
+			<el-col :span="24" style="padding-bottom: 20px;font-size: 18px;margin-top: 5px;">
+				<el-col :span="4">店铺总销量：{{topObj.orderSum}}</el-col>
+				<el-col :span="4">已提现金额：{{topObj.withdrawalsSum}}</el-col>
+				<el-col :span="4">店铺交易额：{{topObj.turnoverSum}}</el-col>
+				<el-col :span="4">店铺交易手续费：{{topObj.serviceFeeSum}}</el-col>
+				<el-col :span="4">账户余额：{{topObj.coreUser.availableIncome}}</el-col>
+			</el-col>
 		</el-col>
 
 		<!--列表-->
@@ -112,7 +119,11 @@
 	export default {
 		data() {
 			return {
-				radio: '0',
+				topObj: {
+					coreUser:{
+						availableIncome:''
+					}
+				},
 				startTime:'',
 				endTime:'',
 				checked: true,
@@ -182,18 +193,7 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[{
-					orderNumber :'145877458784524c',
-					courierNumber :'145877458784524c',
-					userName:'吸引力量',
-					amountPaid :'300',
-					orderTotal :'900',
-					orderStatus :'待付款',
-					paymentMethod :'微信支付',
-					creationTime:'2017-09-08 17:09',
-					deliveryTime:'2017-09-08 17:09',
-					commodityName:'雨花说'
-				}]
+				orderInformation:[]
 			}
 		},
 		methods: {
@@ -231,8 +231,13 @@
                     	_this.orderInformation = info.list
                     	_this.total = info.total
                     	for(var i = 0;i<_this.orderInformation.length;i++){
-                    		
+                    		if(_this.orderInformation[i].pmType === 0){
+                    			_this.orderInformation[i].quota = '-'+_this.orderInformation[i].quota
+                    		}else{
+                    			_this.orderInformation[i].quota = '+'+_this.orderInformation[i].quota
+                    		}
                     	}
+                    	console.log(_this.orderInformation)
                     }
                 });
 			},
@@ -279,6 +284,13 @@
 	                  	_this.orderInformation = info.list
 	                  	_this.startTime = ''
 	                  	_this.endTime = ''
+	                  	for(var i = 0;i<_this.orderInformation.length;i++){
+                    		if(_this.orderInformation[i].pmType === 0){
+                    			_this.orderInformation[i].quota = '-'+_this.orderInformation[i].quota
+                    		}else{
+                    			_this.orderInformation[i].quota = '+'+_this.orderInformation[i].quota
+                    		}
+                    	}
 	                }
 	            })
 			},
@@ -331,17 +343,17 @@
 			//支付方式
 			formatterType(row, column) {
 				let type = ''
-				if(row.payType === '0'){
+				if(row.payType === 0){
 					type = '微信支付'
-				}else if(row.payType === '1'){
+				}else if(row.payType === 1){
 					type = '支付宝支付'
-				}else if(row.payType === '2'){
+				}else if(row.payType === 2){
 					type = '银联支付'
-				}else if(row.payType === '3'){
+				}else if(row.payType === 3){
 					type = '余额支付'
-				}else if(row.payType === '4'){
+				}else if(row.payType === 4){
 					type = '余额金豆混合支付'
-				}else if(row.payType === '5'){
+				}else if(row.payType === 5){
 					type = '金豆支付'
 				}
 				return type
@@ -400,10 +412,37 @@
 					status = '商家会员钱包转平台钱包'
 				}
 				return status
+			},
+			getObl(){
+				const _this = this
+				const params = {
+					name:null,
+					nickName:null,
+					mobile:null,
+					status:null,
+					id:null,
+					pageNum:1,
+					size:5,
+					storeId:this.$route.params.id
+				}
+				params.pageNum = this.page
+				$.ajax({
+	                type:'POST',
+	                dataType:'json',
+	                url:baseUrl+'/api/store/find/page',
+	                data:JSON.stringify(params),
+	                contentType:'application/json;charset=utf-8',
+	                success:function(data){
+	                  	const info = data.data.list
+	                  	console.log(data)
+	                  	_this.topObj = info[0]
+	                }
+	            })
 			}
 		},
 		mounted() {
-			this.getlist();
+			this.getlist()
+			this.getObl()
 		}
 	}
 
