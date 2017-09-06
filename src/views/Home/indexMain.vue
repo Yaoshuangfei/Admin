@@ -122,6 +122,7 @@
     import echarts from 'echarts'
 	import { state } from '../../vuex/state'
 	import util from '../../common/js/util'
+    import china from '../../common/js/china'
 	import {baseUrl , editUser, addUser } from '../../api/api';
     export default {
         data() {
@@ -174,7 +175,8 @@
                 pj:[],
                 tx: [],
                 parobj:[],//饼图
-                parName:[]
+                parName:[],
+                maplist:[]
             }
         },
         methods: {
@@ -489,12 +491,46 @@
                 });
             },
             // 地图
+            getmapList(){
+                const _this = this
+                this.maplist = []
+                $.ajax({
+                    type:'GET',
+                    dataType:'json',
+                    url:baseUrl+"/api/orderMall/selectCountGroupByCounty",
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        const info = data.data
+                        for (var i = 0; i < info.length; i++) {
+                            
+                            const obj = {}
+                            obj.name = info[i].provinceName
+                            obj.calue = info[i].countGroup
+                            _this.maplist.push(obj)
+                        }
+                        // _this.maplist = [
+                        //         {name: '北京',value: Math.round(Math.random()*1000)},
+                        //         {name: '天津',value: Math.round(Math.random()*1000)},
+                        //         {name: '上海',value: Math.round(Math.random()*1000)},
+                        //         {name: '重庆',value: Math.round(Math.random()*1000)},
+                        //         {name: '山东',value: Math.round(Math.random()*1000)},
+                        //         {name: '新疆',value: Math.round(Math.random()*1000)},
+                        //         {name: '江苏',value: Math.round(Math.random()*1000)},
+                        //         {name: '浙江',value: Math.round(Math.random()*1000)},
+                        //         {name: '江西',value: Math.round(Math.random()*1000)}
+                        //     ]
+                        console.log(_this.maplist)
+                        _this.chartmapFu()
+                    }
+                });
+            },
             chartmapFu() {
                 const chartmap = echarts.init(document.getElementById('chartmap'));
                 chartmap.setOption({
                         title : {
-                            text: 'iphone销量',
-                            subtext: '纯属虚构',
+                            text: '地区销量',
+                            // subtext: '纯属虚构',
                             x:'center'
                         },
                         tooltip : {
@@ -503,7 +539,7 @@
                         legend: {
                             orient: 'vertical',
                             x:'left',
-                            data:['iphone3','iphone4','iphone5']
+                            data:['销量']
                         },
                         dataRange: {
                             min: 0,
@@ -534,25 +570,26 @@
                         },
                     series : [
                         {
-                            name: 'iphone3',
+                            name: '销量',
                             type: 'map',
                             mapType: 'china',
-                            roam: true,
+                            roam: false,//放大放小
                             itemStyle:{
                                 normal:{label:{show:true}},
                                 emphasis:{label:{show:true}}
                             },
-                            data:[
-                                {name: '北京',value: Math.round(Math.random()*1000)},
-                                {name: '天津',value: Math.round(Math.random()*1000)},
-                                {name: '上海',value: Math.round(Math.random()*1000)},
-                                {name: '重庆',value: Math.round(Math.random()*1000)},
-                                {name: '山东',value: Math.round(Math.random()*1000)},
-                                {name: '新疆',value: Math.round(Math.random()*1000)},
-                                {name: '江苏',value: Math.round(Math.random()*1000)},
-                                {name: '浙江',value: Math.round(Math.random()*1000)},
-                                {name: '江西',value: Math.round(Math.random()*1000)}
-                            ]
+                            data:this.maplist
+                            // [
+                            //     {name: '北京',value: Math.round(Math.random()*1000)},
+                            //     {name: '天津',value: Math.round(Math.random()*1000)},
+                            //     {name: '上海',value: Math.round(Math.random()*1000)},
+                            //     {name: '重庆',value: Math.round(Math.random()*1000)},
+                            //     {name: '山东',value: Math.round(Math.random()*1000)},
+                            //     {name: '新疆',value: Math.round(Math.random()*1000)},
+                            //     {name: '江苏',value: Math.round(Math.random()*1000)},
+                            //     {name: '浙江',value: Math.round(Math.random()*1000)},
+                            //     {name: '江西',value: Math.round(Math.random()*1000)}
+                            // ]
                         }
                     ]
                 })
@@ -565,7 +602,9 @@
         	this.getPosition()
            	this.getlist()
            	this.getUser()
-            this.chartmapFu()
+
+            this.getmapList()
+            // this.chartmapFu()
         },
        	// 更新
         // updated: function () {
