@@ -45,7 +45,7 @@
 			</el-table-column>
 			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="发货时间">
+			<el-table-column prop="deliveryTime" :formatter='deliveTime'  label="发货时间">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
@@ -203,8 +203,19 @@
 		methods: {
 			formatterTime(row, column){
 				let curTime = row.createTime;
-                curTime = new Date(curTime).toLocaleString()
-                return curTime
+				if(curTime !== null){
+	                curTime = new Date(curTime).toLocaleString()
+	                return curTime
+				}
+			},
+			deliveTime(row, column){
+				let curTime = row.deliveryTime;
+                if(curTime !== null){
+	                curTime = new Date(curTime).toLocaleString()
+	                return curTime
+				}else{
+					return '/'
+				}
 			},
 			//支付方式
 			formatterType: function (row, column) {
@@ -283,7 +294,6 @@
                     	_this.total = info.total
                     	// _this.orderInformation = info.list
                     	for(var i = 0;i<info.list.length;i++){
-                    		console.log(info.list[i].orderGoods)
                     		for(var x = 0;x<info.list[i].orderGoods.length;x++){
                     			info.list[i].orderGoods[0].ddbh = info.list[i].id
                     			info.list[i].orderGoods[0].sfje = info.list[i].totalMoney

@@ -254,6 +254,13 @@
 	                  	_this.table = info.list
 	                  	_this.startTime = ''
 	                  	_this.endTime = ''
+	                  	for(var i = 0;i<_this.table.length;i++){
+                    		if(_this.table[i].pmType === 0){
+                    			_this.table[i].quota = '-'+_this.table[i].quota
+                    		}else{
+                    			_this.table[i].quota = '+'+_this.table[i].quota
+                    		}
+                    	}
 	                }
 	            })
 			},

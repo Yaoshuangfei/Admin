@@ -208,29 +208,25 @@
 				const _this = this
 				_this.table = []
 				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
+					pageNum:this.page,
+					pageSize:10,
+					type:14
 				}
-				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
-	                }
-	              }
-	         	)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/userCashFlow/find/record",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
+                    success:function(data){
+                    	// const info = data.data
+                    	// _this.total = info.total
+                    	// _this.table = info.list
+                    	console.log(data)
+                    	// console.log(_this.table)
+                    }
+                });
 			},
 			handleCurrentChange(val) {
 				this.page = val;
@@ -363,7 +359,7 @@
 			}
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 

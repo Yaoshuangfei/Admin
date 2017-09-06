@@ -232,6 +232,9 @@
 	                  	_this.total = info.total
 	                  	_this.startTime = ''
 	                  	_this.endTime = ''
+	                  	for (var i = 0; i < _this.table.length; i++) {
+	                  		_this.table[i].amount = '-'+_this.table[i].amount
+	                  	}
 	                }
 	            })
 			},

@@ -6,12 +6,12 @@
 				<!-- <el-form-item>
 					<el-input v-model="filters.name" placeholder="支付银行"></el-input>
 				</el-form-item> -->
-				<el-form-item label="状态">
+				<!-- <el-form-item label="状态">
 					<el-select v-model="filters.status" clearable>
 				      <el-option v-for="item in selectSubjectStatus" :label="item.label" :value="item.value">
 				      </el-option>
 				    </el-select>
-				</el-form-item>
+				</el-form-item> -->
 				<el-form-item label="搜索类型">
 				    <el-select v-model="filters.type" clearable>
 				      <el-option v-for="item in options" :label="item.label" :value="item.value">
@@ -22,32 +22,35 @@
 				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getlist">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+		<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
 			<el-table-column type="index">
 			</el-table-column>
-			<el-table-column prop="courierNumber" label="店铺名">
+			<el-table-column prop="storeName" label="店铺名">
 			</el-table-column>
-			<el-table-column prop="userName" label="用户名">
+			<el-table-column prop="user.nickName" label="用户名">
 			</el-table-column>
-			<el-table-column prop="amountPaid" label="手机号">
+			<el-table-column prop="user.mobile" label="手机号">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="违规商品">
+			<el-table-column prop="goods.name" label="违规商品">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="违规次数">
+			<el-table-column prop="num" label="违规次数">
+			</el-table-column>
+			<el-table-column prop="status" :formatter='formatStatus' label="违规状态">
+			</el-table-column>
+			<el-table-column prop="content" label="违规原因">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
-					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button> -->
-					<!-- <el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">禁用</el-button>
-					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
+					<el-button type="text" size="small" @click="seeBtn(scope.row)">查看</el-button>
+					<el-button type="text" size="small" v-if="scope.row.status === 1" @click="upstatus(scope.row)">通过</el-button>
+					<el-button type="text" size="small" v-else @click="nostatus(scope.row)">不通过</el-button>
+					<el-button type="text" size="small" @click="deleteBtn(scope.row.goodsId)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -108,7 +111,17 @@
 	export default {
 		data() {
 			return {
-				radio: '0',
+				table: [
+					{
+						user:{
+							nickName:'',
+							mobile:''
+						},
+						goods:{
+							name:''
+						}
+					}
+				],
 				checked: true,
 				value:'',
 				value1:'',
@@ -135,16 +148,13 @@
 				}],
 				options: [{
 		          value: '0',
-		          label: '全部'
+		          label: '店铺名'
 		        }, {
 		          value: '1',
-		          label: '订单编号'
+		          label: '用户名'
 		        }, {
 		          value: '2',
-		          label: '快递单号'
-		        }, {
-		          value: '3',
-		          label: '用户名'
+		          label: '手机号'
 		        }],
 				filters: {
 					name: '',
@@ -152,7 +162,7 @@
 					type:''
 				},
 				users: [],
-				total: 100,
+				total: 0,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
@@ -194,37 +204,97 @@
 			}
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			//状态
+			formatStatus: function (row, column) {
+				return row.status == 1 ? '未处理' :  '已处理';
+			},
+			upstatus(row){
+				const _this = this
+				_this.table = []
+				const params = {
+					goodsId:row.goodsId,
+					status:2
+				}
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goodsViolationsRecord/update",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
+                    success:function(data){
+                    	console.log(data)
+                    	_this.getlist()
+                    }
+                });
+			},
+			nostatus(row){
+				const _this = this
+				_this.table = []
+				const params = {
+					goodsId:row.goodsId,
+					status:1
+				}
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goodsViolationsRecord/update",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
+                    success:function(data){
+                    	_this.getlist()
+                    	console.log(data)
+                    }
+                });
+			},
+			// 删除
+			deleteBtn(id) {
+				const _this = this
+				const params = {
+					id:id,
+				}
+				this.$confirm('确认删除该商品吗?', '提示', {
+					type: 'warning'
+				}).then(() => {
+					$.ajax({
+	                    type:'POST',
+	                    dataType:'json',
+	                    url:baseUrl+"/api/goods/delete",
+	                    data:JSON.stringify(params),
+	                    contentType:'application/json;charset=utf-8',
+	                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
+	                    success:function(data){
+	                    	alert(data.msg)
+							_this.getlist()
+	                    }
+	                	});
+				}).catch(() => {
+
+				});
 			},
 			getlist(){
 				const _this = this
 				_this.table = []
 				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
+					pageNum:this.page,
+					size:10
 				}
-				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
-	                }
-	              }
-	         	)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/goodsViolationsRecord/selectList",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
+                    success:function(data){
+                    	const info = data.data
+                    	_this.total = info.total
+                    	_this.table = info.list
+                    	console.log(data)
+                    	console.log(_this.table)
+                    }
+                });
 			},
 			handleCurrentChange(val) {
 				this.page = val;
@@ -357,7 +427,7 @@
 			}
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 

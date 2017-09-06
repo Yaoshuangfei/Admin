@@ -199,7 +199,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.userNumPrice = 0
                         		}else{
-                        			_this.userNumPrice = (info[i].avgPrice*100).toFixed(6)
+                        			_this.userNumPrice = (info[i].avgPrice*100).toFixed(2)
                         		}
                         	}else if(info[i].type === 2){
                         		if(info[i].countAll === null){
@@ -210,7 +210,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.TotalTurnoverPrice = 0
                         		}else{
-                        			_this.TotalTurnoverPrice = (info[i].avgPrice*100).toFixed(6)
+                        			_this.TotalTurnoverPrice = (info[i].avgPrice*100).toFixed(2)
                         		}
                         	}else if(info[i].type === 3){
                         		if(info[i].countAll === null){
@@ -221,7 +221,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.MerchantPrice = 0
                         		}else{
-                        			_this.MerchantPrice = (info[i].avgPrice*100).toFixed(6)
+                        			_this.MerchantPrice = (info[i].avgPrice*100).toFixed(2)
                         		}
                         	}else if(info[i].type === 4){
                         		if(info[i].countAll === null){
@@ -232,7 +232,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.RechargePrice = 0
                         		}else{
-                        			_this.RechargePrice = (info[i].avgPrice*100).toFixed(6)
+                        			_this.RechargePrice = (info[i].avgPrice*100).toFixed(2)
                         		}
                         	}else if(info[i].type === 5){
                         		if(info[i].countAll === null){
@@ -243,7 +243,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.publicWelfarePrice = 0
                         		}else{
-                        			_this.publicWelfarePrice = (info[i].avgPrice*100).toFixed(6)
+                        			_this.publicWelfarePrice = (info[i].avgPrice*100).toFixed(2)
                         		}
                         	}else if(info[i].type === 6){
                         		if(info[i].countAll === null){
@@ -254,7 +254,7 @@
                         		if(info[i].avgPrice === null){
                         			_this.HistoryPrice = 0
                         		}else{
-                        			_this.HistoryPrice = (info[i].avgPrice*100).toFixed(6)
+                        			_this.HistoryPrice = (info[i].avgPrice*100).toFixed(2)
                         		}
                         	}
                         }
@@ -488,6 +488,75 @@
                     ]
                 });
             },
+            // 地图
+            chartmapFu() {
+                const chartmap = echarts.init(document.getElementById('chartmap'));
+                chartmap.setOption({
+                        title : {
+                            text: 'iphone销量',
+                            subtext: '纯属虚构',
+                            x:'center'
+                        },
+                        tooltip : {
+                            trigger: 'item'
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            x:'left',
+                            data:['iphone3','iphone4','iphone5']
+                        },
+                        dataRange: {
+                            min: 0,
+                            max: 2500,
+                            x: 'left',
+                            y: 'bottom',
+                            text:['高','低'],           // 文本，默认为数值文本
+                            calculable : true
+                        },
+                        toolbox: {
+                            show: true,
+                            orient : 'vertical',
+                            x: 'right',
+                            y: 'center',
+                            feature : {
+                                mark : {show: true},
+                                dataView : {show: true, readOnly: false},
+                                restore : {show: true},
+                                saveAsImage : {show: true}
+                            }
+                        },
+                        roamController: {
+                            show: true,
+                            x: 'right',
+                            mapTypeControl: {
+                                'china': true
+                            }
+                        },
+                    series : [
+                        {
+                            name: 'iphone3',
+                            type: 'map',
+                            mapType: 'china',
+                            roam: true,
+                            itemStyle:{
+                                normal:{label:{show:true}},
+                                emphasis:{label:{show:true}}
+                            },
+                            data:[
+                                {name: '北京',value: Math.round(Math.random()*1000)},
+                                {name: '天津',value: Math.round(Math.random()*1000)},
+                                {name: '上海',value: Math.round(Math.random()*1000)},
+                                {name: '重庆',value: Math.round(Math.random()*1000)},
+                                {name: '山东',value: Math.round(Math.random()*1000)},
+                                {name: '新疆',value: Math.round(Math.random()*1000)},
+                                {name: '江苏',value: Math.round(Math.random()*1000)},
+                                {name: '浙江',value: Math.round(Math.random()*1000)},
+                                {name: '江西',value: Math.round(Math.random()*1000)}
+                            ]
+                        }
+                    ]
+                })
+            },
             formatterTime(row){
                 return  new Date(row).toLocaleString()
             }
@@ -496,6 +565,7 @@
         	this.getPosition()
            	this.getlist()
            	this.getUser()
+            this.chartmapFu()
         },
        	// 更新
         // updated: function () {
