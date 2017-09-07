@@ -52,7 +52,7 @@
 					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button> -->
 					<!-- <el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
 					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
+					<el-button type="text" size="small" @click="deldetSubmit(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -66,34 +66,40 @@
 
 		<!--编辑界面-->
 		<el-dialog title="订单详情" v-model="editFormVisible" :close-on-click-modal="false" >
-			<el-form :model="seeForm" label-width="160px">
+			<el-form :model="seeForm" label-width="100px">
 				<el-form-item label="订单号">
-					<div>{{seeForm.orderNumber }}</div>
+					<div>{{seeForm.ddbh }}</div>
 					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
 				</el-form-item>
 				<el-form-item label="商品名称">
-					<div>{{seeForm.attrName}}</div>
+					<div>{{seeForm.productName}}</div>
 				</el-form-item>
 				<el-form-item label="用户名">
-					<div>{{seeForm.userName }}</div>
+					<div>{{seeForm.coreUser }}</div>
 				</el-form-item>
 				<el-form-item label="实付金额">
-					<div>{{seeForm.amountPaid }}</div>
+					<div>{{seeForm.sfje }}</div>
 				</el-form-item>
 				<el-form-item label="订单总价">
-					<div>{{seeForm.orderTotal }}</div>
+					<div>{{seeForm.ddzj }}</div>
 				</el-form-item>
 				<el-form-item label="订单状态">
 					<div>{{seeForm.orderStatus }}</div>
 				</el-form-item>
 				<el-form-item label="支付方式">
-					<div>{{seeForm.paymentMethod }}</div>
+					<div>{{seeForm.payMethod }}</div>
 				</el-form-item>
 				<el-form-item label="创建时间">
-					<div>{{seeForm.creationTime}}</div>
+					<div v-if="seeForm.createTime !== null">{{ new Date(seeForm.createTime).toLocaleString()}}</div>
+					<div v-else>\</div>
 				</el-form-item>
 				<el-form-item label="发货时间">
-					<div>{{seeForm.deliveryTime}}</div>
+					<div v-if="seeForm.deliveryTime !== null">{{new Date(seeForm.deliveryTime).toLocaleString()}}</div>
+					<div v-else>\</div>
+				</el-form-item>
+				<el-form-item label="交易完成时间">
+					<div v-if="seeForm.deliveryTime !== null">{{new Date(seeForm.evaluateTime).toLocaleString()}}</div>
+					<div v-else>\</div>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
@@ -201,67 +207,29 @@
 			}
 		},
 		methods: {
-			formatterTime(row, column){
-				let curTime = row.createTime;
-				if(curTime !== null){
-	                curTime = new Date(curTime).toLocaleString()
-	                return curTime
-				}
-			},
-			deliveTime(row, column){
-				let curTime = row.deliveryTime;
-                if(curTime !== null){
-	                curTime = new Date(curTime).toLocaleString()
-	                return curTime
-				}else{
-					return '/'
-				}
-			},
-			//支付方式
-			formatterType: function (row, column) {
-				let type = ''
-				if(row.payMethod === '0'){
-					type = '微信支付'
-				}else if(row.payMethod === '1'){
-					type = '支付宝支付'
-				}else if(row.payMethod === '2'){
-					type = '银联支付'
-				}else if(row.payMethod === '3'){
-					type = '余额支付'
-				}else if(row.payMethod === '4'){
-					type = '余额金豆混合支付'
-				}else if(row.payMethod === '5'){
-					type = '金豆支付'
-				}
-				return type
-			},
-			//订单状态 orderStatus
-			formatterStatus: function (row, column) {
-				let status = ''
-				if(row.orderStatus === 1){
-					status = '支付中'
-				}else if(row.orderStatus === 2){
-					status = '支付成功'
-				}else if(row.orderStatus === 3){
-					status = '支付失败'
-				}else if(row.orderStatus === 4){
-					status = '已取消'
-				}else if(row.orderStatus === 5){
-					status = '卖家已发货'
-				}else if(row.orderStatus === 6){
-					status = '已收货'
-				}else if(row.orderStatus === 7){
-					status = '已评价'
-				}else if(row.orderStatus === 8){
-					status = '交易完成'
-				}else if(row.orderStatus === 9){
-					status = '售后处理'
-				}else if(row.orderStatus === 10){
-					status = '已删除'
-				}else if(row.orderStatus === 11){
-					status = '业务审核中'
-				}
-				return status
+			// 删除订单
+			deldetSubmit(row){
+				console.log(row)
+				const _this = this
+				const params = [{
+					id:row.ddbh
+				}]
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/orderMall/deleteBySys",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    	if(data.code === 1){
+                    		_this.getlist()
+                    	}else{
+                    		alert(data.msg)
+                    	}
+                    }
+                })
 			},
 			getlist(){
 				const _this = this
@@ -305,7 +273,7 @@
                     	}
                     	console.log(_this.orderInformation)
                     }
-                });
+                })
 			},
 			handleCurrentChange(val) {
 				this.page = val;
@@ -421,6 +389,68 @@
 				}).catch(() => {
 
 				});
+			},
+			formatterTime(row, column){
+				let curTime = row.createTime;
+				if(curTime !== null){
+	                curTime = new Date(curTime).toLocaleString()
+	                return curTime
+				}
+			},
+			deliveTime(row, column){
+				let curTime = row.deliveryTime;
+                if(curTime !== null){
+	                curTime = new Date(curTime).toLocaleString()
+	                return curTime
+				}else{
+					return '/'
+				}
+			},
+			//支付方式
+			formatterType: function (row, column) {
+				let type = ''
+				if(row.payMethod === '0'){
+					type = '微信支付'
+				}else if(row.payMethod === '1'){
+					type = '支付宝支付'
+				}else if(row.payMethod === '2'){
+					type = '银联支付'
+				}else if(row.payMethod === '3'){
+					type = '余额支付'
+				}else if(row.payMethod === '4'){
+					type = '余额金豆混合支付'
+				}else if(row.payMethod === '5'){
+					type = '金豆支付'
+				}
+				return type
+			},
+			//订单状态 orderStatus
+			formatterStatus: function (row, column) {
+				let status = ''
+				if(row.orderStatus === 1){
+					status = '支付中'
+				}else if(row.orderStatus === 2){
+					status = '支付成功'
+				}else if(row.orderStatus === 3){
+					status = '支付失败'
+				}else if(row.orderStatus === 4){
+					status = '已取消'
+				}else if(row.orderStatus === 5){
+					status = '卖家已发货'
+				}else if(row.orderStatus === 6){
+					status = '已收货'
+				}else if(row.orderStatus === 7){
+					status = '已评价'
+				}else if(row.orderStatus === 8){
+					status = '交易完成'
+				}else if(row.orderStatus === 9){
+					status = '售后处理'
+				}else if(row.orderStatus === 10){
+					status = '已删除'
+				}else if(row.orderStatus === 11){
+					status = '业务审核中'
+				}
+				return status
 			}
 		},
 		mounted() {

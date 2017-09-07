@@ -56,7 +56,7 @@
 					<div>{{editForm.name}}</div>
 				</el-form-item>
 				<el-form-item label="用户名">
-					<div>{{editForm.seller.nickName}}</div>
+					<div v-if="editForm.seller !== null">{{editForm.seller.nickName}}</div>
 				</el-form-item>
 				<el-form-item label="商品上架时间">
 					<div>{{new Date(editForm.shelfTime).toLocaleString()}}</div>

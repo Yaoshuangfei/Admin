@@ -242,7 +242,7 @@
 				<el-form-item label="已提现金额">
 					{{seeEditDisFrom.withdrawals}}
 				</el-form-item>
-				<el-form-item label="已提现金额">
+				<el-form-item label="平台身份">
 					<el-select v-model="seeEditDisFrom.crade" placeholder="请选择">
 						<el-option
 					      v-for="item in cradeList"

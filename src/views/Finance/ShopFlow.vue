@@ -313,6 +313,13 @@
 	                  	_this.total = data.data.total
 	                  	_this.orderInformation = info
 	                  	console.log(info)
+	                  	for(var i = 0;i<_this.orderInformation.length;i++){
+                    		if(_this.orderInformation[i].pmType === 0){
+                    			_this.orderInformation[i].quota = '-'+_this.orderInformation[i].quota
+                    		}else{
+                    			_this.orderInformation[i].quota = '+'+_this.orderInformation[i].quota
+                    		}
+                    	}
 	                }
 	            })
 			},

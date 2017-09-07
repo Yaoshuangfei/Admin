@@ -269,6 +269,13 @@
 	                  	_this.orderInformation = info
 	                  	console.log(info)
 	                  	_this.listLoading = false;
+	                  	for (var i = 0; i < _this.orderInformation.length; i++) {
+	                  		if(_this.orderInformation[i].pmType === 0){
+	                  			_this.orderInformation[i].quota = '-'+_this.orderInformation[i].quota
+	                  		}else{
+	                  			_this.orderInformation[i].quota = '+'+_this.orderInformation[i].quota
+	                  		}
+	                  	}
 	                }
 	            })
 			},

@@ -28,7 +28,7 @@
 			</el-table-column>
 			<el-table-column prop="coreUser.mobile" label="手机号">
 			</el-table-column>
-			<el-table-column prop="orderGoods.orderStatus"  label="订单状态">
+			<el-table-column prop="orderGoods.orderStatus" :formatter='orderStatu'  label="订单状态">
 			</el-table-column>
 			<el-table-column prop="refundType" :formatter='refunType'  label="退款类型">
 			</el-table-column>
@@ -41,7 +41,7 @@
 					<!-- <el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button> -->
 					<el-button type="text" size="small" @click="pass(scope.row)">通过</el-button>
 					<el-button type="text" size="small" @click="nopass(scope.row)">不通过</el-button>
-					<el-button type="text" size="small" @click="deldetBtn(scope.row)">删除</el-button>
+					<!-- <el-button type="text" size="small" @click="deldetBtn(scope.row)">删除</el-button> -->
 				</template>
 			</el-table-column>
 		</el-table>
@@ -53,20 +53,39 @@
 			</el-pagination>
 		</el-col>
 
-		<!--编辑界面-->
+		<!--同意界面-->
 		<el-dialog title="审核" v-model="editFormVisible" :close-on-click-modal="false" >
 			<el-form label-width="80px" >
 				<el-form-item label="密码">
-					<el-input v-model="password" type="text" auto-complete="off"></el-input>
+					<el-input v-model="password" type="password" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="发货时间">
-					<div>{{orderDetails.evaluate}}</div>
+				<el-form-item v-if="diinfo" label="退货地址">
+					<el-input v-model="bzCont" type="text" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item v-else label="备注">
+					<el-input v-model="bzCont" type="text" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button> -->
+				<el-button type="primary" @click.native="tongyiSubmit">确定</el-button>
 				<el-button type="primary" @click.native="editFormVisible = false">关闭</el-button>
+			</div>
+		</el-dialog>
+		<!--不同意界面-->
+		<el-dialog title="审核" v-model="noVisible" :close-on-click-modal="false" >
+			<el-form label-width="80px" >
+				<el-form-item label="密码">
+					<el-input v-model="nopassword" type="password" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="拒绝原因">
+					<el-input v-model="notLy" type="text"></el-input>
+				</el-form-item>
+				<el-col :span='24'></el-col>
+			</el-form>
+			<div slot="footer" class="dialog-footer" style="text-align: center;">
+				<el-button type="primary" @click.native="noupSubmit">确定</el-button>
+				<el-button type="primary" @click.native="noVisible = false">关闭</el-button>
 			</div>
 		</el-dialog>
 	</section>
@@ -80,31 +99,16 @@
 	export default {
 		data() {
 			return {
+				sele:[],
+				tyId:'',
+				bzCont:'',
+				diinfo:false,
+				shenhenopaid:'',
+				notLy:'',
+				nopassword:'',
+				noVisible:false,
+				editFormVisible:false,
 				password: '',
-				checked: true,
-				value:'',
-				value1:'',
-				value2:'',
-				selectSubjectStatus: [
-				{
-					value:'0',
-					label:'全部'
-				},{
-					value:'1',
-					label:'待付款'
-				},{
-					value:'2',
-					label:'待发货'
-				},{
-					value:'3',
-					label:'已发货'
-				},{
-					value:'4',
-					label:'待评价'
-				},{
-					value:'5',
-					label:'退货'
-				}],
 				options: [{
 		          value: '0',
 		          label: '全部'
@@ -120,34 +124,9 @@
 					status:'',
 					type:''
 				},
-				users: [],
 				total: 0,
 				page: 1,
 				listLoading: false,
-				sels: [],//列表选中列
-
-				editFormVisible: false,//编辑界面是否显示
-				editLoading: false,
-				editFormRules: {
-					name: [
-						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					]
-				},
-				//编辑界面数据
-				editForm: {
-					id: 0,
-					username: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				},
-
-				addFormVisible: false,//新增界面是否显示
-				addLoading: false,
-				//新增界面数据
-				orderDetails: {
-				},
 				orderEvaluate:[{
 					orderGoods:{
 						productName:'',
@@ -161,6 +140,66 @@
 			}
 		},
 		methods: {
+			//通过
+			pass(row){
+				console.log(row)
+				this.editFormVisible = true
+				this.tyId = row.refundId
+				if(row.refundType === '2'){
+					this.diinfo = true
+				}
+			},
+			tongyiSubmit(){
+				const params = {
+					refundId: this.tyId,
+					refundStatus:3,
+					payPwd:this.password,
+					sellerCause:this.bzCont
+				}
+				if(this.diinfo){
+					params.refundStatus = 4
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/refundOrder/update",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        if(data.code !== 1){
+	                        alert(data.msg)
+                        }else{
+                        	_this.getlist()
+                        }
+                    }
+                })
+			},
+			// 不通过
+			nopass(row){
+				this.noVisible = true
+				this.shenhenopaid = row.refundId
+			},
+			noupSubmit(){
+				const params = {
+					refundId: this.shenhenopaid,
+					refundStatus:3,
+					payPwd:this.nopassword,
+					sellerCause:this.notLy
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/refundOrder/update",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                    }
+                })
+			},
 			getlist(){
 				const _this = this
 				_this.table = []
@@ -185,74 +224,6 @@
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getlist();
-			},
-			//删除
-			pass(row){
-				this.editFormVisible = true
-			},
-			//显示编辑界面
-			seeBtn: function (index, row) {
-				this.editFormVisible = true;
-				this.orderDetails = Object.assign({}, row);
-			},
-			//显示新增界面
-			handleAdd: function () {
-				this.addFormVisible = true;
-				this.addForm = {
-					name: '',
-					sex: -1,
-					age: 0,
-					birth: '',
-					addr: ''
-				};
-			},
-			//编辑
-			editSubmit: function () {
-				this.$refs.editForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.editLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.editForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser(para).then((res) => {
-								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['editForm'].resetFields();
-								this.editFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
-			},
-			//新增
-			addSubmit: function () {
-				this.$refs.addForm.validate((valid) => {
-					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
-							this.addLoading = true;
-							//NProgress.start();
-							let para = Object.assign({}, this.addForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							addUser(para).then((res) => {
-								this.addLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
-								this.$refs['addForm'].resetFields();
-								this.addFormVisible = false;
-								this.getUsers();
-							});
-						});
-					}
-				});
 			},
 			selsChange: function (sels) {
 				this.sels = sels;
@@ -292,6 +263,31 @@
 				}
 				return type
 			},
+			orderStatu(row, column){
+				let type = ''
+				if(row.orderGoods.orderStatus === 1){
+					type = '支付中'
+				}else if(row.orderGoods.orderStatus === 2){
+					type = '支付成功'
+				}else if(row.orderGoods.orderStatus === 3){
+					type = '支付失败'
+				}else if(row.orderGoods.orderStatus === 4){
+					type = '已取消'
+				}else if(row.orderGoods.orderStatus === 5){
+					type = '买家已发货'
+				}else if(row.orderGoods.orderStatus === 6){
+					type = '已收货'
+				}else if(row.orderGoods.orderStatus === 7){
+					type = '已评价'
+				}else if(row.orderGoods.orderStatus === 8){
+					type = '交易完成'
+				}else if(row.orderGoods.orderStatus === 9){
+					type = '售后处理'
+				}else if(row.orderGoods.orderStatus === 10){
+					type = '已删除'
+				}
+				return type
+			}
 		},
 		mounted() {
 			this.getlist();

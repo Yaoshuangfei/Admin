@@ -284,6 +284,13 @@
 	                  	console.log(info)
 	                  	_this.total = info.total
 	                  	_this.table = info.list
+	                  	for(var i = 0;i<_this.table.length;i++){
+                    		if(_this.table[i].pmType === 0){
+                    			_this.table[i].quota = '-'+_this.table[i].quota
+                    		}else{
+                    			_this.table[i].quota = '+'+_this.table[i].quota
+                    		}
+                    	}
 	                }
 	            })
 			},
