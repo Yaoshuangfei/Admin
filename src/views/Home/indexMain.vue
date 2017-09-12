@@ -506,7 +506,7 @@
                             
                             const obj = {}
                             obj.name = info[i].provinceName
-                            obj.calue = info[i].countGroup
+                            obj.value = info[i].countGroup
                             _this.maplist.push(obj)
                         }
                         // _this.maplist = [
