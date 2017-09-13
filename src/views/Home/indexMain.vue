@@ -505,7 +505,7 @@
                         for (var i = 0; i < info.length; i++) {
                             
                             const obj = {}
-                            obj.name = info[i].provinceName
+                            obj.name = info[i].provinceName.replace('省','').replace('市','')
                             obj.value = info[i].countGroup
                             _this.maplist.push(obj)
                         }
@@ -579,16 +579,16 @@
                                 emphasis:{label:{show:true}}
                             },
                             data:this.maplist
-                            // [
-                            //     {name: '北京',value: Math.round(Math.random()*1000)},
-                            //     {name: '天津',value: Math.round(Math.random()*1000)},
-                            //     {name: '上海',value: Math.round(Math.random()*1000)},
-                            //     {name: '重庆',value: Math.round(Math.random()*1000)},
-                            //     {name: '山东',value: Math.round(Math.random()*1000)},
-                            //     {name: '新疆',value: Math.round(Math.random()*1000)},
-                            //     {name: '江苏',value: Math.round(Math.random()*1000)},
-                            //     {name: '浙江',value: Math.round(Math.random()*1000)},
-                            //     {name: '江西',value: Math.round(Math.random()*1000)}
+                            // data:[
+                            //     {name: '北京',value: 200},
+                            //     {name: '天津',value: 200},
+                            //     {name: '上海',value: 100},
+                            //     {name: '重庆',value: 100},
+                            //     {name: '山东',value: 100},
+                            //     {name: '新疆',value: 100},
+                            //     {name: '江苏',value: 100},
+                            //     {name: '浙江',value: 100},
+                            //     {name: '江西',value: 100}
                             // ]
                         }
                     ]

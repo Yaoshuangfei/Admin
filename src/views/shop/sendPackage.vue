@@ -22,34 +22,38 @@
 				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getlist">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
+		<el-table :data="table" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
 			<el-table-column type="index">
 			</el-table-column>
-			<el-table-column prop="courierNumber" label="店铺名">
+			<el-table-column prop="storeId" label="店铺id">
 			</el-table-column>
-			<el-table-column prop="userName" label="用户名">
+			<!-- <el-table-column prop="userName" label="用户名">
 			</el-table-column>
 			<el-table-column prop="amountPaid" label="手机号码">
+			</el-table-column> -->
+			<!-- <el-table-column prop="name" label="视频名称">
+			</el-table-column> -->
+			<el-table-column prop="url" label="视频地址">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="视频名称">
+			<el-table-column prop="allowStatus" :formatter='allType' label="视频状态">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="视频大小">
+			<el-table-column prop="status" :formatter='statusType' label="店铺状态">
 			</el-table-column>
-			<el-table-column prop="paymentMethod" label="状态">
+			<el-table-column prop="index" :formatter='indexType' label="店铺位置">
 			</el-table-column>
 			<el-table-column label="操作">
 				<template scope="scope">
 					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button> -->
 					<!-- <el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">通过</el-button>
-					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">不通过</el-button>
+					<!-- <el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button> -->
+					<el-button type="text" size="small" v-if="scope.row.allowStatus === 1" @click="passSubmit(scope.row)">通过</el-button>
+					<el-button type="text" size="small" v-if="scope.row.allowStatus === 1" @click="shownop(scope.row)">不通过</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -63,39 +67,13 @@
 
 		<!--编辑界面-->
 		<el-dialog title="订单详情" v-model="editFormVisible" :close-on-click-modal="false" >
-			<el-form :model="orderDetails" label-width="160px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="订单号">
-					<div>{{orderDetails.orderNumber }}</div>
-					<!-- <el-input v-model="addForm.name" type="text" auto-complete="off"></el-input> -->
+			<el-form  label-width="80px">
+				<el-form-item label="备注">
+					<el-input v-model="remarks" type="text" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="商品名称">
-					<div>{{orderDetails.commodityName}}</div>
-				</el-form-item>
-				<el-form-item label="用户名">
-					<div>{{orderDetails.userName }}</div>
-				</el-form-item>
-				<el-form-item label="实付金额">
-					<div>{{orderDetails.amountPaid }}</div>
-				</el-form-item>
-				<el-form-item label="订单总价">
-					<div>{{orderDetails.orderTotal }}</div>
-				</el-form-item>
-				<el-form-item label="订单状态">
-					<div>{{orderDetails.orderStatus }}</div>
-				</el-form-item>
-				<el-form-item label="支付方式">
-					<div>{{orderDetails.paymentMethod }}</div>
-				</el-form-item>
-				<el-form-item label="创建时间">
-					<div>{{orderDetails.creationTime}}</div>
-				</el-form-item>
-				<el-form-item label="发货时间">
-					<div>{{orderDetails.deliveryTime}}</div>
-				</el-form-item>
-				<el-col :span='24'></el-col>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center;">
-				<!-- <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button> -->
+				<el-button type="primary" @click.native="nopassSubmit">提交</el-button>
 				<el-button type="primary" @click.native="editFormVisible = false">关闭</el-button>
 			</div>
 		</el-dialog>
@@ -110,8 +88,8 @@
 	export default {
 		data() {
 			return {
-				radio: '0',
-				checked: true,
+				remarks: '',
+				passObj: {},
 				value:'',
 				value1:'',
 				value2:'',
@@ -154,7 +132,7 @@
 					type:''
 				},
 				users: [],
-				total: 100,
+				total: 0,
 				page: 1,
 				listLoading: false,
 				sels: [],//列表选中列
@@ -181,57 +159,100 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[{
-					orderNumber :'145877458784524c',
-					courierNumber :'145877458784524c',
-					userName:'吸引力量',
-					amountPaid :'300',
-					orderTotal :'900',
-					orderStatus :'待付款',
-					paymentMethod :'微信支付',
-					creationTime:'2017-09-08 17:09',
-					deliveryTime:'2017-09-08 17:09',
-					commodityName:'雨花说'
-				}]
+				table:[]
 			}
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
-			},
 			getlist(){
 				const _this = this
 				_this.table = []
 				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
+					pageNum:this.page,
+					pageSize:10,
+					allowStatus:''
 				}
 				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
-	                }
-	              }
-	         	)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/storeVideo/selectListByAdmin",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        const info = data.data
+                        _this.table = info.list
+                        _this.total = info.total
+                    }
+                })
+			},
+			passSubmit(row){
+				console.log(row)
+				const _this = _this
+				const params = {
+					id:row.id,
+					allowStatus:2
+				}
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/storeVideo/auditByAdmin",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                    }
+                })
+			},
+			shownop(row){
+				this.editFormVisible = true
+				this.passObj = row
+			},
+			nopassSubmit(row){
+				const _this = _this
+				const params = {
+					id:this.passObj.id,
+					allowStatus:3,
+					remarks:this.remarks
+				}
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/store/storeVideo/auditByAdmin",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                    }
+                })
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
+				this.getlist();
 			},
+			allType(row,column){
+				if(row.allowStatus === 1){
+					return '待审核'
+				}else if(row.allowStatus === 2){
+					return '审核通过'
+				}else if(row.allowStatus === 3){
+					return '审核不通过'
+				}
+            },
+            statusType(row,column){
+            	if(row.status === 1){
+					return '试用'
+				}else if(row.status === 2){
+					return '已购买'
+				}
+            },
+            indexType(row,column){
+            	if(row.index === 1){
+					return '店铺'
+				}else if(row.index === 2){
+					return '身份'
+				}
+            },
 			//获取用户列表
 			getUsers() {
 				let para = {
@@ -359,7 +380,7 @@
 			}
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 
