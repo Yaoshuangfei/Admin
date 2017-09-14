@@ -218,7 +218,6 @@
                     url:baseUrl+"/api/userCashFlow/find/record",
                     data:JSON.stringify(params),
                     contentType:'application/json;charset=utf-8',
-                    error: function (XMLHttpRequest, textStatus, errorThrown) {},
                     success:function(data){
                     	// const info = data.data
                     	// _this.total = info.total
