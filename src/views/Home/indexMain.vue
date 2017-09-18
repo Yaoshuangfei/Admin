@@ -127,6 +127,7 @@
     export default {
         data() {
             return {
+                number:0,
                 baobiaoName:'日营业额',
             	 ruleAll:[{
                 	name:'日报表',
@@ -508,19 +509,10 @@
                             obj.name = info[i].provinceName.replace('省','').replace('市','')
                             obj.value = info[i].countGroup
                             _this.maplist.push(obj)
+                            if(_this.number<info[i].countGroup){
+                                _this.number=info[i].countGroup
+                            }
                         }
-                        // _this.maplist = [
-                        //         {name: '北京',value: Math.round(Math.random()*1000)},
-                        //         {name: '天津',value: Math.round(Math.random()*1000)},
-                        //         {name: '上海',value: Math.round(Math.random()*1000)},
-                        //         {name: '重庆',value: Math.round(Math.random()*1000)},
-                        //         {name: '山东',value: Math.round(Math.random()*1000)},
-                        //         {name: '新疆',value: Math.round(Math.random()*1000)},
-                        //         {name: '江苏',value: Math.round(Math.random()*1000)},
-                        //         {name: '浙江',value: Math.round(Math.random()*1000)},
-                        //         {name: '江西',value: Math.round(Math.random()*1000)}
-                        //     ]
-                        console.log(_this.maplist)
                         _this.chartmapFu()
                     }
                 });
@@ -543,7 +535,7 @@
                         },
                         dataRange: {
                             min: 0,
-                            max: 2500,
+                            max: this.number,
                             x: 'left',
                             y: 'bottom',
                             text:['高','低'],           // 文本，默认为数值文本

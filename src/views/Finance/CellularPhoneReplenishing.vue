@@ -45,6 +45,8 @@
 			</el-table-column>
 			<el-table-column prop="quantity" :formatter='formatterType' label="充值类型">
 			</el-table-column>
+			<el-table-column prop="payType" :formatter='ispayType' label="充值来源">
+			</el-table-column>
 			<el-table-column prop="productPrice" label="充值金额">
 			</el-table-column>
 			<el-table-column prop="productName" label="原价">
@@ -380,6 +382,23 @@
 					type = '视频充值'
 				}
 				return type
+			},
+			ispayType(row, column){
+				if(row.payType === 0){
+					return '微信支付'
+				}else if(row.payType === 1){
+					return '支付宝支付'
+				}else if(row.payType === 2){
+					return '银联支付'
+				}else if(row.payType === 3){
+					return '余额支付'
+				}else if(row.payType === 4){
+					return '余额金豆混合支付'
+				}else if(row.payType === 5){
+					return '金豆支付'
+				}else if(row.payType === 6){
+					return '在线支付'
+				}
 			}
 		},
 		mounted() {

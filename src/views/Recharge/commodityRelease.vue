@@ -55,7 +55,11 @@
 					<el-form-item label="充值类型">
 						<el-input v-model="sjinput" placeholder="手机充值" :disabled="true" style="width: 80%;"></el-input>
 					</el-form-item>
-
+					<el-form-item label="规格名称">
+						<el-select v-model="valueHf" placeholder="请选择">
+					 		<el-option v-for="item in option1"  :label="item.label" :value="item.value" :type="item.type"></el-option>
+						</el-select>
+					</el-form-item>
 					<el-form-item label="价格">
 						<el-input v-model="inputMoney" placeholder="请输入你要发布的价格"  style="width: 80%;"></el-input>
 					</el-form-item>
@@ -63,6 +67,11 @@
 				<div class="sort" id="liuliang" style="display: none;">
 					<el-form-item label="充值类型">
 						<el-input v-model="sjinput" placeholder="流量充值" :disabled="true" style="width: 80%;"></el-input>
+					</el-form-item>
+					<el-form-item label="规格名称">
+						<el-select v-model="valuell" placeholder="请选择">
+					 		<el-option v-for="item in option2"  :label="item.label" :value="item.value" :type="item.type"></el-option>
+						</el-select>
 					</el-form-item>
 					<el-form-item label="价格">
 						<el-input v-model="inputMoney" placeholder="请输入你要发布的价格"  style="width: 80%;"></el-input>
@@ -72,6 +81,11 @@
 					<el-form-item label="油卡种类">
 						<el-select v-model="rechargeList.rechargeTypeIdyk" placeholder="请选择" @change="commodityReleaseyk">
 							<el-option v-for="item in optionyk"  :label="item.label" :value="item.value"></el-option>
+						</el-select>
+					</el-form-item>
+					<el-form-item label="规格名称">
+						<el-select v-model="valueyk" placeholder="请选择">
+					 		<el-option v-for="item in option3"  :label="item.label" :value="item.value" :type="item.type"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="价格">
@@ -156,6 +170,51 @@
 	export default {
 		data() {
 			return {
+				option1:[
+					{
+						value:'100元',
+						label:'100元'
+					},
+					{
+						value:'200元',
+						label:'200元'
+					},
+					{
+						value:'500元',
+						label:'500元'
+					}
+				],
+				valueHf:'',
+				option2:[
+					{
+						value:'1G',
+						label:'1G'
+					},
+					{
+						value:'2G',
+						label:'2G'
+					},
+					{
+						value:'3G',
+						label:'3G'
+					}
+				],
+				valuell:'',
+				option3:[
+					{
+						value:'500元',
+						label:'500元'
+					},
+					{
+						value:'1000元',
+						label:'1000元'
+					},
+					{
+						value:'2000元',
+						label:'2000元'
+					}
+				],
+				valueyk:'',
 				url:'',
                 inputMoney:'',
                 inputtime:'',
@@ -532,7 +591,7 @@
 						}
 					}
                     const params = {
-                        name:this.option[0].label,
+                        name:this.valueHf,
                         carouselPicture:_this.url,
                         price:this.inputMoney,
                         catId:this.numtyId,
@@ -559,7 +618,7 @@
 				}
 				else if(_number === 2){
                     const params = {
-                        name:this.option[1].label,
+                        name:this.valuell,
                         carouselPicture:_this.url,
                         price:this.inputMoney,
                         catId:this.numtyId,
@@ -589,7 +648,7 @@
                     let name		= '';
                     for(var i=0;i<this.optionyk.length;i++){
                         if(this.optionyk[i].value === this.rechargeList.rechargeTypeIdyk){
-                            name = this.optionyk[i].label;
+                            name = this.valueyk;
                             this.catId = this.optionyk[i].value;
                             console.log(this.optionyk[i].label)
                         }

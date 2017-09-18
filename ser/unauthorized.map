@@ -1,0 +1,7 @@
+{
+    "codeEnum": "ERR_PERMISSIONS",
+    "code": -2,
+    "data": null,
+    "msg": "无此权限",
+    "success": false
+}

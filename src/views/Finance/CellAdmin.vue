@@ -41,11 +41,13 @@
 			</el-table-column>
 			<el-table-column prop="userName" label="昵称">
 			</el-table-column>
-			<el-table-column prop="mobile" label="手机号">
+			<el-table-column prop="mobile" label="手机号">payType
 			</el-table-column>
 			<el-table-column prop="attrName" label="充值号码">
 			</el-table-column>
 			<el-table-column prop="quantity" :formatter='formatterType' label="充值类型">
+			</el-table-column>
+			<el-table-column prop="payType" :formatter='ispayType' label="充值来源">
 			</el-table-column>
 			<el-table-column prop="productPrice" label="充值金额">
 			</el-table-column>
@@ -422,6 +424,23 @@
 					status = '审核中'
 				}
 				return status
+			},
+			ispayType(row, column){
+				if(row.payType === 0){
+					return '微信支付'
+				}else if(row.payType === 1){
+					return '支付宝支付'
+				}else if(row.payType === 2){
+					return '银联支付'
+				}else if(row.payType === 3){
+					return '余额支付'
+				}else if(row.payType === 4){
+					return '余额金豆混合支付'
+				}else if(row.payType === 5){
+					return '金豆支付'
+				}else if(row.payType === 6){
+					return '在线支付'
+				}
 			}
 		},
 		mounted() {

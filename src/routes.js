@@ -182,6 +182,18 @@ let routes = [
     {
         path: '/',
         component: Home,
+        name: '充值管理',
+        iconCls: 'el-icon-message',
+        children: [
+            { path: '/CellAdmin', component: CellAdmin, name: '手机充值管理' },
+            { path: '/CellularPhoneReplenishing', component: CellularPhoneReplenishing, name: '手机充值记录' },
+            { path: '/rechargeSpecification', component: rechargeSpecification, name: '充值规格管理' },
+            { path: '/commodityRelease', component: commodityRelease, name: '充值商品' }
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
         name: '扫码付管理',
         iconCls: 'el-icon-message',
         children: [
@@ -209,18 +221,6 @@ let routes = [
             // { path: '/account', component: account, name: '账号管理' },
             // { path: '/editPassword', component: editPassword, name: '修改密码' },
             // { path: '/operationLog', component: operationLog, name: '操作日志' }
-        ]
-    },
-    {
-        path: '/',
-        component: Home,
-        name: '充值管理',
-        iconCls: 'el-icon-message',
-        children: [
-            { path: '/CellAdmin', component: CellAdmin, name: '手机充值管理' },
-            { path: '/CellularPhoneReplenishing', component: CellularPhoneReplenishing, name: '手机充值记录' },
-            { path: '/rechargeSpecification', component: rechargeSpecification, name: '充值规格管理' },
-            { path: '/commodityRelease', component: commodityRelease, name: '充值商品' }
         ]
     },
     {

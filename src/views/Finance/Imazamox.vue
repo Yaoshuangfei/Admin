@@ -22,7 +22,7 @@
 				    <el-input v-model="filters.name"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getlist">查询</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -180,18 +180,7 @@
 				//新增界面数据
 				orderDetails: {
 				},
-				orderInformation:[{
-					orderNumber :'145877458784524c',
-					courierNumber :'145877458784524c',
-					userName:'吸引力量',
-					amountPaid :'300',
-					orderTotal :'900',
-					orderStatus :'待付款',
-					paymentMethod :'微信支付',
-					creationTime:'2017-09-08 17:09',
-					deliveryTime:'2017-09-08 17:09',
-					commodityName:'雨花说'
-				}]
+				orderInformation:[]
 			}
 		},
 		methods: {
@@ -203,33 +192,25 @@
 				const _this = this
 				_this.table = []
 				const params = {
-					accountId:'1',
-					accessToken:'',
-					resourceType:'',
-					page:{
-						pageNum:_this.page,
-						pageSize:'10'
-					}
+					pageNum:this.page,
+					pageSize:10,
+					type:'9,10'
 				}
 				console.log(params)
-				$.post(baseUrl+"/admin/banner/getBannerByPage",
-	             { param: JSON.stringify(params) },
-	             function(data){
-	             	const info = eval('(' + data + ')');
-	                const response = JSON.parse(info);
-	                const list = response.obj.results
-	                console.log(response)
-	                // _this.page = response.obj.total
-	                _this.total = response.obj.totalRecord
-	                for(var i = 0;i<list.length;i++){
-	                	_this.table.push(list[i])
-	                }
-	              }
-	         	)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/admin/userCashFlow/selectFlowList",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                    	console.log(data)
+                    }
+                });
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
+				this.getlist();
 			},
 			//获取用户列表
 			getUsers() {
@@ -358,7 +339,7 @@
 			}
 		},
 		mounted() {
-			// this.getlist();
+			this.getlist();
 		}
 	}
 
