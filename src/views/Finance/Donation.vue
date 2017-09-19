@@ -35,19 +35,17 @@
 
 		<!--列表-->
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column type="index">
-			</el-table-column>
-			<el-table-column prop="tradeNo" label="订单编号">
+			<el-table-column type="index" label="序号">
 			</el-table-column>
 			<el-table-column prop="userName" label="用户昵称">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="转赠人">
+			<el-table-column prop="pmType" :formatter='pmtypes' label="支出收益">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="便付券/张">
+			<el-table-column prop="quota" label="便付券/张">
 			</el-table-column>
-			<el-table-column prop="creationTime" label="便付券编码">
+			<el-table-column prop="remark" label="备注">
 			</el-table-column>
-			<el-table-column prop="deliveryTime" label="创建时间">
+			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
 			</el-table-column>
 			<!-- <el-table-column label="操作"> -->
 				<!-- <template scope="scope"> -->
@@ -162,6 +160,19 @@
 			}
 		},
 		methods: {
+			pmtypes(row,column){
+				if(row.pmType === 1){
+                	return '收入'
+                }else{
+                	return '支出'
+                }
+			},
+			formatterTime(row,column){
+                let curTime = row.createTime;
+                if(curTime !== null){
+                	return new Date(curTime).toLocaleString()
+                }
+            },
 			getlist(){
 				const _this = this
 				_this.table = []
@@ -187,7 +198,7 @@
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getlist(); 
+				this.getlist();
 			}
 		},
 		mounted() {

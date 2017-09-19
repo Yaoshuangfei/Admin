@@ -35,24 +35,24 @@
 
 		<!--列表-->
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
-			<el-table-column prop="userName" label="订单编号">
+			<el-table-column prop="tradeNo" label="订单编号">
 			</el-table-column>
-			<el-table-column prop="amountPaid" label="用户名">
+			<el-table-column prop="userName" label="用户名">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="实付金额">
+			<el-table-column prop="remark" label="实付金额">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="手续费">
+			<el-table-column prop="quota" label="手续费">
 			</el-table-column>
-			<el-table-column prop="creationTime" label="创建时间">
+			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
 			</el-table-column>
-			<el-table-column label="操作">
+			<!-- <el-table-column label="操作">
 				<template scope="scope">
-					<!-- <el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button>
-					<el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button> -->
+					<el-button v-if='scope.row.index === 1' type='text' size="small" @click="handleEdit(scope.$index, scope.row)">暂停</el-button>
+					<el-button v-else-if='scope.row.index === 0' :disabled="true" type='text' size="small" @click="handleEdit(scope.$index, scope.row)">已处理</el-button>
 					<el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button>
-					<!-- <el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button> -->
+					<el-button type="text" size="small" @click="handleEdit(scope.$index, scope.row)">删除</el-button>
 				</template>
-			</el-table-column>
+			</el-table-column> -->
 		</el-table>
 
 		<!--工具条-->
@@ -162,6 +162,12 @@
 			}
 		},
 		methods: {
+			formatterTime(row,column){
+                let curTime = row.createTime;
+                if(curTime !== null){
+                	return new Date(curTime).toLocaleString()
+                }
+            },
 			getlist(){
 				const _this = this
 				_this.table = []

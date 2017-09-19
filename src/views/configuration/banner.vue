@@ -218,8 +218,9 @@
 		methods: {
 			formatterTime(row,column){
                 let curTime = row.createTime;
-                curTime = new Date(curTime).toLocaleString()
-                return curTime
+                if(curTime !== null){
+                	return new Date(curTime).toLocaleString()
+                }
             },
             formatterType(row,column){
             	return row.status == 0 ? '禁用' : '启用 ' ;
