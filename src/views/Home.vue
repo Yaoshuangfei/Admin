@@ -409,7 +409,7 @@
 				// left: 230px;*/
 				overflow-y: scroll;
 				padding: 20px 20px 20px 0;
-				background: #f7f7f7;
+				background: #f7f7f7;/*背景颜色*/
 				.breadcrumb-container {
 					//margin-bottom: 15px;
 					.title {

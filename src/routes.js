@@ -19,6 +19,11 @@ import system from './views/configuration/system.vue'
 import BankCard from './views/configuration/BankCard.vue'
 import rule from './views/configuration/rule.vue'
 
+// 统计
+import transactionStatistics from './views/Statistics/transactionStatistics.vue'
+import goodstatistics from './views/Statistics/goodstatistics.vue'
+import vipstatistics from './views/Statistics/vipstatistics.vue'
+
 /*商品管理 commodity */
 import investorList from './views/commodity/investorList.vue'
 import scoreList from './views/commodity/scoreList.vue'
@@ -117,6 +122,17 @@ let routes = [
             { path: '/system', component: system, name: '系统配置' },
             { path: '/BankCard', component: BankCard, name: '银行卡管理' },
             { path: '/rule', component: rule, name: '规则管理' }
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '统计',
+        iconCls: 'fa fa-bar-chart',
+        children: [
+            { path: '/transactionStatistics', component: transactionStatistics, name: '店铺交易统计' },
+            { path: '/goodstatistics', component: goodstatistics, name: '商品统计' },
+            { path: '/vipstatistics', component: vipstatistics, name: '会员统计' }
         ]
     },
     {
