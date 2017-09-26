@@ -115,6 +115,8 @@
 					<button type="button" class="el-button el-button--primary el-button--small">
 						<span>点击上传</span>
 					</button>
+				</el-form-item>
+				<el-form-item>
 					<img v-if="url !== ''" style="width: 50px" :src="url">
 				</el-form-item>
 				<el-col :span='24'></el-col>

@@ -10,6 +10,10 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
+                    <el-button type="primary" @click="ztBtn">昨天</el-button>
+                    <el-button type="primary" @click="zjBtn">最近7天</el-button>
+                    <el-button type="primary" @click="yBtn">最近30天</el-button>
+                    <el-button type="primary" @click="getlist">查询</el-button>
                     <el-button type="primary">导出数据</el-button>
                 </el-form-item>
             </el-form>
@@ -25,12 +29,12 @@
                     <el-col :span="4">下单金额</el-col>
                 </el-col>
                 <el-col :span="24" style="height: 60px;line-height: 60px;">
-                    <el-col :span="4">1111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
+                    <el-col :span="4">{{browseNum}}</el-col>
+                    <el-col :span="4">{{pOrderNum}}</el-col>
+                    <el-col :span="4">{{orderNum}}</el-col>
+                    <el-col :span="4">{{pOrderNc}}</el-col>
+                    <el-col :span="4">{{vaOrderNum}}</el-col>
+                    <el-col :span="4">{{pAmount}}</el-col>
                 </el-col>
                 <el-col :span="24" style="height: 40px;line-height: 40px;background:#ccc;">
                     <el-col :span="4">退款金额</el-col>
@@ -40,11 +44,11 @@
                     <el-col :span="4">付款金额</el-col>
                 </el-col>
                 <el-col :span="24" style="height: 60px;line-height: 60px;">
-                    <el-col :span="4">1111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
+                    <el-col :span="4">{{rAmount}}</el-col>
+                    <el-col :span="4">{{payMemberNum}}</el-col>
+                    <el-col :span="4">{{payOrderNum}}</el-col>
+                    <el-col :span="4">{{payOrderNc}}</el-col>
+                    <el-col :span="4">{{payAmount}}</el-col>
                 </el-col>
             </el-col>
             <el-col :span="8"  style="border:1px solid #ddd;height: 200px;"></el-col>
@@ -85,17 +89,17 @@
                 </el-col>
                 <el-col :span="24" style="height: 60px;line-height: 60px;border-bottom: 1px solid #ccc">
                     <el-col :span="4">平台</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
+                    <el-col :span="4">{{idenNumPla}}</el-col>
+                    <el-col :span="4">{{idenPayMoneyPla}}</el-col>
+                    <el-col :span="4">{{goodsNumPla}}</el-col>
+                    <el-col :span="4">{{goodsPayMoneyPla}}</el-col>
                 </el-col>
                 <el-col :span="24" style="height: 60px;line-height: 60px;">
                     <el-col :span="4">微信</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
-                    <el-col :span="4">11111</el-col>
+                    <el-col :span="4">{{idenNumWx}}</el-col>
+                    <el-col :span="4">{{idenPayMoneyWx}}</el-col>
+                    <el-col :span="4">{{goodsNumWx}}</el-col>
+                    <el-col :span="4">{{goodsPayMoneyWx}}</el-col>
                 </el-col>
             </el-col>
     </section>
@@ -109,167 +113,141 @@
     export default {
         data() {
         	return {
-                name:'',
-                options:[
-                    {
-                        value:'1',
-                        label:'1店'
-                    },{
-                        value:'2',
-                        label:'2店'
-                    },{
-                        value:'3',
-                        label:'3店'
-                    },{
-                        value:'4',
-                        label:'4店'
-                    }
-                ],
+                payOrderNc:'',    //付款件数
+                payOrderNum:'',    //付款订单数
+                rAmount:'',    //退款金额
+                payAmount:'',    //付款金额
+                browseNum:'',    //浏览人数
+                vaOrderNum:'',    //有效订单
+                pAmount:'',    //下单金额
+                pOrderNum:'',    //下单人数
+                orderNum:'',    //订单数
+                pOrderNc:'',    //下单件数
+                payMemberNum:'',    //付款人数
+
+                idenNumPla:'',    //-身份数量（来源平台）
+                idenPayMoneyPla:'',    //付款金额（身份）（来源平台）
+                goodsNumPla:'',    //商品数量（来源平台）
+                goodsPayMoneyPla:'',    //付款金额（商品）（来源平台）
+                idenNumWx:'',    //-身份数量（来源微信）
+                idenPayMoneyWx:'',    //付款金额（身份）（来源微信）
+                goodsNumWx:'',    //商品数量（来源微信）
+                goodsPayMoneyWx:'',    //付款金额（商品）（来源微信）
+                                
+                name:4,
+                options:[],
                 chartColumn: null,
                 chartPie:null,
-                chartPieRight:null
+                chartPieRight:null,
+                plist:[],
+                wxlist:[],
+                cNum:''
         	}
         },
         methods: {
-            getPosition(){
+            getTransaction(){
                 const _this = this
-                _this.sj = []
-                _this.cj = []
-                _this.sp = []
-                _this.pj = []
-                _this.tx = []
-                _this.parobj = []//初始化饼图数据
-                _this.parName = []
-                _this.listAll = []//初始化线形图数据
+                this.options = []
                 const params = {
-                    type:this.type,
-                    storeId:state.storeId
+                    pageNum:1,
+                    size:1000,
+                    name:'',
+                    nickName:'',
+                    mobile:'',
+                    status:'',
+                    id:''
                 }
-                // console.log(params)
-                
                 $.ajax({
-                  type:'POST',
-                  dataType:'json',
-                  url:baseUrl+"/api/orderMall/selectByPayTimeGroup",
-                  data:JSON.stringify(params),
-                  contentType:'application/json;charset=utf-8',
-                  success:function(data){
-                    const info = data.data
-                    // 线形图
-                    if(info === null){
-                        return
-                    }
-                    console.log(info)
-                    const linelist = info.analysisVOList
-                    for(var i = 0;i<linelist.length;i++){
-                        // 时间
-                        var date=new Date(linelist[i].payTime);
-                        if(_this.type === 0){
-                             _this.sj.push(date.getHours()+'时')
-                        }else if(_this.type === 1 || _this.type === 3){
-                             _this.sj.push((date.getMonth()+1)+"月"+date.getDate()+'日')
-                        }else if(_this.type === 2 ){
-
-                            _this.sj.push(date.getDate()+'日')
-                        }else{
-                            _this.sj.push(date.getFullYear()+"-"+(date.getMonth()+1))
-                        }
-                        _this.cj.push(linelist[i].moneyAll)
-                        _this.sp.push(linelist[i].countAll)
-                        _this.pj.push(linelist[i].avgPrice)
-                        _this.tx.push(linelist[i].amount)
-                    }
-                    console.log(_this.sj)
-
-                    
-
-                    const obj = {}
-                    obj.name = '成交额总数'
-                    obj.type = 'line'
-                    obj.smooth = true
-                    obj.data = _this.cj
-                    obj.itemStyle = {
-                        normal : {
-                            label:{show:true}
+                    type: 'POST',
+                    dataType: 'json',
+                    url: baseUrl + "/api/store/find/page",
+                    data: JSON.stringify(params),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        console.log(data)
+                        const info = data.data
+                        for (var i = 0; i < info.list.length; i++) {
+                            const obj = {}
+                            obj.value = info.list[i].id
+                            obj.label = info.list[i].name
+                            _this.options.push(obj)
                         }
                     }
-                    _this.listAll.push(obj)
-
-                    const obj1 = {}
-                    obj1.name = '成交商品总数'
-                    obj1.type = 'line'
-                    obj1.smooth = true
-                    obj1.data = _this.sp
-                    obj1.itemStyle = {
-                        normal : {
-                            label:{show:true}
-                        }
+                })
+            },
+            ztBtn(){
+                this.cNum = 1
+                this.getlist()
+            },
+            zjBtn(){
+                this.cNum = 7
+                this.getlist()
+            },
+            yBtn(){
+                this.cNum = 30
+                this.getlist()
+            },
+            getlist(){
+                const _this = this
+                const params = {
+                    storeId:this.name,
+                    cNum:this.cNum,
+                    startTime:'',
+                    endTime:''
+                }
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: baseUrl + "/api/admin/mallStatistics/findMallStatistics",
+                    data: JSON.stringify(params),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        console.log(data)
+                        const info = data.data
+                        _this.browseNum = info.browseNum
+                        _this.orderNum = info.orderNum
+                        _this.pAmount = info.pAmount
+                        _this.pOrderNc = info.pOrderNc
+                        _this.pOrderNum = info.pOrderNum
+                        _this.payAmount = info.payAmount
+                        _this.payMemberNum = info.payMemberNum
+                        _this.payOrderNc = info.payOrderNc
+                        _this.payOrderNum = info.payOrderNum
+                        _this.rAmount = info.rAmount
+                        _this.vaOrderNum = info.vaOrderNum
                     }
-                    _this.listAll.push(obj1)
-
-                    const obj2 = {}
-                    obj2.name = '成交额平均值'
-                    obj2.type = 'line'
-                    obj2.smooth = true
-                    obj2.data = _this.pj
-                    obj2.itemStyle = {
-                        normal : {
-                            label:{show:true}
-                        }
+                })
+                this.cNum = ''
+            },
+            getlistBootm(){
+                const _this = this
+                const params = {
+                    storeId:this.name,
+                    monthTime:'',
+                    startTime:'',
+                    endTime:''
+                }
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: baseUrl + "/api/admin/mallStatistics/findMallMakeUpStatistics",
+                    data: JSON.stringify(params),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        console.log(data)
+                        const info = data.data
+                        _this.goodsNumPla = info.goodsNumPla
+                        _this.goodsNumWx = info.goodsNumWx
+                        _this.goodsPayMoneyPla = info.goodsPayMoneyPla
+                        _this.goodsPayMoneyWx = info.goodsPayMoneyWx
+                        _this.idenNumPla = info.idenNumPla
+                        _this.idenNumWx = info.idenNumWx
+                        _this.idenPayMoneyPla = info.idenPayMoneyPla
+                        _this.idenPayMoneyWx = info.idenPayMoneyWx
+                        _this.drawPieChart()
+                        _this.drawPieChartR()
                     }
-                    _this.listAll.push(obj2)
-                    
-                    const obj3 = {}
-                    obj3.name = '提现总金额'
-                    obj3.type = 'line'
-                    obj3.smooth = true
-                    obj3.data = _this.tx
-                    obj3.itemStyle = {
-                        normal : {
-                            label:{show:true}
-                        }
-                    }
-                    _this.listAll.push(obj3)
-
-                    console.log(_this.listAll)
-
-
-
-                    //饼图数据
-                    const ordlist= info.orderMalls
-                    console.log(ordlist)
-                    for(var i = 0;i<ordlist.length;i++){
-                        const obj = {}
-                        if(ordlist[i].orderType === 3){
-                            obj.name = '业务充值'
-                        }else if(ordlist[i].orderType === 4){
-                            obj.name = '余额充值'
-                        }else if(ordlist[i].orderType === 5){
-                            obj.name = '商品购买'
-                        }else if(ordlist[i].orderType === 6){
-                            obj.name = ordlist[i].storeName+ '身份购买'
-                        }else if(ordlist[i].orderType === 7){
-                            obj.name = '平台身份购买 '
-                        }else if(ordlist[i].orderType === 8){
-                            obj.name = '补货'
-                        }else if(ordlist[i].orderType === 9){
-                            obj.name = '金豆充值'
-                        }else if(ordlist[i].orderType === 13){
-                            obj.name = '便付劵充值'
-                        }else{
-                            obj.name = '业务充值'
-                        }
-                        obj.value = ordlist[i].totalMoney
-                        _this.parName.push(obj.name)
-                        _this.parobj.push(obj)
-                    }
-                    console.log(_this.parobj)
-
-                    console.log(_this.parName)
-                    _this.drawColumnChart()
-                    _this.drawPieChart()
-                  }
-              });
+                })
             },
             // 折线图
             drawColumnChart() {
@@ -312,7 +290,7 @@
                 this.chartPie = echarts.init(document.getElementById('chartPie'));
                 this.chartPie.setOption({
                     title: {
-                        text: '店铺收入支出分析图',
+                        text: '平台',
                         x: 'center'
                     },
                     tooltip: {
@@ -322,7 +300,7 @@
                     legend: {
                         orient: 'vertical',
                         left: 'left',
-                         data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                         data:['身份数量','身份付款金额','商品数量','商品付款金额']
                     },
                     series: [
                         {
@@ -331,12 +309,11 @@
                             radius: '55%',
                             center: ['50%', '60%'],
                             data:[
-                {value:335, name:'直接访问'},
-                {value:310, name:'邮件营销'},
-                {value:234, name:'联盟广告'},
-                {value:135, name:'视频广告'},
-                {value:1548, name:'搜索引擎'}
-            ],
+                                {value:this.idenNumPla, name:'身份数量'},
+                                {value:this.goodsPayMoneyPla, name:'身份付款金额'},
+                                {value:this.goodsNumPla, name:'商品数量'},
+                                {value:this.idenPayMoneyPla, name:'商品付款金额'}
+                            ],
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -352,7 +329,7 @@
                 this.chartPieRight = echarts.init(document.getElementById('chartPieRight'));
                 this.chartPieRight.setOption({
                     title: {
-                        text: '店铺收入支出分析图',
+                        text: '微信',
                         x: 'center'
                     },
                     tooltip: {
@@ -362,7 +339,7 @@
                     legend: {
                         orient: 'vertical',
                         left: 'left',
-                         data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                         data:['身份数量','身份付款金额','商品数量','商品付款金额']
                     },
                     series: [
                         {
@@ -371,12 +348,11 @@
                             radius: '55%',
                             center: ['50%', '60%'],
                             data:[
-                {value:335, name:'直接访问'},
-                {value:310, name:'邮件营销'},
-                {value:234, name:'联盟广告'},
-                {value:135, name:'视频广告'},
-                {value:1548, name:'搜索引擎'}
-            ],
+                                {value:this.idenNumWx, name:'身份数量'},
+                                {value:this.idenPayMoneyWx, name:'身份付款金额'},
+                                {value:this.goodsNumWx, name:'商品数量'},
+                                {value:this.goodsPayMoneyWx, name:'商品付款金额'}
+                            ],
                             itemStyle: {
                                 emphasis: {
                                     shadowBlur: 10,
@@ -390,9 +366,10 @@
             }
         },
         mounted: function () {
+            this.getTransaction()
+            this.getlist()
+            this.getlistBootm()
             this.drawColumnChart()
-            this.drawPieChart()
-            this.drawPieChartR()
         }
     }
 </script>

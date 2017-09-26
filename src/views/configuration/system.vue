@@ -19,24 +19,29 @@
             <el-col :span="1" style="margin-top: 6px;margin-left: 5px;">天</el-col>
         </el-col>
         <el-col :span="24" style="margin-left: 166px;margin-bottom: 20px;">
-            <el-col :span="6" style="margin-top: 6px;">自动退款日期</el-col>
+            <el-col :span="6" style="margin-top: 6px;">自动退款日期：</el-col>
             <el-col :span="8"><el-input v-model="table.refundDay" auto-complete="off"></el-input></el-col>
             <el-col :span="1" style="margin-top: 6px;margin-left: 5px;">天</el-col>
         </el-col>
         <el-col :span="24" style="margin-left: 166px;margin-bottom: 20px;">
-            <el-col :span="6" style="margin-top: 6px;">订单自动取消时间</el-col>
+            <el-col :span="6" style="margin-top: 6px;">订单自动取消时间：</el-col>
             <el-col :span="8"><el-input v-model="table.cancelHour" auto-complete="off"></el-input></el-col>
             <el-col :span="2" style="margin-top: 6px;margin-left: 5px;">小时</el-col>
         </el-col>
         <el-col :span="24" style="margin-left: 166px;margin-bottom: 20px;">
-            <el-col :span="6" style="margin-top: 6px;">订单自动评价时间</el-col>
+            <el-col :span="6" style="margin-top: 6px;">订单自动评价时间：</el-col>
             <el-col :span="8"><el-input v-model="table.evaluateDay" auto-complete="off"></el-input></el-col>
             <el-col :span="1" style="margin-top: 6px;margin-left: 5px;">天</el-col>
         </el-col>
         <el-col :span="24" style="margin-left: 166px;margin-bottom: 20px;">
-            <el-col :span="6" style="margin-top: 6px;">订单收货后维权期</el-col>
+            <el-col :span="6" style="margin-top: 6px;">订单收货后维权期：</el-col>
             <el-col :span="8"><el-input v-model="table.rightsDay" auto-complete="off"></el-input></el-col>
             <el-col :span="1" style="margin-top: 6px;margin-left: 5px;">天</el-col>
+        </el-col>
+        <el-col :span="24" style="margin-left: 166px;margin-bottom: 20px;">
+            <el-col :span="7" style="margin-top: 6px;">代理商超时未发货时间：</el-col>
+            <el-col :span="8"><el-input v-model="table.agentDeliverHour" auto-complete="off"></el-input></el-col>
+            <el-col :span="2" style="margin-top: 6px;margin-left: 5px;">小时</el-col>
         </el-col>
         <el-col :span="24" style="margin-left: 300px;margin-bottom: 20px;">
             <el-button type="primary" @click="saveBtn">保存</el-button>
@@ -65,7 +70,8 @@
                 refundDay:parseInt(this.table.refundDay),
                 cancelHour:parseInt(this.table.cancelHour),
                 evaluateDay:parseInt(this.table.evaluateDay),
-                rightsDay:parseInt(this.table.rightsDay)
+                rightsDay:parseInt(this.table.rightsDay),
+                agentDeliverHour:parseInt(this.table.agentDeliverHour)
             }
             if(this.table !== null){
                 params.sysId = this.table.sysId

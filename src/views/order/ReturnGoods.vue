@@ -39,8 +39,8 @@
 			<el-table-column label="操作">
 				<template scope="scope">
 					<!-- <el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button> -->
-					<el-button type="text" size="small" @click="pass(scope.row)">通过</el-button>
-					<el-button type="text" size="small" @click="nopass(scope.row)">不通过</el-button>
+					<el-button type="text" v-if="scope.row.refundStatus !== 2" size="small" @click="pass(scope.row)">通过</el-button>
+					<el-button type="text" v-if="scope.row.refundStatus !== 2" size="small" @click="nopass(scope.row)">不通过</el-button>
 					<!-- <el-button type="text" size="small" @click="deldetBtn(scope.row)">删除</el-button> -->
 				</template>
 			</el-table-column>
@@ -150,9 +150,10 @@
 				}
 			},
 			tongyiSubmit(){
+				const _this = this
 				const params = {
 					refundId: this.tyId,
-					refundStatus:3,
+					refundStatus:2,
 					payPwd:this.password,
 					sellerCause:this.bzCont
 				}
@@ -172,6 +173,7 @@
 	                        alert(data.msg)
                         }else{
                         	_this.getlist()
+                        	_this.editFormVisible = false
                         }
                     }
                 })
@@ -182,6 +184,7 @@
 				this.shenhenopaid = row.refundId
 			},
 			noupSubmit(){
+				const _this = this
 				const params = {
 					refundId: this.shenhenopaid,
 					refundStatus:3,
@@ -197,6 +200,8 @@
                     contentType:'application/json;charset=utf-8',
                     success:function(data){
                         console.log(data)
+                        _this.getlist()
+                        _this.noVisible = false
                     }
                 })
 			},

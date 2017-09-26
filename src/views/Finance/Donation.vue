@@ -175,6 +175,7 @@
             },
 			getlist(){
 				const _this = this
+				this.listLoading = true
 				_this.table = []
 				const params = {
 					pageNum:this.page,
@@ -193,6 +194,7 @@
                     	_this.orderInformation = info.list
                     	console.log(data)
                     	// console.log(_this.table)
+                    	_this.listLoading = false
                     }
                 });
 			},

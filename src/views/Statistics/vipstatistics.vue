@@ -10,6 +10,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
+                    <el-date-picker v-model="value" type="month" placeholder="选择月">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="getlist">查询</el-button>
                     <el-button type="primary">导出数据</el-button>
                 </el-form-item>
             </el-form>
@@ -36,27 +41,71 @@
     export default {
         data() {
             return {
-                name:'',
-                options:[
-                    {
-                        value:'1',
-                        label:'1店'
-                    },{
-                        value:'2',
-                        label:'2店'
-                    },{
-                        value:'3',
-                        label:'3店'
-                    },{
-                        value:'4',
-                        label:'4店'
-                    }
-                ],
+                name:2,
+                value:'',
+                options:[],
                 chartColumn: null,
-                chartColumnTop:null
+                chartColumnTop:null,
+                topList:[],
+                list:[],
+                topTitle:[],
+                bottomTitle:[]
             }
         },
         methods: {
+            getlist(){
+                const _this = this
+                _this.bottomTitle = []
+                _this.topTitle = []
+                const params = {
+                    storeId:this.name,
+                    dateDay:''
+                }
+                if(this.value !== ''){
+                    const y = this.value.getFullYear()
+                    const m = this.value.getMonth() + 1
+                    params.dateDay =  y +'-' + m
+                }
+                console.log(params)
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: baseUrl + "/api/admin/mallStatistics/storeMemberStatistics",
+                    data: JSON.stringify(params),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        console.log(data)
+                        const info = data.data.list
+                        const infos = data.data.yyeList
+                        const arry = []
+                        for (var i = 0; i < info.length; i++) {
+                           arry.push(info[i].memberNum)
+                           _this.topTitle.push(info[i].dateDay)
+                        }
+                        _this.topList = [{
+                            name: '天新增会员',
+                            type: 'line',
+                            data: arry
+                        }]
+                        const arrys = []
+                        for (var i = 0; i < infos.length; i++) {
+                           arrys.push(infos[i].turnover)
+                           _this.bottomTitle.push(infos[i].dateDay)
+                        }
+                        _this.list = [{
+                            name: '天营业额',
+                            type: 'line',
+                            data: arrys
+                        }]
+                        console.log(_this.list)
+
+
+
+                        _this.drawColumnChart()
+                        _this.drawColumnChartTop()
+                    }
+                })
+            },
             // 折线图 
             drawColumnChartTop() {
                 this.chartColumnTop = echarts.init(document.getElementById('chartColumnTop'));
@@ -64,33 +113,17 @@
                     title: { text: '' },
                     tooltip: {},
                     legend: {
-                        data:['提现总金额','成交额总数','成交商品总数','成交额平均值']
+                        data:['天新增会员']
                     },
                     xAxis: {
                         type : 'category',
                         boundaryGap : false,
-                        data: ['一', '二', '三', '四', '五', '六', '七', '八', '九']
+                        data: this.topTitle
                     },
                     yAxis: {
                         type : 'value'
                     },
-                    series:[
-                            {
-                                name: '3的指数',
-                                type: 'line',
-                                data: [1, 3, 9, 27, 81, 247, 741, 2223, 6669]
-                            },
-                            {
-                                name: '2的指数',
-                                type: 'line',
-                                data: [1, 2, 4, 8, 16, 32, 64, 128, 256]
-                            },
-                            {
-                                name: '1/2的指数',
-                                type: 'line',
-                                data: [1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, 1/256, 1/512]
-                            }
-                        ]
+                    series:this.topList
                 });
             },
             drawColumnChart() {
@@ -99,39 +132,53 @@
                     title: { text: '' },
                     tooltip: {},
                     legend: {
-                        data:['提现总金额','成交额总数','成交商品总数','成交额平均值']
+                        data:['天营业额']
                     },
                     xAxis: {
                         type : 'category',
                         boundaryGap : false,
-                        data: ['一', '二', '三', '四', '五', '六', '七', '八', '九']
+                        data: this.bottomTitle
                     },
                     yAxis: {
                         type : 'value'
                     },
-                    series:[
-                            {
-                                name: '3的指数',
-                                type: 'line',
-                                data: [1, 3, 9, 27, 81, 247, 741, 2223, 6669]
-                            },
-                            {
-                                name: '2的指数',
-                                type: 'line',
-                                data: [1, 2, 4, 8, 16, 32, 64, 128, 256]
-                            },
-                            {
-                                name: '1/2的指数',
-                                type: 'line',
-                                data: [1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, 1/256, 1/512]
-                            }
-                        ]
+                    series:this.list
                 });
+            },
+            getTransaction(){
+                const _this = this
+                this.options = []
+                const params = {
+                    pageNum:1,
+                    size:1000,
+                    name:'',
+                    nickName:'',
+                    mobile:'',
+                    status:'',
+                    id:''
+                }
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: baseUrl + "/api/store/find/page",
+                    data: JSON.stringify(params),
+                    contentType: 'application/json;charset=utf-8',
+                    success: function (data) {
+                        console.log(data)
+                        const info = data.data
+                        for (var i = 0; i < info.list.length; i++) {
+                            const obj = {}
+                            obj.value = info.list[i].id
+                            obj.label = info.list[i].name
+                            _this.options.push(obj)
+                        }
+                    }
+                })
             }
         },
         mounted: function () {
-            this.drawColumnChartTop()
-            this.drawColumnChart()
+            this.getTransaction()
+            this.getlist()
         }
     }
 </script>
