@@ -228,7 +228,7 @@
 					{{seeEditDisFrom.userName}}
 				</el-form-item>
 				<el-form-item label="手机号">
-					{{seeEditDisFrom.inviteCode}}
+					{{seeEditDisFrom.mobile}}
 				</el-form-item>
 				<el-form-item label="邮箱">
 					{{seeEditDisFrom.email}}
@@ -429,7 +429,7 @@
 	                  	console.log(data)
 	                  	if(data.code === 1){
 	                  		alert(data.msg)
-	                  		_this.userMonEdit = false
+	                  		_this.seeEditDis = false
 	                  	}else{
 	                  		alert(data.msg)
 	                  	}

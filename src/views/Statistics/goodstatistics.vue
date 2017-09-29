@@ -3,13 +3,17 @@
     <!--工具条-->
         <el-col :span="24" class="toolbar" style="padding-bottom: 0px;background: #fff">
             <el-form :inline="true">
-               <!--  <el-form-item>
-                    <el-select v-model="name" clearable>
-                      <el-option v-for="item in options" :label="item.label" :value="item.value">
-                      </el-option>
-                    </el-select>
-                </el-form-item> -->
                 <el-form-item>
+                    <el-button type="primary" @click="ztBtn">昨天</el-button>
+                    <el-button type="primary" @click="zjBtn">最近7天</el-button>
+                    <el-button type="primary" @click="yBtn">最近30天</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-date-picker v-model="startTime" type="date" placeholder="选择开始日期"></el-date-picker>
+                    <el-date-picker v-model="endTime" type="date" placeholder="选择结束日期"></el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="getlist">查询</el-button>
                     <el-button type="primary">导出数据</el-button>
                 </el-form-item>
             </el-form>
@@ -21,9 +25,6 @@
                 <el-col :span="12"><div id="chartPieRight" style="width:100%; height:650px;"></div></el-col>
             </el-col>
         </el-col>
-
-
-
         <el-col :span="24"  style="border:1px solid #ddd;text-align: center;">
                 <el-col :span="24" style="height: 40px;line-height: 40px;background:#ccc;">
                     <el-col :span="4">分类名称</el-col>
@@ -35,9 +36,9 @@
                 <el-col :span="24" style="height: 60px;line-height: 60px;border-bottom: 1px solid #ccc" v-for="item in goodslist">
                     <el-col :span="4">{{item.name}}</el-col>
                     <el-col :span="4">{{item.sellNum}}</el-col>
-                    <el-col :span="4">{{item.sellNum/totalMoneyTotal}}</el-col>
+                    <el-col :span="4">{{item.sellNum/quantityTotal}}</el-col>
                     <el-col :span="4">{{item.sellQuota}}</el-col>
-                    <el-col :span="4">{{item.sellQuota/quantityTotal}}</el-col>
+                    <el-col :span="4">{{item.sellQuota/totalMoneyTotal}}</el-col>
                 </el-col>
             </el-col>
     </section>
@@ -51,6 +52,9 @@
     export default {
         data() {
             return {
+                startTime:'',
+                endTime:'',
+                cNum:'',
                 name:'',
                 totalMoneyTotal:'',
                 quantityTotal:'',
@@ -79,17 +83,53 @@
             }
         },
         methods: {
+            ztBtn(){
+                this.cNum = 1
+                this.startTime = ''
+                this.endTime = ''
+                this.getlist()
+            },
+            zjBtn(){
+                this.cNum = 7
+                this.startTime = ''
+                this.endTime = ''
+                this.getlist()
+            },
+            yBtn(){
+                this.cNum = 30
+                this.startTime = ''
+                this.endTime = ''
+                this.getlist()
+            },
             getlist(){
                 const _this = this
                 _this.listL = []
                 _this.namesL = []
                 _this.listR = []
                 _this.namesR = []
+                const params = {
+                    cNum:this.cNum,
+                    startTime:'',
+                    endTime:''
+                }
+                if(this.startTime !== ''){
+                    const y = this.startTime.getFullYear()
+                    const m = this.startTime.getMonth() + 1
+                    const d = this.startTime.getDate()
+                    params.startTime = y+'-'+ m +'-'+ d
+                }
+                if(this.endTime !== ''){
+                    const _y = this.endTime.getFullYear()
+                    const _m = this.endTime.getMonth() + 1
+                    const _d = this.endTime.getDate()
+                    params.endTime = _y+'-'+ _m +'-'+ _d
+                }
+                console.log(params)
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
                     url: baseUrl + "/api/admin/mallStatistics/commodityStatistics",
-                    data: {},
+                    data: JSON.stringify(params),
                     contentType: 'application/json;charset=utf-8',
                     success: function (data) {
                         console.log(data)
@@ -115,6 +155,7 @@
                         _this.drawPieChartR()
                     }
                 })
+                 this.cNum = ''
             },
             // 饼图
             drawPieChart() {

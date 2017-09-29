@@ -13,6 +13,12 @@
                     <el-button type="primary" @click="ztBtn">昨天</el-button>
                     <el-button type="primary" @click="zjBtn">最近7天</el-button>
                     <el-button type="primary" @click="yBtn">最近30天</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-date-picker v-model="startTime" type="date" placeholder="选择开始日期"></el-date-picker>
+                    <el-date-picker v-model="endTime" type="date" placeholder="选择结束日期"></el-date-picker>
+                </el-form-item>
+                <el-form-item>
                     <el-button type="primary" @click="getlist">查询</el-button>
                     <el-button type="primary">导出数据</el-button>
                 </el-form-item>
@@ -57,15 +63,24 @@
             </el-col>
             <el-col :span="24">
                 <el-col :span="4">订单构成来源</el-col>
-                <el-col :span="10">
+                <el-col :span="20">
                     <el-form :inline="true">
                         <el-form-item>
-                            <el-select v-model="name" clearable>
+                            <el-select v-model="namebottom" clearable>
                               <el-option v-for="item in options" :label="item.label" :value="item.value">
                               </el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item>
+                            <el-button type="primary" @click="onMouth">本月</el-button>
+                            <el-button type="primary" @click="inMouth">上月</el-button>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-date-picker v-model="bstartTime" type="date" placeholder="选择开始日期"></el-date-picker>
+                            <el-date-picker v-model="bendTime" type="date" placeholder="选择结束日期"></el-date-picker>
+                        </el-form-item>
+                        <el-form-item>
+                           <el-button type="primary" @click="getlistBootm">查询</el-button>
                             <el-button type="primary">导出数据</el-button>
                         </el-form-item>
                     </el-form>
@@ -134,14 +149,20 @@
                 goodsNumWx:'',    //商品数量（来源微信）
                 goodsPayMoneyWx:'',    //付款金额（商品）（来源微信）
                                 
-                name:4,
+                name:2,
+                namebottom:2,
                 options:[],
                 chartColumn: null,
                 chartPie:null,
                 chartPieRight:null,
                 plist:[],
                 wxlist:[],
-                cNum:''
+                cNum:'',
+                startTime:'',
+                endTime:'',
+                monthTime:'',
+                bstartTime:'',
+                bendTime:''
         	}
         },
         methods: {
@@ -177,14 +198,20 @@
             },
             ztBtn(){
                 this.cNum = 1
+                this.startTime = ''
+                this.endTime = ''
                 this.getlist()
             },
             zjBtn(){
                 this.cNum = 7
+                this.startTime = ''
+                this.endTime = ''
                 this.getlist()
             },
             yBtn(){
                 this.cNum = 30
+                this.startTime = ''
+                this.endTime = ''
                 this.getlist()
             },
             getlist(){
@@ -195,6 +222,19 @@
                     startTime:'',
                     endTime:''
                 }
+                if(this.startTime !== ''){
+                    const y = this.startTime.getFullYear()
+                    const m = this.startTime.getMonth() + 1
+                    const d = this.startTime.getDate()
+                    params.startTime = y+'-'+ m +'-'+ d
+                }
+                if(this.endTime !== ''){
+                    const _y = this.endTime.getFullYear()
+                    const _m = this.endTime.getMonth() + 1
+                    const _d = this.endTime.getDate()
+                    params.endTime = _y+'-'+ _m +'-'+ _d
+                }
+                console.log(params)
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
@@ -219,14 +259,45 @@
                 })
                 this.cNum = ''
             },
+            onMouth(){
+                this.bstartTime = ''
+                this.bendTime = ''
+                const date = new Date()
+                const by = date.getFullYear()
+                const bm = date.getMonth() + 1
+                this.monthTime = by + '-' + bm
+                this.getlistBootm()
+            },
+            inMouth(){
+                this.bstartTime = ''
+                this.bendTime = ''
+                const date = new Date()
+                const sy = date.getFullYear()
+                const sm = date.getMonth()
+                this.monthTime = sy + '-' + sm
+                this.getlistBootm()
+            },
             getlistBootm(){
                 const _this = this
                 const params = {
-                    storeId:this.name,
-                    monthTime:'',
+                    storeId:this.namebottom,
+                    monthTime:this.monthTime,
                     startTime:'',
                     endTime:''
                 }
+                if(this.bstartTime !== ''){
+                    const y = this.bstartTime.getFullYear()
+                    const m = this.bstartTime.getMonth() + 1
+                    const d = this.bstartTime.getDate()
+                    params.startTime = y+'-'+ m +'-'+ d
+                }
+                if(this.bendTime !== ''){
+                    const _y = this.bendTime.getFullYear()
+                    const _m = this.bendTime.getMonth() + 1
+                    const _d = this.bendTime.getDate()
+                    params.endTime = _y+'-'+ _m +'-'+ _d
+                }
+                console.log(params)
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
@@ -248,6 +319,7 @@
                         _this.drawPieChartR()
                     }
                 })
+                this.monthTime = ''
             },
             // 折线图
             drawColumnChart() {

@@ -80,7 +80,7 @@
                         const arry = []
                         for (var i = 0; i < info.length; i++) {
                            arry.push(info[i].memberNum)
-                           _this.topTitle.push(info[i].dateDay)
+                           _this.topTitle.push(info[i].dateDay.substring(5))
                         }
                         _this.topList = [{
                             name: '天新增会员',
@@ -90,17 +90,13 @@
                         const arrys = []
                         for (var i = 0; i < infos.length; i++) {
                            arrys.push(infos[i].turnover)
-                           _this.bottomTitle.push(infos[i].dateDay)
+                           _this.bottomTitle.push(infos[i].dateDay.substring(5))
                         }
                         _this.list = [{
                             name: '天营业额',
                             type: 'line',
                             data: arrys
                         }]
-                        console.log(_this.list)
-
-
-
                         _this.drawColumnChart()
                         _this.drawColumnChartTop()
                     }

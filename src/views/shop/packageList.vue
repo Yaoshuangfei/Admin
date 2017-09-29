@@ -262,10 +262,8 @@
 		          label: '语花说分佣线'
 		        }
 				],
-				options: [{
-		          value: '0',
-		          label: '全部'
-		        }, {
+				options: [
+				{
 		          value: '1',
 		          label: '店铺名'
 		        }, {
@@ -425,7 +423,7 @@
 					params.nickName = this.filters.name
 				}else if(this.filters.type === '3'){
 					params.mobile = this.filters.name
-				}else if(this.filters.type === '0'){
+				}else{
 					params.name = ''
 				}
 				// console.log(params)
