@@ -260,6 +260,9 @@
 		        }, {
 		          value: 5,
 		          label: '语花说分佣线'
+		        }, {
+		          value: 6,
+		          label: '好丝蜜分佣线'
 		        }
 				],
 				options: [
