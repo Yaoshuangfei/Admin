@@ -23,10 +23,10 @@
             <el-col :span="24">
                 <div id="chartColumnTop" style="width:100%; height:650px;"></div>
             </el-col>
-            <el-col :span="24">
+            <el-col :span="24" v-if="yyeShow">
                 <el-col :span="4">营业额增长情况</el-col>
             </el-col>
-             <el-col :span="24">
+             <el-col :span="24" v-if="yyeShow">
                 <div id="chartColumn" style="width:100%; height:650px;"></div>
             </el-col>
         </el-col>
@@ -41,7 +41,7 @@
     export default {
         data() {
             return {
-                name:2,
+                name:0,
                 value:'',
                 options:[],
                 chartColumn: null,
@@ -49,7 +49,8 @@
                 topList:[],
                 list:[],
                 topTitle:[],
-                bottomTitle:[]
+                bottomTitle:[],
+                yyeShow:true
             }
         },
         methods: {
@@ -57,6 +58,11 @@
                 const _this = this
                 _this.bottomTitle = []
                 _this.topTitle = []
+                if(this.name === 0){
+                    this.yyeShow = false
+                }else{
+                    this.yyeShow = true
+                }
                 const params = {
                     storeId:this.name,
                     dateDay:''
@@ -143,7 +149,7 @@
             },
             getTransaction(){
                 const _this = this
-                this.options = []
+                this.options = [{value:0,label:'平台'}]
                 const params = {
                     pageNum:1,
                     size:1000,

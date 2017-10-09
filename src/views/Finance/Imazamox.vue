@@ -194,7 +194,7 @@
 				const params = {
 					pageNum:this.page,
 					pageSize:10,
-					type:'9,10'
+					type:'9,10,15'
 				}
 				console.log(params)
 				$.ajax({

@@ -15,6 +15,7 @@ import addUser from './views/systemSettings/addUser.vue'
 
 /*配置管理 configuration*/
 import banner from './views/configuration/banner.vue'
+import share from './views/configuration/share.vue'
 import system from './views/configuration/system.vue'
 import BankCard from './views/configuration/BankCard.vue'
 import rule from './views/configuration/rule.vue'
@@ -118,7 +119,8 @@ let routes = [
         name: '配置管理',
         iconCls: 'fa fa-bar-chart',
         children: [
-            { path: '/banner', component: banner, name: 'banner管理了' },
+            { path: '/banner', component: banner, name: 'banner管理' },
+            { path: '/share', component: share, name: '分享页管理' },
             { path: '/system', component: system, name: '系统配置' },
             { path: '/BankCard', component: BankCard, name: '银行卡管理' },
             { path: '/rule', component: rule, name: '规则管理' }
