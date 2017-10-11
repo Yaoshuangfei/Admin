@@ -130,34 +130,25 @@
 					label:'全部'
 				},{
 					value:'1',
-					label:'支付中'
+					label:'待付款'
 				},{
 					value:'2',
-					label:'支付成功'
-				},{
-					value:'3',
-					label:'支付失败'
-				},{
-					value:'4',
-					label:'已取消'
+					label:'待发货'
 				},{
 					value:'5',
-					label:'卖家已发货'
+					label:'待收货'
 				},{
 					value:'6',
-					label:'已收货'
+					label:'待评价'
 				},{
 					value:'7',
 					label:'已评价'
 				},{
 					value:'8',
-					label:'交易完成'
+					label:'已完成'
 				},{
-					value:'9',
-					label:'售后处理'
-				},{
-					value:'10',
-					label:'已删除'
+					value:'4',
+					label:'已取消'
 				}],
 				options: [{
 		          value: '0',
@@ -428,27 +419,27 @@
 			formatterStatus: function (row, column) {
 				let status = ''
 				if(row.orderStatus === 1){
-					status = '支付中'
+					status = '待付款'
 				}else if(row.orderStatus === 2){
-					status = '支付成功'
+					status = '待发货'
 				}else if(row.orderStatus === 3){
 					status = '支付失败'
 				}else if(row.orderStatus === 4){
 					status = '已取消'
 				}else if(row.orderStatus === 5){
-					status = '卖家已发货'
+					status = '待收货'
 				}else if(row.orderStatus === 6){
-					status = '已收货'
+					status = '待评价'
 				}else if(row.orderStatus === 7){
 					status = '已评价'
 				}else if(row.orderStatus === 8){
-					status = '交易完成'
+					status = '已完成'
 				}else if(row.orderStatus === 9){
-					status = '售后处理'
+					status = '未通过'
 				}else if(row.orderStatus === 10){
 					status = '已删除'
 				}else if(row.orderStatus === 11){
-					status = '业务审核中'
+					status = '已完成'
 				}
 				return status
 			}

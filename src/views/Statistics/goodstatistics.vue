@@ -36,9 +36,9 @@
                 <el-col :span="24" style="height: 60px;line-height: 60px;border-bottom: 1px solid #ccc" v-for="item in goodslist">
                     <el-col :span="4">{{item.name}}</el-col>
                     <el-col :span="4">{{item.sellNum}}</el-col>
-                    <el-col :span="4">{{item.sellNum/quantityTotal}}</el-col>
+                    <el-col :span="4">{{(item.sellNum/quantityTotal).toFixed(4)}}</el-col>
                     <el-col :span="4">{{item.sellQuota}}</el-col>
-                    <el-col :span="4">{{item.sellQuota/totalMoneyTotal}}</el-col>
+                    <el-col :span="4">{{(item.sellQuota/totalMoneyTotal).toFixed(4)}}</el-col>
                 </el-col>
             </el-col>
     </section>

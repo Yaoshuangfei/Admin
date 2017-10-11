@@ -29,8 +29,8 @@
 				<template scope="scope">
 					<el-button type="text" size="small" v-if="scope.row.sharedStatus === 2" @click="upBtn(scope.row)">启用</el-button>
 					<el-button type="text" size="small" v-if="scope.row.sharedStatus === 1" @click="nupBtn(scope.row)">禁用</el-button>
-					<!-- <el-button type="text" size="small" @click="editBtn(scope.row)">修改</el-button> -->
-					<!-- <el-button type="text" size="small" @click="deldetBtn(scope.row)">删除</el-button> -->
+					<el-button type="text" size="small" @click="editBtn(scope.row)">修改</el-button>
+					<el-button type="text" size="small" @click="deldetBtn(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -80,34 +80,30 @@
 		<!--编辑界面-->
 		<el-dialog title="修改banner" v-model="editFormVisible" :close-on-click-modal="false" >
 			<el-form :model="orderDetails" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="链接">
-					<el-input v-model="orderDetails.link" type="text" auto-complete="off"></el-input>
+				<el-form-item label="名称">
+					<el-input v-model="orderDetails.sharedName" type="text" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="banner">
+				<el-form-item label="分享图">
 					<input type="file" style="position:absolute;opacity:0;width:70px;height:30px;margin-right:10px"  @change="uploadnoe" id="fileInput">
 					<button type="button" class="el-button el-button--primary el-button--small">
 						<span>上传新图片</span>
 					</button>
 				</el-form-item>
 				<el-col :span="24">
-					<img style="margin-left: 80px;margin-bottom: 20px;" class="img" :src="orderDetails.picture" alt="">
+					<img style="margin-left: 80px;margin-bottom: 20px;" class="img" :src="orderDetails.sharedUrl" alt="">
 				</el-col>
-				<el-form-item label="序号">
-					<el-input v-model="orderDetails.orderSort" type="text" auto-complete="off"></el-input>
-				</el-form-item>
-				<!-- <el-form-item label="图片位置"> -->
-					<!-- <el-select v-model="orderDetails.poType" placeholder="请选择">
+				<el-form-item label="图片位置">
+					<el-select v-model="orderDetails.sharedCarde" placeholder="请选择">
 				    <el-option
 				      v-for="item in options"
 				      :key="item.value"
 				      :label="item.label"
 				      :value="item.value">
 				    </el-option>
-				  </el-select> -->
-					<!-- <el-input v-model="orderDetails.poType" type="text" auto-complete="off"></el-input> -->
-				<!-- </el-form-item> -->
-				<el-form-item label="描述">
-					<el-input v-model="orderDetails.desc" type="text" auto-complete="off"></el-input>
+				  </el-select>
+				</el-form-item>
+				<el-form-item label="备注">
+					<el-input v-model="orderDetails.remarks" type="text" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-col :span='24'></el-col>
 			</el-form>
@@ -161,13 +157,13 @@
 					label:'退货'
 				}],
 				options: [{
-		          value: '1',
+		          value: 1,
 		          label: '普通'
 		        }, {
-		          value: '2',
+		          value: 2,
 		          label: '创客'
 		        }, {
-		          value: '3',
+		          value: 3,
 		          label: '创客商'
 		        }],
 				filters: {
@@ -316,7 +312,7 @@
                             const info = JSON.parse(response.bodyText);
 							_this.editurl = info.data[0].baseUri+info.data[0].uri;
 							// _this.getUrl()
-							_this.orderDetails.picture = _this.editurl
+							_this.orderDetails.sharedUrl = _this.editurl
                         }, error => _this.$emit('complete', 500, error.message))
                  });
 			},
@@ -415,22 +411,21 @@
 				this.editFormVisible = true;
 				console.log(row)
 				this.orderDetails = row
-				this.orderDetails.poType = this.orderDetails.poType.toString()
 			},
 			upBanner(){
 				const _this = this
 				const params = {
-					id:_this.orderDetails.id,
-					link:_this.orderDetails.link,
-					picture:_this.orderDetails.picture,
-					orderSort:_this.orderDetails.orderSort,
-					desc:_this.orderDetails.desc
+					sharedId:_this.orderDetails.sharedId,
+					sharedName:_this.orderDetails.sharedName,
+					sharedUrl:_this.orderDetails.sharedUrl,
+					sharedCarde:_this.orderDetails.sharedCarde,
+					remarks:_this.orderDetails.remarks
 				}
 				console.log(params)
 				$.ajax({
                     type:'POST',
                     dataType:'json',
-                    url:baseUrl+"/api/indexAdvert/update",
+                    url:baseUrl+"/api/shared/update",
                     data:JSON.stringify(params),
                     contentType:'application/json;charset=utf-8',
                     success:function(data){
@@ -442,14 +437,15 @@
 			},
 			deldetBtn(row){
 				const _this = this
-				const params = {
-					id:row.id
-				}
+				console.log(row)
+				const params = [
+					row.sharedId
+				]
 				console.log(params)
 				$.ajax({
                     type:'POST',
                     dataType:'json',
-                    url:baseUrl+"/api/indexAdvert/delete/one",
+                    url:baseUrl+"/api/shared/deleteByIds",
                     data:JSON.stringify(params),
                     contentType:'application/json;charset=utf-8',
                     success:function(data){

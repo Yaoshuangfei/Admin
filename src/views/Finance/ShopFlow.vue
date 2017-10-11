@@ -28,7 +28,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getlist">查询</el-button>
-					<el-button type="primary">导出</el-button>
+					<el-button type="primary" @click="exportExcel">导出</el-button>
 					<router-link :to="{ name: '店铺流水记录'}"   style="margin: 0 10px;">
 						<el-button  type="primary">返回上级</el-button>
 					</router-link>
@@ -445,6 +445,28 @@
 	                  	_this.topObj = info[0]
 	                }
 	            })
+			},
+			exportExcel(){
+				const params = {
+					type:'',
+					startTime:'',
+					endTime:'',
+					storeId:this.$route.params.id,
+					sort:'',
+					source:''
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/platformInformation/store/account",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        window.location.href = data.msg
+                    }
+                })
 			}
 		},
 		mounted() {

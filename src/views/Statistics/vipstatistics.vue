@@ -67,7 +67,8 @@
                     storeId:this.name,
                     dateDay:''
                 }
-                if(this.value !== ''){
+                console.log(this.value)
+                if(this.value !== '' && this.value !== undefined){
                     const y = this.value.getFullYear()
                     const m = this.value.getMonth() + 1
                     params.dateDay =  y +'-' + m
@@ -81,30 +82,45 @@
                     contentType: 'application/json;charset=utf-8',
                     success: function (data) {
                         console.log(data)
-                        const info = data.data.list
-                        const infos = data.data.yyeList
-                        const arry = []
-                        for (var i = 0; i < info.length; i++) {
-                           arry.push(info[i].memberNum)
-                           _this.topTitle.push(info[i].dateDay.substring(5))
+                        if(data.code === 1){
+                            const info = data.data.list
+                            const infos = data.data.yyeList
+                            const arry = []
+                            for (var i = 0; i < info.length; i++) {
+                               arry.push(info[i].memberNum)
+                               _this.topTitle.push(info[i].dateDay.substring(5))
+                            }
+                            _this.topList = [{
+                                name: '天新增会员',
+                                type: 'line',
+                                data: arry
+                            }]
+                            if(infos.length > 0){
+                                _this.yyeShow = true
+                                const arrys = []
+                                for (var i = 0; i < infos.length; i++) {
+                                   arrys.push(infos[i].turnover)
+                                   _this.bottomTitle.push(infos[i].dateDay.substring(5))
+                                }
+                                _this.list = [{
+                                    name: '天营业额',
+                                    type: 'line',
+                                    data: arrys
+                                }]
+                                _this.drawColumnChart()
+                            }else{
+                                _this.yyeShow = false
+                                // _this.list = [{
+                                //     name: '天营业额',
+                                //     type: 'line',
+                                //     data: []
+                                // }]
+                                // _this.drawColumnChart()
+                            }
+                            console.log(_this.topList)
+                            console.log(_this.list)
+                            _this.drawColumnChartTop()
                         }
-                        _this.topList = [{
-                            name: '天新增会员',
-                            type: 'line',
-                            data: arry
-                        }]
-                        const arrys = []
-                        for (var i = 0; i < infos.length; i++) {
-                           arrys.push(infos[i].turnover)
-                           _this.bottomTitle.push(infos[i].dateDay.substring(5))
-                        }
-                        _this.list = [{
-                            name: '天营业额',
-                            type: 'line',
-                            data: arrys
-                        }]
-                        _this.drawColumnChart()
-                        _this.drawColumnChartTop()
                     }
                 })
             },

@@ -31,17 +31,17 @@
 		<el-table :data="orderInformation" border highlight-current-row v-loading="listLoading" style="width: 100%;min-width: 1080px;">
 			<el-table-column type="index">
 			</el-table-column>
-			<el-table-column prop="courierNumber" label="交易编码">
+			<el-table-column prop="id" label="交易编码">
 			</el-table-column>
 			<el-table-column prop="userName" label="用户昵称">
 			</el-table-column>
-			<el-table-column prop="amountPaid" label="转赠人">
+			<el-table-column prop="quota" label="几颗">
 			</el-table-column>
-			<el-table-column prop="orderTotal" label="几颗">
+			<el-table-column prop="type"  :formatter='typeForm' label="获取方式">
 			</el-table-column>
-			<el-table-column prop="orderStatus" label="获取方式">
+			<el-table-column prop="createTime" label="创建时间">
 			</el-table-column>
-			<el-table-column prop="paymentMethod" label="创建时间">
+			<el-table-column prop="remark" label="备注">
 			</el-table-column>
 			<!-- <el-table-column label="操作">
 				<template scope="scope">
@@ -184,10 +184,15 @@
 			}
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
-			},
+			typeForm(row,column){
+            	if(row.type === 9){
+            		return '金豆充值'
+            	}else if(row.type === 10){
+            		return '金豆支出'
+            	}else if(row.type === 15){
+            		return '便付劵兑换金豆'
+            	}
+            },
 			getlist(){
 				const _this = this
 				_this.table = []
@@ -205,6 +210,8 @@
                     contentType:'application/json;charset=utf-8',
                     success:function(data){
                     	console.log(data)
+                    	_this.total = data.data.total
+                    	_this.orderInformation = data.data.list
                     }
                 });
 			},

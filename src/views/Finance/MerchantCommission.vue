@@ -28,7 +28,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getlist">分析</el-button>
-					<el-button type="primary" v-on:click="getlist">导出</el-button>
+					<el-button type="primary" v-on:click="exportExcel">导出</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -199,6 +199,27 @@
 			seeBtn: function (index, row) {
 				this.editFormVisible = true;
 				this.orderDetails = Object.assign({}, row);
+			},
+			exportExcel(){
+				const params = {
+					type:'12',
+					source:'',
+					sort:'',
+					startTime:'',
+					endTime:''
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/platformInformation/website/account",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        window.location.href = data.msg
+                    }
+                })
 			}
 		},
 		mounted() {

@@ -28,7 +28,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getlist">查询</el-button>
-					<el-button type="primary" v-on:click="getUsers">导出</el-button>
+					<el-button type="primary" v-on:click="exportExcel">导出</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -464,6 +464,26 @@
 					type = '提现失败'
 				}
 				return type
+			},
+			exportExcel(){
+				const params = {
+					status:this.filters.status,
+					source:'',
+					startTime:'',
+					endTime:''
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/platformInformation/withdrawals",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        window.location.href = data.msg
+                    }
+                })
 			}
 		},
 		mounted() {

@@ -162,7 +162,11 @@
                 endTime:'',
                 monthTime:'',
                 bstartTime:'',
-                bendTime:''
+                bendTime:'',
+                dataAll:[],
+                sjList: [],
+                min:'',
+                max:''
         	}
         },
         methods: {
@@ -216,6 +220,7 @@
             },
             getlist(){
                 const _this = this
+                _this.dataAll = []
                 const params = {
                     storeId:this.name,
                     cNum:this.cNum,
@@ -255,6 +260,80 @@
                         _this.payOrderNum = info.payOrderNum
                         _this.rAmount = info.rAmount
                         _this.vaOrderNum = info.vaOrderNum
+
+                        const payAmountList = [] //金额
+                        const payMemberNumList = [] //人数
+                        for (var i = 0; i < info.mallStatisticsDetailsPmnAPa.length; i++) {
+                            payAmountList.push(info.mallStatisticsDetailsPmnAPa[i].payAmount) //金额
+                            payMemberNumList.push(info.mallStatisticsDetailsPmnAPa[i].payMemberNum)//人数
+                            _this.sjList.push(info.mallStatisticsDetailsPmnAPa[i].dateDay.substring(5))
+                        }
+                        const rateList = [] //成交率
+                        for (var i = 0; i < info.mallStatisticsDetailsPmnAPaFinishRate.length; i++) {
+                            rateList.push(info.mallStatisticsDetailsPmnAPaFinishRate[i].rate) //成交率
+                        }
+
+                        const rateListone = [] //下单转化率
+                        for (var i = 0; i < info.mallStatisticsDetailsPmnAPaRate.length; i++) {
+                            rateListone.push(info.mallStatisticsDetailsPmnAPaRate[i].rate) //下单转化率
+                        }
+
+                        const payOrderNcList = [] //付款件数
+                        for (var i = 0; i < info.mallStatisticsDetailsPoNc.length; i++) {
+                            payOrderNcList.push(info.mallStatisticsDetailsPoNc[i].payOrderNc) //付款件数
+                        }
+
+                        const rAmountList = [] //退款金额
+                        for (var i = 0; i < info.mallStatisticsDetailsRa.length; i++) {
+                            rAmountList.push(info.mallStatisticsDetailsRa[i].rAmount) //退款金额
+                        }
+                        _this.dataAll = [
+                            {
+                                name:'付款金额',
+                                type:'line',
+                                data:payAmountList
+                            },
+                            {
+                                name:'付款人数',
+                                type:'line',
+                                data:payMemberNumList
+                            },
+                            {
+                                name:'成交率',
+                                type:'line',
+                                yAxisIndex: 1,
+                                data:rateList
+                            },
+                            {
+                                name:'下单转化率',
+                                type:'line',
+                                yAxisIndex: 1,
+                                data:rateListone
+                            },
+                            {
+                                name:'付款件数',
+                                type:'line',
+                                data:payOrderNcList
+                            },
+                            {
+                                name:'退款金额',
+                                type:'line',
+                                data:rAmountList
+                            }
+                        ]
+                        _this.max = 0
+                        for (var i = 0; i < payAmountList.length; i++) {
+                            if(payAmountList[i] > _this.max){
+                                _this.max = payAmountList[i]
+                            }
+                        }
+                        _this.min = payAmountList[0]
+                        for (var i = 0; i < payAmountList.length; i++) {
+                            if(payAmountList[i] < _this.min ){
+                                _this.min = payAmountList[i]
+                            }
+                        }
+                        _this.drawColumnChart()
                     }
                 })
                 this.cNum = ''
@@ -325,36 +404,76 @@
             drawColumnChart() {
                 this.chartColumn = echarts.init(document.getElementById('chartColumn'));
                 this.chartColumn.setOption({
-                    title: { text: '' },
-                    tooltip: {},
-                    legend: {
-                        data:['提现总金额','成交额总数','成交商品总数','成交额平均值']
-                    },
-                    xAxis: {
-                        type : 'category',
-                        boundaryGap : false,
-                        data: ['一', '二', '三', '四', '五', '六', '七', '八', '九']
-                    },
-                    yAxis: {
-                        type : 'value'
-                    },
-                    series:[
-                            {
-                                name: '3的指数',
-                                type: 'line',
-                                data: [1, 3, 9, 27, 81, 247, 741, 2223, 6669]
-                            },
-                            {
-                                name: '2的指数',
-                                type: 'line',
-                                data: [1, 2, 4, 8, 16, 32, 64, 128, 256]
-                            },
-                            {
-                                name: '1/2的指数',
-                                type: 'line',
-                                data: [1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, 1/256, 1/512]
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross',
+                            crossStyle: {
+                                color: '#999'
                             }
-                        ]
+                        }
+                    },
+                    toolbox: {
+                        // feature: {
+                        //     dataView: {show: true, readOnly: false},
+                        //     magicType: {show: true, type: ['line', 'bar']},
+                        //     restore: {show: true},
+                        //     saveAsImage: {show: true}
+                        // }
+                    },
+                    legend: {
+                        data:['付款金额','付款人数','成交率','下单转化率','付款件数','退款金额']
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: this.sjList,
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: '金额',
+                            min:  this.min,
+                            max:  this.max,
+                            interval: this.max/10,
+                            axisLabel: {
+                                formatter: '{value} 元'
+                            }
+                        },
+                        {
+                            type: 'value',
+                            name: '转化率',
+                            min: 0,
+                            max: 1,
+                            interval: 0.1,
+                            axisLabel: {
+                                formatter: '{value} %'
+                            }
+                        }
+                    ],
+                    series: this.dataAll
+                    // [
+                    //     {
+                    //         name:'下单转化率',
+                    //         type:'line',
+                    //         data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                    //     },
+                    //     {
+                    //         name:'成交率',
+                    //         type:'line',
+                    //         data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+                    //     },
+                    //     {
+                    //         name:'付款转化率',
+                    //         type:'line',
+                    //         yAxisIndex: 1,
+                    //         data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+                    //     }
+                    // ]
                 });
             },
             // 饼图
@@ -372,7 +491,7 @@
                     legend: {
                         orient: 'vertical',
                         left: 'left',
-                         data:['身份数量','身份付款金额','商品数量','商品付款金额']
+                         data:['平台商品数量','微信商品数量']
                     },
                     series: [
                         {
@@ -381,10 +500,9 @@
                             radius: '55%',
                             center: ['50%', '60%'],
                             data:[
-                                {value:this.idenNumPla, name:'身份数量'},
-                                {value:this.goodsPayMoneyPla, name:'身份付款金额'},
-                                {value:this.goodsNumPla, name:'商品数量'},
-                                {value:this.idenPayMoneyPla, name:'商品付款金额'}
+                                
+                                {value:this.goodsNumPla, name:'平台商品数量'},
+                                {value:this.goodsNumWx, name:'微信商品数量'}
                             ],
                             itemStyle: {
                                 emphasis: {
@@ -411,7 +529,7 @@
                     legend: {
                         orient: 'vertical',
                         left: 'left',
-                         data:['身份数量','身份付款金额','商品数量','商品付款金额']
+                         data:['微信身份数量','平台身份数量']
                     },
                     series: [
                         {
@@ -420,10 +538,9 @@
                             radius: '55%',
                             center: ['50%', '60%'],
                             data:[
-                                {value:this.idenNumWx, name:'身份数量'},
-                                {value:this.idenPayMoneyWx, name:'身份付款金额'},
-                                {value:this.goodsNumWx, name:'商品数量'},
-                                {value:this.goodsPayMoneyWx, name:'商品付款金额'}
+                                {value:this.idenNumWx, name:'微信身份数量'},
+                                {value:this.idenNumPla, name:'平台身份数量'}
+                                
                             ],
                             itemStyle: {
                                 emphasis: {
@@ -441,7 +558,7 @@
             this.getTransaction()
             this.getlist()
             this.getlistBootm()
-            this.drawColumnChart()
+            // this.drawColumnChart()
         }
     }
 </script>

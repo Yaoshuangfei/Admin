@@ -28,7 +28,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getlist">搜索</el-button>
-					<el-button type="primary" v-on:click="getUsers">导出</el-button>
+					<el-button type="primary" @click="exportExcel">导出</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -399,6 +399,26 @@
 				}else if(row.payType === 6){
 					return '在线支付'
 				}
+			},
+			exportExcel(){
+				const params = {
+					tags:this.filters.tags,
+					type:'2',
+					startTime:'',
+					endTime:''
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/platformInformation/recharge",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        window.location.href = data.msg
+                    }
+                })
 			}
 		},
 		mounted() {
