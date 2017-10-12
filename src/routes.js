@@ -209,14 +209,14 @@ let routes = [
             { path: '/commodityRelease', component: commodityRelease, name: '充值商品' }
         ]
     },
-    {
-        path: '/',
-        component: Home,
-        name: '扫码付管理',
-        iconCls: 'el-icon-message',
-        children: [
-        ]
-    },
+    // {
+    //     path: '/',
+    //     component: Home,
+    //     name: '扫码付管理',
+    //     iconCls: 'el-icon-message',
+    //     children: [
+    //     ]
+    // },
     {
         path: '/',
         component: Home,
@@ -227,29 +227,29 @@ let routes = [
             { path: '/addpage/:id', component: addpage, name: '添加千人千面', hidden: true  }
         ]
     },
-    {
-        path: '/',
-        component: Home,
-        name: '慈善公益管理',
-        iconCls: 'el-icon-message',
-        children: [
-            // { path: '/department', component: department, name: '员工管理' },
-            // { path: '/menu', component: menu, name: '菜单管理' },
-            // { path: '/role', component: role, name: '组织管理' },
-            // { path: '/account', component: account, name: '账号管理' },
-            // { path: '/editPassword', component: editPassword, name: '修改密码' },
-            // { path: '/operationLog', component: operationLog, name: '操作日志' }
-        ]
-    },
-    {
-        path: '/',
-        component: Home,
-        name: '网络电话管理',
-        iconCls: 'el-icon-message',
-        children: [
-            // { path: '/department', component: department, name: '员工管理' }
-        ]
-    },
+    // {
+    //     path: '/',
+    //     component: Home,
+    //     name: '慈善公益管理',
+    //     iconCls: 'el-icon-message',
+    //     children: [
+    //         // { path: '/department', component: department, name: '员工管理' },
+    //         // { path: '/menu', component: menu, name: '菜单管理' },
+    //         // { path: '/role', component: role, name: '组织管理' },
+    //         // { path: '/account', component: account, name: '账号管理' },
+    //         // { path: '/editPassword', component: editPassword, name: '修改密码' },
+    //         // { path: '/operationLog', component: operationLog, name: '操作日志' }
+    //     ]
+    // },
+    // {
+    //     path: '/',
+    //     component: Home,
+    //     name: '网络电话管理',
+    //     iconCls: 'el-icon-message',
+    //     children: [
+    //         // { path: '/department', component: department, name: '员工管理' }
+    //     ]
+    // },
     {
         path: '/',
         component: Home,

@@ -395,10 +395,11 @@
 				return row.gender == 1 ? '男' : row.gender == 2 ? '女' : '未知';
 			},
 			formatterVip: function (row, column) {
-				return row.gender == 2 ? '创客' : row.gender == 3 ? '合作商' : '普通';
+				console.log(row.crade)
+				return row.crade == 2 ? '创客' : row.crade == 3 ? '创客商' : '普通';
 			},
 			formatterType: function (row, column) {
-				return row.gender == 1 ? '是' : row.gender == 0 ? '否' : '未知';
+				return row.isAgent == 1 ? '是' : row.isAgent == 0 ? '否' : '未知';
 			},
 			// 修改账户余额
 			userMonEdit(){

@@ -221,6 +221,7 @@
             getlist(){
                 const _this = this
                 _this.dataAll = []
+                this.sjList = []
                 const params = {
                     storeId:this.name,
                     cNum:this.cNum,
