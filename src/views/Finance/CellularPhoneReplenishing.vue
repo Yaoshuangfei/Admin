@@ -401,11 +401,19 @@
 				}
 			},
 			exportExcel(){
+				const _this = this
+				console.log(this.startTime)
+				if(this.startTime !== '' && this.startTime !== undefined){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== '' && this.endTime !== undefined){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
 				const params = {
 					tags:this.filters.tags,
 					type:'2',
-					startTime:'',
-					endTime:''
+					startTime:_this.startTime,
+					endTime:_this.endTime
 				}
 				console.log(params)
 				$.ajax({

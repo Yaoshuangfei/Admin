@@ -2,11 +2,11 @@
 	<el-row class="container">
 		<el-col :span="24" class="main">
 			<aside :class="collapsed?'menu-collapsed':'menu-expanded'">
-				<div style="height: 283px;text-align: center;position: relative;border-bottom: 3px solid #4d6985;">
+				<div style="height: 180px;text-align: center;position: relative;border-bottom: 3px solid #4d6985;">
 					<router-link :to="{ name: '主页'}">
 						<img src="../assets/logos.png" alt="" style="margin-top: 50px;">
 					</router-link>
-					<div class="main_login">
+					<!-- <div class="main_login">
 						<ul>
 							<li>
 								<img style="width:50px" src="http://resources.51att.cn/ATTACHMENT/ATTACHMENT/1bccc3cf-8d44-4482-84e1-82d84d56e25c.png">
@@ -14,12 +14,11 @@
 							<li>
 								<p>
 									<span class="main_login_name">昵称</span>
-									<!-- <span class="main_login_write">注销</span> -->
 								</p>
 								<p style="font-size: 18px;">123456789</p>
 							</li>
 						</ul>
-					</div>
+					</div> -->
 				</div>
 				<!--导航菜单-->
 				<div style="width: 230px;height: 72%;overflow-y: auto;">

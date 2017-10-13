@@ -14,6 +14,12 @@
 				      </el-option>
 				    </el-select>
 				</el-form-item>
+				<el-form-item label="来源">
+					<el-select v-model="source" clearable>
+				      <el-option v-for="item in selectsource" :label="item.label" :value="item.value">
+				      </el-option>
+				    </el-select>
+				</el-form-item>
 				<el-form-item label="搜索条件">
 					<el-input v-model="value" placeholder="订单编号、用户名、手机号"></el-input>
 				    <!-- <el-select v-model="type" clearable>
@@ -26,6 +32,7 @@
 				</el-form-item> -->
 				<el-form-item>
 					<el-button type="primary" v-on:click="getlist">查询</el-button>
+					<el-button type="primary" v-on:click="exportExcel">导出</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -43,6 +50,8 @@
 			<el-table-column prop="payType" :formatter='formatterType' label="支付方式">
 			</el-table-column>
 			<el-table-column prop="createTime" :formatter='formatterTime' label="创建时间">
+			</el-table-column>
+			<el-table-column prop="source" :formatter='formattersource' label="来源">
 			</el-table-column>
 			<el-table-column prop="remark" label="备注">
 			</el-table-column>
@@ -113,6 +122,7 @@
 		data() {
 			return {
 				radio: '0',
+				source:'',
 				startTime:'',
 				endTime:'',
 				payType:'',
@@ -141,6 +151,15 @@
 					value:'5',
 					label:'金豆支付'
 				}],
+				selectsource:[
+					{
+						value:0,
+						label:'APP'
+					},{
+						value:1,
+						label:'微信'
+					}
+				],
 				options: [{
 		          value: '',
 		          label: '全部'
@@ -212,7 +231,8 @@
 					endTime:_this.endTime,
 					payType:_this.payType,
 					conditions:this.value,
-					sort:'4'
+					sort:'4',
+					source:this.source
 				}
 				// if(_this.type === '1'){
 				// 	params.tradeNo = this.value
@@ -318,7 +338,42 @@
                 	curType = '金豆支付'
                 }
                 return curType
-            }
+            },
+            formattersource(row,column){
+                if(row.source === 0 || row.source === null){
+                	return 'APP'
+                }else if(row.source === 1){
+                	return '微信'
+                }
+            },
+            exportExcel(){
+				const _this = this
+				if(this.startTime !== '' && this.startTime !== undefined){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== '' && this.endTime !== undefined){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
+				const params = {
+					type:'',
+					startTime:_this.startTime,
+					endTime:_this.endTime,
+					sort:'',
+					source:this.source
+				}
+				console.log(params)
+				$.ajax({
+                    type:'POST',
+                    dataType:'json',
+                    url:baseUrl+"/api/platformInformation/website/account",
+                    data:JSON.stringify(params),
+                    contentType:'application/json;charset=utf-8',
+                    success:function(data){
+                        console.log(data)
+                        window.location.href = data.msg
+                    }
+                })
+			}
 		},
 		mounted() {
 			this.getlist();

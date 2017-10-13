@@ -28,7 +28,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getlist">搜索</el-button>
-					<el-button type="primary">导出</el-button>
+					<!-- <el-button type="primary">导出</el-button> -->
 				</el-form-item>
 			</el-form>
 		</el-col>

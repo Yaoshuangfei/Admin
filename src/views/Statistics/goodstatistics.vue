@@ -14,7 +14,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="getlist">查询</el-button>
-                    <el-button type="primary">导出数据</el-button>
+                    <!-- <el-button type="primary">导出数据</el-button> -->
                 </el-form-item>
             </el-form>
         </el-col>

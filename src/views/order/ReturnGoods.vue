@@ -24,10 +24,12 @@
 			</el-table-column>
 			<el-table-column prop="orderGoods.productName" label="商品名称">
 			</el-table-column>
+			<el-table-column prop="refundPrice" label="退款金额">
+			</el-table-column>
 			<el-table-column prop="coreUser.nickName" label="用户名">
 			</el-table-column>
-			<el-table-column prop="coreUser.mobile" label="手机号">
-			</el-table-column>
+			<!-- <el-table-column prop="coreUser.mobile" label="手机号">
+			</el-table-column> -->
 			<el-table-column prop="orderGoods.orderStatus" :formatter='orderStatu'  label="订单状态">
 			</el-table-column>
 			<el-table-column prop="refundType" :formatter='refunType'  label="退款类型">
@@ -39,8 +41,8 @@
 			<el-table-column label="操作">
 				<template scope="scope">
 					<!-- <el-button type="text" size="small" @click="seeBtn(scope.$index, scope.row)">查看</el-button> -->
-					<el-button type="text" v-if="scope.row.refundStatus !== 2" size="small" @click="pass(scope.row)">通过</el-button>
-					<el-button type="text" v-if="scope.row.refundStatus !== 2" size="small" @click="nopass(scope.row)">不通过</el-button>
+					<el-button type="text" v-if="scope.row.refundStatus !== 2 && scope.row.refundStatus === 1" size="small" @click="pass(scope.row)">通过</el-button>
+					<el-button type="text" v-if="scope.row.refundStatus !== 2 && scope.row.refundStatus === 1" size="small" @click="nopass(scope.row)">不通过</el-button>
 					<!-- <el-button type="text" size="small" @click="deldetBtn(scope.row)">删除</el-button> -->
 				</template>
 			</el-table-column>

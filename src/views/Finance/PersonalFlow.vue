@@ -500,10 +500,17 @@
 				return status
 			},
 			exportExcel(){
+				const _this = this
+				if(this.startTime !== '' && this.startTime !== undefined){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== '' && this.endTime !== undefined){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
 				const params = {
 					type:'',
-					startTime:'',
-					endTime:'',
+					startTime:_this.startTime,
+					endTime:_this.endTime,
 					userId:'',
 					sort:'',
 					source:''
@@ -517,7 +524,7 @@
                     contentType:'application/json;charset=utf-8',
                     success:function(data){
                         console.log(data)
-                        // window.location.href = data.msg
+                        window.location.href = data.msg
                     }
                 })
 			}

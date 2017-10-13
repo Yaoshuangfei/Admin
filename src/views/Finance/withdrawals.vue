@@ -466,11 +466,18 @@
 				return type
 			},
 			exportExcel(){
+				const _this = this
+				if(this.startTime !== '' && this.startTime !== undefined){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== '' && this.endTime !== undefined){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
 				const params = {
 					status:this.filters.status,
 					source:'',
-					startTime:'',
-					endTime:''
+					startTime:this.startTime,
+					endTime:this.endTime
 				}
 				console.log(params)
 				$.ajax({

@@ -447,10 +447,17 @@
 	            })
 			},
 			exportExcel(){
+				const _this = this
+				if(this.startTime !== '' && this.startTime !== undefined){
+					_this.startTime = state.formatDate(_this.startTime)
+				}
+				if(this.endTime !== '' && this.endTime !== undefined){
+					_this.endTime = state.formatDate(_this.endTime)
+				}
 				const params = {
 					type:'',
-					startTime:'',
-					endTime:'',
+					startTime:_this.startTime,
+					endTime:_this.endTime,
 					storeId:this.$route.params.id,
 					sort:'',
 					source:''
