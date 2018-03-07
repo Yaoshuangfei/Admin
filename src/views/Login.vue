@@ -64,40 +64,9 @@
               password: this.ruleForm2.password
           }
           const _this = this
-          $.ajax({
-                type:'POST',
-                dataType:'json',
-                url:baseUrl+"/api/core/adminLogin",
-                data:JSON.stringify(params),
-                contentType:'application/json;charset=utf-8',
-                success:function(data){
-                  console.log(data)
-                  if(data.code !== 1){
-                    alert(data.msg)
-                  }
-                  state.storeId = data.data.storeId
-                  state.id = data.data.id
-                  document.cookie="JSESSIONID="+data.data.token+';';
-                  sessionStorage.setItem('user', JSON.stringify(_this.ruleForm2.username));
-                  _this.$router.push({ path: '/main' });
-
-
-                //   if(data.code === 1){
-                //           _this.$message({
-                //   message: '提交成功',
-                //   type: 'success'
-                // });
-                //         }else{
-                //           _this.$message({
-                //   message: data.msg,
-                //   type: 'error'
-                // });
-                //         }
-
-
-
-                }
-            });
+         
+			sessionStorage.setItem('user', JSON.stringify(_this.ruleForm2.username));
+            _this.$router.push({ path: '/main' });
       }
     },
     mounted() {
